@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="/bower_components/google-blockly/blockly_compressed.js"></script>
+  <script src="/bower_components/google-blockly/blocks_compressed.js"></script>
+  <script src="/bower_components/google-blockly/javascript_compressed.js"></script>
+  <script src="/bower_components/google-blockly/msg/js/en.js"></script>
+  <script src="/customBlocks.js"></script>
+
+
+</head>
+<body>
+
+<style>
+  #blocklyArea {
+    width: 100%;
+    height: 100%;
+  }
+  body {
+    margin: 0;
+  }
+</style>
+
+<div id="blocklyArea" style="position: absolute">
+  <div id="blocklyDiv" style="position: absolute"></div>
+  <xml id="toolbox" style="display: none">
+  </xml>
+</div>
+
+<script>
+  var showToolbox = false;
+  var showControls = false;
+  var showTrashcan = false;
+  var readOnly = false;
+  var blocklyCode = '';
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var toolbox = document.getElementById('toolbox');
+  var workspace = null;
+
+  var onresize = function(e) {
+    // Compute the absolute coordinates and dimensions of blocklyArea.
+    var element = blocklyArea;
+    var x = 0;
+    var y = 0;
+    do {
+      x += element.offsetLeft;
+      y += element.offsetTop;
+      element = element.offsetParent;
+    } while (element);
+    // Position blocklyDiv over blocklyArea.
+    blocklyDiv.style.left = x + 'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+  };
+
+  var renderBlockly = function(){
+    this.blocklyDiv.innerHTML = '';
+    this.workspace = Blockly.inject('blocklyDiv',
+      {toolbox: this.showToolbox ? this.toolbox : null,
+        zoom:
+          {controls: showControls,
+            wheel: showControls,
+            startScale: 0.8,
+            maxScale: 2,
+            minScale: 0.3,
+            scaleSpeed: 1.2},
+        trashcan: showTrashcan,
+          readOnly: readOnly,
+        scrollbars:  true
+      });
+    if(blocklyCode) {
+      var xml = Blockly.Xml.textToDom(blocklyCode);
+      Blockly.Xml.domToWorkspace(xml, this.workspace);
+      var element = this.workspace.getAllBlocks()[0];
+      if(element && element.id)
+      {
+            this.workspace.centerOnBlock(element.id);
+      }
+    }
+  };
+
+  renderBlockly();
+  window.addEventListener('resize', onresize, false);
+  onresize();
+  Blockly.svgResize(workspace);
+
+  var setToolbox = function(newToolbox){
+    toolbox.innerHTML = newToolbox;
+    if(newToolbox){
+      showToolbox = true;
+    }
+    renderBlockly();
+  };
+
+  var setControls = function(controls){
+    showControls = controls;
+    renderBlockly();
+  };
+
+  var setTrashcan = function(trashcan){
+    showTrashcan = trashcan;
+    renderBlockly();
+  };
+
+  var setCode = function(newCode){
+    blocklyCode = newCode;
+    renderBlockly();
+  };
+
+  var setReadOnly = function(disabled){
+      readOnly = disabled;
+      renderBlockly();
+  };
+
+  var getCode = function() {
+    var jsCode = Blockly.JavaScript.workspaceToCode(workspace);
+    return jsCode;
+  }
+
+  var getXML = function() {
+    var xml = Blockly.Xml.workspaceToDom(workspace);
+    var xml_text = Blockly.Xml.domToText(xml);
+    return xml_text;
+  }
+
+</script>
+
+</body>
+</html>

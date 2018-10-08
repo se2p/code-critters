@@ -1,0 +1,34 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+    <variables></variables>
+    <block type="controls_if" id="N72Ns7:Qa%:=S5rpwAeA" x="156" y="108">
+        <value name="IF0">
+            <block type="logic_compare" id="Updh4`dmqWOl8d}M;g8y">
+                <field name="OP">EQ</field>
+                <value name="A">
+                    <block type="properties" id="K^M3DpnEmq;{g;pUovR5">
+                        <field name="properties">TERRAIN</field>
+                    </block>
+                </value>
+                <value name="B">
+                    <block type="text" id="/E6tLUu~(6@q4Ei;[]{L">
+                        <field name="TEXT">dirt</field>
+                    </block>
+                </value>
+            </block>
+        </value>
+        <statement name="DO0">
+            <block type="set" id="kOCdKtm)p#{K2/IaeeD1">
+                <value name="value1">
+                    <block type="properties" id="c:F1+?7jw0mn!Shzr6}_">
+                        <field name="properties">BODYCOLOR</field>
+                    </block>
+                </value>
+                <value name="value2">
+                    <block type="colour_picker" id="qr!R`=.8_];7A=dk[b@4">
+                        <field name="COLOUR">#000000</field>
+                    </block>
+                </value>
+            </block>
+        </statement>
+    </block>
+</xml>

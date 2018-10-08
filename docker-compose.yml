@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: "critter-mysql"
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "critter-user"
+      MYSQL_PASSWORD: "#s0me4ery3avePa88w0rd!"
+      MYSQL_DATABASE: "critter-db"

@@ -1,0 +1,10 @@
+
+\.idea/
+
+local_db_dump2\.sql
+
+Code-Critters\.iml
+
+target/
+
+src/main/resources/static/bower_components/
