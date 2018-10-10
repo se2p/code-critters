@@ -299,7 +299,6 @@ Displays a critter.
                         computed: "_isHuman(human)"
                     },
 
-
                     direction: {
                         type: String,
                         value: "east"
@@ -390,7 +389,7 @@ Displays a critter.
                     this.notifyPath("position", this.position.x);
                     this.$.critter.addEventListener('mouseover', this._onHover.bind(this));
                     this.$.critter.addEventListener('mouseout', this._onHoverOut.bind(this));
-
+                    this._globalData = window.Core.CritterLevelData;
                 });
             }
 
@@ -471,7 +470,7 @@ Displays a critter.
 
             /** computes a path to the tower **/
             _computePath() {
-                let source = this.position = (this.position.x !== -1 && this.position !== -1 ? this.position : this.spawn);
+                let source = this.position = (this.position.x !== -1 && this.position !== -1 ? this.position : this._globalData.spawn);
 
                 return this.findPath(source);
             }
@@ -514,27 +513,17 @@ Displays a critter.
             }
 
             _doElements() {
-                this.mines = this.getRootNode().host.mines;
-                this.towers = this.getRootNode().host.towers;
-                this.modder = this.getRootNode().host.modder;
                 this._doMines();
-                this._doTowers();
-                this._doModder();
             }
 
             _doMines() {
-                this.mines.forEach((mine) => {
+                this._globalData.mines.forEach((mine) => {
                     if (this.position.x === mine.x && this.position.y === mine.y) {
                         mine.code.bind(this)(mine.x, mine.y);
                     }
                 });
             }
 
-            _doTowers() {
-            }
-
-            _doModder() {
-            }
 
             _killCritter(x, y) {
                 setTimeout(() => {

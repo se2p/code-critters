@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../critter-data-store/critter-data-store.html">
 <link rel="import" href="../critter-level-mixin/critter-level-mixin.html">
 <link rel="import" href="../critter-gameboard/critter-board.html">
 <link rel="import" href="../critter-critter/critter-critter.html">
@@ -129,6 +130,8 @@ Displays the game elements
 
         </style>
 
+        <critter-data-store></critter-data-store>
+
         <critter-dialog id="score_dialog">
             <div id="star_container">
                 <iron-icon id="star" icon="icons:star"></iron-icon>
@@ -143,24 +146,23 @@ Displays the game elements
         </critter-dialog>
 
         <div id="board_container">
-            <critter-gameboard id="gameboard" level="{{level}}" tower="{{tower}}" spawn="{{spawn}}" width="{{width}}"
-                               height="{{height}}" selected-element="{{selectedElement}}" mines="{{mines}}"
-                               towers="{{towers}}" modder="{{modder}}" show-grid="{{showGrid}}" generator="{{generator}}"
-            ></critter-gameboard>
-            <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _bloardHeight }}px">
+            <critter-gameboard id="gameboard" selected-element="{{selectedElement}}" show-grid="{{showGrid}}"
+                               generator="{{generator}}">
+
+            </critter-gameboard>
+            <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
             </div>
         </div>
         <div id="blockly_container" style$="width: calc(-{{ _boardWidth }}px - 70px + 100vw)">
             <critter-blockly id="blockly_init" class="half_blockly" height$="{{ _blocklyHeight}}" controls="true"
-                             level-name$="{{ levelName }}" init read-only>
+                             init read-only>
                 <span>Init Code</span>
             </critter-blockly>
             <critter-blockly id="blockly_CUT" class="half_blockly" height$="{{ _blocklyHeight}}" controls="true" cut
-                             level-name$="{{ levelName }}" read-only>
+                             read-only>
                 <span>Code under Test</span>
             </critter-blockly>
-            <critter-blockly id="blockly_test" height$="{{ _blocklyHeight}}" trashcan="true" controls="true"
-                             level-name$="{{ levelName }}">
+            <critter-blockly id="blockly_test" height$="{{ _blocklyHeight}}" trashcan="true" controls="true">
                 <span>Test</span>
             </critter-blockly>
         </div>
@@ -173,6 +175,10 @@ Displays the game elements
 
     </template>
     <script>
+
+        window.Core = window.Core || {};
+        window.Core.GameRoot = window.Core.GameRoot || [];
+
         class CritterGame extends CritterMixins.Level(Polymer.Element) {
             static get is() {
                 return 'critter-game';
@@ -185,14 +191,6 @@ Displays the game elements
                         value: true
                     },
 
-                    numberOfCritters: {
-                        type: Number
-                    },
-
-                    numberOfHumans: {
-                        type: Number
-                    },
-
                     selectedElement:{
                         type: String,
                         value: 'mine'
@@ -200,17 +198,17 @@ Displays the game elements
 
                     _blocklyHeight: {
                         type: Number,
-                        computed: '_computeBlocklyHeight(height, _blockSize)'
+                        computed: '_computeBlocklyHeight(_globalData.height, _blockSize)'
                     },
 
-                    _bloardHeight: {
+                    _boardHeight: {
                         type: Number,
-                        computed: '_computeBoardHeight(height, _blockSize)'
+                        computed: '_computeBoardHeight(_globalData.height, _blockSize)'
                     },
 
                     _boardWidth: {
                         type: Number,
-                        computed: '_computeBoardWidth(width, _blockSize)'
+                        computed: '_computeBoardWidth(_globalData.width, _blockSize)'
                     },
 
                     _blockSize: {
@@ -269,13 +267,16 @@ Displays the game elements
                     _toasterTime: {
                     type: Number,
                         value: 5000
-                }
-
+                    }
                 };
             }
 
             connectedCallback() {
                 super.connectedCallback();
+
+                window.Core.GameRoot = this;
+
+                this._globalData = window.Core.CritterLevelData;
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.grid_button.addEventListener("click", () => this._showGrid(this));
@@ -283,6 +284,9 @@ Displays the game elements
                     this.$.gameboard.addEventListener("hoverOver", (event) => this._handleHoverField(event));
                     this.$.gameboard.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
                     this.addEventListener("_levelFinished", () => this._onLevelFinished());
+                    this.addEventListener("_levelNameUpdated", this.getLevelData);
+                    this._globalData.levelName =  new URL(window.location.href).searchParams.get("level");
+
                 });
             }
 
@@ -312,7 +316,7 @@ Displays the game elements
 
             /** sends one critter after another**/
             _sendCritters(i = 0) {
-                if(!i && this._critterList.length !== this.numberOfHumans + this.numberOfCritters){
+                if(!i && this._critterList.length !== this._globalData.numberOfHumans + this._globalData.numberOfCritters){
                     setTimeout(() => {
                         this._sendCritters(0);
                     }, 100);
@@ -329,7 +333,7 @@ Displays the game elements
             /** creates and append humans**/
             _addHumans(cut, init) {
                 let i = 0;
-                while(i++ < this.numberOfHumans) {
+                while(i++ < this._globalData.numberOfHumans) {
                     this._createCritter(true, cut, init);
                 }
             }
@@ -337,11 +341,6 @@ Displays the game elements
             _createCritter(human, cut, init) {
                 let container = this.$.critter_container;
                 let critter = document.createElement("critter-critter");
-                critter.level = this.level;
-                critter.tower = this.tower;
-                critter.spawn = this.spawn;
-                critter.width = this.width;
-                critter.height = this.height;
                 critter.human = human;
                 critter.cut = new Function(cut);
                 critter.init = new Function(init);
@@ -359,11 +358,11 @@ Displays the game elements
                 req.contentType = 'application/json';
                 req.bubbles = true;
                 req.rejectWithRequest = true;
-                req.params = {level: this.levelName};
+                req.params = {level: this._globalData.levelName};
 
                 req.addEventListener('response', e => {
                     let mutants = e.detail.__data.response;
-                    for(let i = 0; i < this.numberOfCritters; i++){
+                    for(let i = 0; i < this._globalData.numberOfCritters; i++){
                         this._createCritter(false, mutants[i % (mutants.length)].code, mutants[i % (mutants.length)].init);
                     }
                     this._critterList = this._shuffleArray(this._critterList);
@@ -394,7 +393,7 @@ Displays the game elements
             _handleHoverField(event){
                 let detail = event.detail;
                 this._hoverX = detail.x + 1;
-                this._hoverY = this.width - detail.y;
+                this._hoverY = this._globalData.width - detail.y;
             }
 
             /** handels the clickField event and creates the element **/
@@ -411,7 +410,7 @@ Displays the game elements
                 }
                 detail.code =  new Function('x', 'y', code);
                 detail.xml = this.$.blockly_test.getXML();
-                this.mines.push(detail);
+                this._globalData.mines.push(detail);
             }
 
             _updateScore(x) {
@@ -443,14 +442,14 @@ Displays the game elements
             }
 
             _onLevelFinished() {
-                this.score -= 25 * (this.mines.length);
+                this.score -= 25 * (this._globalData.mines.length);
                 this.score = (this.score < 0 ? 0 : this.score);
                 this.$.score_dialog.open();
                 this._storeResult();
             }
 
             _storeResult() {
-                this.mines.forEach((mine) => {
+                this._globalData.mines.forEach((mine) => {
                     mine.code = mine.code.toString();
                 });
                 let req = document.createElement('iron-ajax');
@@ -461,9 +460,9 @@ Displays the game elements
                 req.bubbles = true;
                 req.rejectWithRequest = true;
                 req.body = {
-                    level: this.levelName,
-                    mines: this.mines,
-                    score: this.score,
+                    level: this._globalData.levelName,
+                    mines: this._globalData.mines,
+                    score: this._globalData.score,
                     cookie: this.getCookie()
                 };
 
@@ -472,8 +471,8 @@ Displays the game elements
                 return req;
             }
 
-             setCookie(cname, cvalue) {
-                document.cookie = cname + "=" + cvalue + ";" + ";path=/";
+             setCookie(name, value) {
+                document.cookie = name + "=" + value + ";" + ";path=/";
             }
 
             getCookie() {

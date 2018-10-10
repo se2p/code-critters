@@ -1,0 +1,111 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<!--
+# critter-data-store
+
+A Simple Button
+
+## Example
+```html
+<critter-data-store></critter-data-store>
+```
+
+@demo
+-->
+
+<dom-module id="critter-data-store">
+    <template>
+
+    </template>
+    <script>
+
+        window.Core = window.Core || {};
+        window.Core.CritterLevelData = window.Core.CritterLevelData || [];
+
+        class CritterDataStore extends Polymer.Element {
+            static get is() {
+                return 'critter-data-store';
+            }
+
+            static get properties() {
+                return {
+                    levelName: {
+                        type: String,
+                        value: '',
+                        observer: '_updateLevelData'
+                    },
+
+                    level: {
+                        type: Array,
+                        notify: true
+                    },
+
+                    numberOfCritters: {
+                        type: Number
+                    },
+
+                    numberOfHumans: {
+                        type: Number
+                    },
+
+                    tower: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    spawn: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    width: {
+                        type: Number,
+                        value: 16,
+                        notify: true
+                    },
+
+                    height: {
+                        type: Number,
+                        value: 16,
+                        notify: true
+                    },
+
+                    mines: {
+                        type: Array,
+                        value: [],
+                        notify: true
+                    },
+                }
+            }
+
+            static get observers() {
+                return [
+                    '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*)',
+                    '_sizeChanged(width, height)'
+                ]
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                window.Core.CritterLevelData = this;
+            }
+
+            _updateLevelData() {
+                if (this.levelName === '') {
+                    return;
+                }
+                this.dispatchEvent(new CustomEvent('_levelNameUpdated', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            _dataChanged() {
+                this.dispatchEvent(new CustomEvent('_levelDataChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            _sizeChanged() {
+                this.dispatchEvent(new CustomEvent('_levelSizeChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+        }
+
+        window.customElements.define(CritterDataStore.is, CritterDataStore)
+    </script>
+</dom-module>
