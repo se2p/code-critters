@@ -9,6 +9,7 @@
 <link rel="import" href="../critter-mutant-creator/critter-mutant-creator.html">
 <link rel="import" href="../critter-input/critter-input.html">
 <link rel="import" href="../critter-toaster/critter-toaster.html">
+<link rel="import" href="../critter-data-store/critter-data-store.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 
@@ -86,11 +87,12 @@ Displays the game elements
             </style>
         </custom-style>
 
+        <critter-data-store></critter-data-store>
+
+
         <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
         <div class="tab-0 tab">
-            <critter-gameboard id="gameboard" level="{{level}}" tower="{{tower}}" spawn="{{spawn}}" width="{{width}}"
-                               height="{{height}}" selected-element="{{selectedElement}}" mines="{{mines}}"
-                               towers="{{towers}}" modder="{{modder}}" show-grid="false" generator></critter-gameboard>
+            <critter-gameboard id="gameboard"  selected-element="{{selectedElement}}" show-grid="false" generator></critter-gameboard>
             <critter-element-selector id="element_selector"  selected-element="{{selectedElement}}" height$="{{ _boardHeight}}">
             </critter-element-selector>
         </div>
@@ -107,7 +109,7 @@ Displays the game elements
             </critter-blockly>
         </div>
         <div class="tab-3 tab">
-            <critter-mutant-creator id="mutant_creator" height$="{{ _boardHeight}}" number-of-mutants="{{numberOfCritters}}"></critter-mutant-creator>
+            <critter-mutant-creator id="mutant_creator" height$="{{ _boardHeight}}" number-of-mutants="{{_globalData.numberOfMutants}}" ></critter-mutant-creator>
         </div>
         <br>
         <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
@@ -124,14 +126,9 @@ Displays the game elements
             static get properties() {
                 return {
 
-                    numberOfCritters: {
-                        type: Number,
-                        value: 15
-                    },
-
-                    numberOfHumans: {
-                        type: Number,
-                        value: 5
+                    levelName: {
+                        type: String,
+                        value: ''
                     },
 
                     selectedElement:{
@@ -200,18 +197,19 @@ Displays the game elements
                     this.$.tabs.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
                     this._initLevel();
                     this._initNames();
+                    this._globalData = window.Core.CritterLevelData;
                 });
             }
 
             /** initializes an empty level **/
             _initLevel(){
-                this.level = [];
+                this._globalData.level = [];
                 let array = [];
-                for(let j = 0; j < this.width; ++j) {
+                for(let j = 0; j < this._globalData.width; ++j) {
                     array[j] = "grass";
                 }
-                for(let i = 0; i < this.width; ++i){
-                    this.level[i] = array.slice();
+                for(let i = 0; i < this._globalData.width; ++i){
+                    this._globalData.level[i] = array.slice();
                 }
                 this.$.gameboard.dispatchEvent(new CustomEvent('_levelChanged'));
             }
@@ -264,7 +262,7 @@ Displays the game elements
                     return;
                 }
 
-                if(! this.tower || this.tower.x === -1){
+                if(! this._globalData.tower || this._globalData.tower.x === -1){
                     let toaster = document.createElement("critter-toaster");
                     toaster.type = "error";
                     toaster.msg = "Please set the tower";
@@ -273,7 +271,7 @@ Displays the game elements
                     return;
                 }
 
-                if(! this.spawn || this.spawn.x === -1){
+                if(! this._globalData.spawn || this._globalData.spawn.x === -1){
                     let toaster = document.createElement("critter-toaster");
                     toaster.type = "error";
                     toaster.msg = "Please set the tower";
@@ -281,7 +279,7 @@ Displays the game elements
                     toaster.show(this._toasterTime);
                     return;
                 }
-                if(!this.existPath(this.spawn)){
+                if(!this.existPath(this._globalData.spawn)){
                     let toaster = document.createElement("critter-toaster");
                     toaster.type = "error";
                     toaster.msg = "There is no path to the tower";
@@ -299,11 +297,11 @@ Displays the game elements
                 req.rejectWithRequest = true;
                 req.body = {
                     name: this.levelName,
-                    level: this.level,
-                    tower: this.tower,
-                    spawn: this.spawn,
-                    numberOfCritters: this.numberOfCritters,
-                    numberOfHumans: this.numberOfHumans,
+                    level: this._globalData.level,
+                    tower: this._globalData.tower,
+                    spawn: this._globalData.spawn,
+                    numberOfCritters: this._globalData.numberOfCritters,
+                    numberOfHumans: this._globalData.numberOfHumans,
                     cut: this.$.blockly_CUT.getXML(),
                     init: this.$.blockly_init.getXML(),
                     test: this.$.blockly_test.getXML()};
@@ -336,7 +334,7 @@ Displays the game elements
             _handleHoverField(event){
                 let detail = event.detail;
                 this._hoverX = detail.x + 1;
-                this._hoverY = this.width - detail.y;
+                this._hoverY = this._globalData.width - detail.y;
             }
 
             /** handels the clickField event and creates the element **/

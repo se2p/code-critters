@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../critter-level-mixin/critter-level-mixin.html">
+
 
 <!--
 # critter-blockly
@@ -36,7 +38,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
     <iframe id="blockly_frame" src$="[[importPath]]iFrame/blockly_frame.html" height$="{{height}}px"></iframe>
   </template>
   <script>
-    class CritterBlockly extends Polymer.Element {
+    class CritterBlockly extends CritterMixins.Level(Polymer.Element) {
       static get is() {
         return 'critter-blockly';
       }
@@ -44,12 +46,6 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
       static get properties() {
 
         return {
-
-          levelName: {
-            type: String,
-            value: '',
-            observer: '_updateLevelData'
-          },
 
           width: {
             type: Number,
@@ -120,6 +116,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
 
         Polymer.RenderStatus.afterNextRender(this, function () {
           this.$.blockly_frame.addEventListener("load", () => this._updateIFrame());
+          this._globalData = window.Core.CritterLevelData;
         });
       }
 
@@ -193,7 +190,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
         req.contentType = 'application/json';
         req.bubbles = true;
         req.rejectWithRequest = true;
-        req.params = {level: this.levelName};
+        req.params = {level: this._globalData.levelName};
 
         req.addEventListener('response', e => {
           this.code = e.detail.__data.response;
@@ -211,7 +208,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
             req.contentType = 'application/json';
             req.bubbles = true;
             req.rejectWithRequest = true;
-            req.params = {level: this.levelName};
+            req.params = {level: this._globalData.levelName};
 
             req.addEventListener('response', e => {
                 let data = e.detail.__data.response;
@@ -232,7 +229,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
             req.contentType = 'application/json';
             req.bubbles = true;
             req.rejectWithRequest = true;
-            req.params = {level: this.levelName};
+            req.params = {level: this._globalData.levelName};
 
             req.addEventListener('response', e => {
                 this.code = e.detail.__data.response;
@@ -263,7 +260,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
           if(this.generator){
               this._getFullToolBox();
           }
-          else if (this.levelName !== '') {
+          else if (this._globalData.levelName !== '') {
             if (this.cut) {
                 this._getCUT();
             } else if(this.init){

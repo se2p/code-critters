@@ -27,55 +27,8 @@ Holds general functions for code-critter Levels
 
             static get properties() {
                 return {
-                    levelName: {
-                        type: String,
-                        value: '',
-                        observer: '_updateLevelData'
-                    },
-
-                    level: {
-                        type: Array,
-                        notify: true
-                    },
-
-                    tower: {
-                        type: Object,
-                        notify: true
-                    },
-
-                    spawn: {
-                        type: Object,
-                        notify: true
-                    },
-
-                    width: {
-                        type: Number,
-                        value: 16,
-                        notify: true
-                    },
-
-                    height: {
-                        type: Number,
-                        value: 16,
-                        notify: true
-                    },
-
-                    mines: {
-                        type: Array,
-                        value: [],
-                        notify: true
-                    },
-
-                    towers: {
-                        type: Array,
-                        value: [],
-                        notify: true
-                    },
-
-                    modder: {
-                        type: Array,
-                        value: [],
-                        notify: true
+                    _globalData:{
+                        type: Object
                     }
 
                 };
@@ -89,34 +42,35 @@ Holds general functions for code-critter Levels
 
             /** returns a path from source to the tower using the lib **/
             findPathLib(source) {
-                if (!this.tower || !this.level || !this.spawn) {
+                if (!this._globalData.tower || !this._globalData.level || !this._globalData.spawn) {
                     return [];
                 }
 
                 let tempArray = this._computeGrid();
-                if (source.x !== this.spawn.x || source.y !== this.spawn.y) {
-                    tempArray[this.spawn.x][this.spawn.y] = 1;
+                if (source.x !== this._globalData.spawn.x || source.y !== this._globalData.spawn.y) {
+                    tempArray[this._globalData.spawn.x][this._globalData.spawn.y] = 1;
                 }
                 let grid = new PF.Grid(tempArray);
                 let finder = new PF.AStarFinder();
-                let path = finder.findPath(source.x, source.y, this.tower.x, this.tower.y, grid);
+                let path = finder.findPath(source.x, source.y, this._globalData.tower.x, this._globalData.tower.y, grid);
 
                 return path;
             }
 
             /** returns a radnom path from source to the tower **/
             findPath(source, steps = 0) {
-                if (!this.tower || !this.level || !this.spawn) {
+                if (!this._globalData.tower || !this._globalData.level || !this._globalData.spawn) {
                     return [];
                 }
 
                 let tempArray = this._computeGrid();
 
-                tempArray[this.spawn.x][this.spawn.y] = 1;
+                tempArray[this._globalData.spawn.x][this._globalData.spawn.y] = 1;
 
                 let path = [source];
                 let possibilities = this._findPossibility(tempArray, source);
-                while (possibilities.length !== 1 || !(possibilities[0].x === this.tower.x && possibilities[0].y === this.tower.y)) {
+                while (possibilities.length !== 1 || !(possibilities[0].x === this._globalData.tower.x
+                            && possibilities[0].y === this._globalData.tower.y)) {
                     if (possibilities.length > 0) {
                         source = possibilities[this._randomNumber(0, possibilities.length - 1)];
                         path.push(source);
@@ -137,7 +91,7 @@ Holds general functions for code-critter Levels
                                         y: pathBuffer[i][1]
                                     });
                                 }
-                                path.push(this.tower);
+                                path.push(this._globalData.tower);
                                 return path;
                             }
                         }
@@ -145,7 +99,7 @@ Holds general functions for code-critter Levels
                     }
                     possibilities = this._findPossibility(tempArray, source);
                 }
-                path.push(this.tower);
+                path.push(this._globalData.tower);
                 return path;
             }
 
@@ -153,7 +107,6 @@ Holds general functions for code-critter Levels
             _randomNumber(min, max) {
                 return Math.floor((Math.random() * ((max - min) + 1)) + min);
             }
-
 
             /** searches for possibilities and return list of possible waypoints or the location of the tower, if the tower
              * is in range **/
@@ -172,8 +125,8 @@ Holds general functions for code-critter Levels
                     possibilities.push({y: (source.y) - 1, x: source.x});
                 }
                 for (let i = 0; i < possibilities.length; ++i) {
-                    if (possibilities[i].x === this.tower.x && possibilities[i].y === this.tower.y) {
-                        return [this.tower];
+                    if (possibilities[i].x === this._globalData.tower.x && possibilities[i].y === this._globalData.tower.y) {
+                        return [this._globalData.tower];
                     }
                 }
                 return possibilities;
@@ -185,8 +138,11 @@ Holds general functions for code-critter Levels
                 for (let i = 0; i < this.height; ++i) {
                     tempArray[i] = new Array(this.width);
                     for (let j = 0; j < this.width; ++j) {
-                        if (this.level[i][j] === "grass" || this.level[i][j] === "dirt" || (this.level[i][j] === "water" && this.canWalkOnWater) || this.level[i][j] === "ice" || (this.level[i][j] === "lava" && this.canWalkOnLava)) {
-                            tempArray[i][j] = 0;
+                        let fieldClass =  this._globalData.level[i][j];
+                        if (fieldClass=== "grass" || fieldClass === "dirt" ||
+                            (fieldClass === "water" && this.canWalkOnWater) ||
+                            fieldClass === "ice" || (fieldClass === "lava" && this.canWalkOnLava)) {
+                                tempArray[i][j] = 0;
                         }
                         else {
                             tempArray[i][j] = 1;
@@ -199,24 +155,14 @@ Holds general functions for code-critter Levels
 
             /** computes weather an element is already at that position or not**/
             _isElementOnPosition(j, i) {
-                if(this.tower && this.tower.y=== i && this.tower.x === j) {
+                if(this._globalData.tower && this._globalData.tower.y=== i && this._globalData.tower.x === j) {
                     return true;
                 }
-                if(this.spawn && this.spawn.y === i && this.spawn.x === j) {
+                if(this._globalData.spawn && this._globalData.spawn.y === i && this._globalData.spawn.x === j) {
                     return true;
                 }
-                this.mines.forEach((mine) => {
+                this._globalData.mines.forEach((mine) => {
                     if (mine.x === i && mine.y === j) {
-                        return true;
-                    }
-                });
-                this.towers.forEach((tower) => {
-                    if (tower.x === i && tower.y === j) {
-                        return true;
-                    }
-                });
-                this.modder.forEach((modder) => {
-                    if (modder.x === i && modder.y === j) {
                         return true;
                     }
                 });
@@ -231,30 +177,22 @@ Holds general functions for code-critter Levels
                 req.contentType = 'application/json';
                 req.bubbles = true;
                 req.rejectWithRequest = true;
-                req.params = {level: this.levelName};
+                req.params = {level: this._globalData.levelName};
 
                 req.addEventListener('response', e => {
                     let data = e.detail.__data.response;
-                    this.level = data.level;
-                    this.spawn = data.spawn;
-                    this.tower = data.tower;
-                    this.width = data.width;
-                    this.height = data.height;
-                    this.numberOfHumans = data.numberOfHumans;
-                    this.numberOfCritters = data.numberOfCritters;
+                    this._globalData.level = data.level;
+                    this._globalData.spawn = data.spawn;
+                    this._globalData.tower = data.tower;
+                    this._globalData.width = data.width;
+                    this._globalData.height = data.height;
+                    this._globalData.numberOfHumans = data.numberOfHumans;
+                    this._globalData.numberOfCritters = data.numberOfCritters;
                 });
 
                 let genRequest = req.generateRequest();
                 req.completes = genRequest.completes;
                 return req;
-            }
-
-            /** updates the level Data needed for the game **/
-            _updateLevelData() {
-                if (this.levelName === '' || this.generator) {
-                    return;
-                }
-                this.getLevelData();
             }
 
             _shuffleArray(array) {
