@@ -19,7 +19,7 @@ Blockly.JavaScript['properties'] = function(block) {
     var code;
     switch (dropdown_properties) {
         case 'TERRAIN' :
-            code = 'this.level[this.position.y][this.position.x]';
+            code = 'this._globalData.level[this.position.y][this.position.x]';
             break;
         case 'SIZE':
             code = 'this.size';
@@ -31,7 +31,7 @@ Blockly.JavaScript['properties'] = function(block) {
             code = 'this.position.x + 1';
             break;
         case 'YCOORD':
-            code = 'this.height - this.position.y';
+            code = 'this._globalData.height - this.position.y';
             break;
         case 'CANWALKONWATER':
             code = 'this.canWalkOnWater';

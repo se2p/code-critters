@@ -118,8 +118,9 @@ Renders the gameboard and its textures.
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     let rootNode = window.Core.GameRoot;
-                    this.addEventListener("_critterKilled", (event) => this._playExplosion(event));
                     this.addEventListener("_levelChanged", this.renderBoard);
+
+                    rootNode.addEventListener("_critterKilled", (event) => this._playExplosion(event));
                     rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
                     rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
                     this._globalData = window.Core.CritterLevelData;
@@ -183,7 +184,7 @@ Renders the gameboard and its textures.
             /** adds the given element to the gameboard and the List **/
             addElement(element) {
                 if (!this.generator) {
-                    this.dispatchEvent(new CustomEvent('fieldClicked', {detail: element}));
+                    this.dispatchEvent(new CustomEvent('fieldClicked', {detail: element, bubbles: true, composed: true}));
                     if (element.code && element.xml) {
                         switch (this.selectedElement) {
                             case "mine" :
@@ -228,7 +229,7 @@ Renders the gameboard and its textures.
                 //add EventListeners
                 hoverField.addEventListener("hoverOver", (event) => {
                     let detail = event.detail;
-                    this.dispatchEvent(new CustomEvent('hoverOver', {detail: {x: detail.x, y: detail.y}}));
+                    this.dispatchEvent(new CustomEvent('hoverOver', {detail: {x: detail.x, y: detail.y}, bubbles: true, composed: true}));
                 });
 
                 hoverField.addEventListener("fieldClicked", (event) => this.addElement(event.detail));

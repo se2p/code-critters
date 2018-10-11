@@ -90,7 +90,7 @@ A creator for mutated critters
               super.connectedCallback();
 
               Polymer.RenderStatus.afterNextRender(this, function () {
-                  this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
+                  this.addEventListener("tabChanged", (event) => this._onTabChanged(event));
               });
           }
 

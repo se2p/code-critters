@@ -191,10 +191,10 @@ Displays the game elements
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.save_button.addEventListener("click", this._saveLevel.bind(this));
-                    this.$.gameboard.addEventListener("hoverOver", (event) => this._handleHoverField(event));
-                    this.$.gameboard.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
-                    this.$.name_input.addEventListener("valueChanged", (event) => this._validateLevelName(event));
-                    this.$.tabs.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
+                    this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
+                    this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
+                    this.addEventListener("valueChanged", (event) => this._validateLevelName(event));
+                    this.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
                     this._initLevel();
                     this._initNames();
                     this._globalData = window.Core.CritterLevelData;
@@ -211,7 +211,7 @@ Displays the game elements
                 for(let i = 0; i < this._globalData.width; ++i){
                     this._globalData.level[i] = array.slice();
                 }
-                this.$.gameboard.dispatchEvent(new CustomEvent('_levelChanged'));
+                this.$.gameboard.dispatchEvent(new CustomEvent('_levelChanged', { detail: {}, bubbles: true, composed: true }));
             }
 
             /** gets all existing level names **/

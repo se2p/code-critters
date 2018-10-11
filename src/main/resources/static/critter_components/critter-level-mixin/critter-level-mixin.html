@@ -134,10 +134,10 @@ Holds general functions for code-critter Levels
 
             /** computes the grid used for finding a path through the map **/
             _computeGrid() {
-                let tempArray = new Array(this.height);
-                for (let i = 0; i < this.height; ++i) {
-                    tempArray[i] = new Array(this.width);
-                    for (let j = 0; j < this.width; ++j) {
+                let tempArray = new Array(this._globalData.height);
+                for (let i = 0; i < this._globalData.height; ++i) {
+                    tempArray[i] = new Array(this._globalData.width);
+                    for (let j = 0; j < this._globalData.width; ++j) {
                         let fieldClass =  this._globalData.level[i][j];
                         if (fieldClass=== "grass" || fieldClass === "dirt" ||
                             (fieldClass === "water" && this.canWalkOnWater) ||

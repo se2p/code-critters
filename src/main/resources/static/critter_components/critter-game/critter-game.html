@@ -170,8 +170,8 @@ Displays the game elements
         <critter-button id="grid_button">Show Grid</critter-button>
         <critter-button id="send_button">Send Critters</critter-button>
         <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-        <div id="finished_container">{{_finishedHumans}} of {{numberOfHumans}} humans has finished</div>
-        <div id="killed_container">{{_killedCritters}} of {{numberOfCritters}} critters has been detected</div>
+        <div id="finished_container">{{_finishedHumans}} of {{_globalData.numberOfHumans}} humans has finished</div>
+        <div id="killed_container">{{_killedCritters}} of {{_globalData.numberOfCritters}} critters has been detected</div>
 
     </template>
     <script>
@@ -281,12 +281,15 @@ Displays the game elements
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.$.grid_button.addEventListener("click", () => this._showGrid(this));
                     this.$.send_button.addEventListener("click", () => this._startCritters(this));
-                    this.$.gameboard.addEventListener("hoverOver", (event) => this._handleHoverField(event));
-                    this.$.gameboard.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
+                    this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
+                    this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
+
                     this.addEventListener("_levelFinished", () => this._onLevelFinished());
                     this.addEventListener("_levelNameUpdated", this.getLevelData);
-                    this._globalData.levelName =  new URL(window.location.href).searchParams.get("level");
+                    this.addEventListener("_critterKilled", (event) => this._onCritterKilled(event));
+                    this.addEventListener("_critterFinished", (event) => this._onCritterFinished(event));
 
+                    this._globalData.levelName =  new URL(window.location.href).searchParams.get("level");
                 });
             }
 
@@ -344,8 +347,6 @@ Displays the game elements
                 critter.human = human;
                 critter.cut = new Function(cut);
                 critter.init = new Function(init);
-                critter.addEventListener("_critterKilled", (event) => this._onCritterKilled(event));
-                critter.addEventListener("_critterFinished", (event) => this._onCritterFinished(event));
                 container.append(critter);
                 this._critterList.push(critter);
             }
@@ -418,7 +419,6 @@ Displays the game elements
             }
 
             _onCritterKilled(e){
-                this.$.gameboard.dispatchEvent(new CustomEvent('_critterKilled', {detail: e.detail}));
                 this._updateScore(e.detail.human ? -100 : 50);
                 if(!e.detail.human){
                     this._killedCritters++;
@@ -437,7 +437,7 @@ Displays the game elements
             _onCritterDone(){
                 this._doneCritters++;
                 if(this._doneCritters === this._critterList.length){
-                    this.dispatchEvent(new CustomEvent('_levelFinished'));
+                    this.dispatchEvent(new CustomEvent('_levelFinished', { detail: {}, bubbles: true, composed: true }));
                 }
             }
 

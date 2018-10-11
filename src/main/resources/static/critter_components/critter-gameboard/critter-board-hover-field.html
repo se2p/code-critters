@@ -172,12 +172,12 @@ Renders the gameboard and its textures.
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this.addEventListener("mouseover", () => {
                         this.element = this.getRootNode().host.selectedElement;
-                        this.dispatchEvent(new CustomEvent('hoverOver', {detail: {x: this.x, y: this.y}}));
+                        this.dispatchEvent(new CustomEvent('hoverOver', {detail: {x: this.x, y: this.y}, bubbles: true, composed: true}));
                     });
 
                     this.addEventListener("click", () => {
                         if(this.state === 'good') {
-                            this.dispatchEvent(new CustomEvent('fieldClicked', {detail: {x: this.x, y: this.y}}));
+                            this.dispatchEvent(new CustomEvent('fieldClicked', {detail: {x: this.x, y: this.y}, bubbles: true, composed: true}));
                         }
                     });
 

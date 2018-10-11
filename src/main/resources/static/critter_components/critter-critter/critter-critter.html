@@ -340,7 +340,8 @@ Displays a critter.
                         value: {
                             x: -1,
                             y: -1
-                        }
+                        },
+                        observer: '_changePosition'
                     },
 
                     speedy: {
@@ -384,7 +385,7 @@ Displays a critter.
                 super.connectedCallback();
 
                 Polymer.RenderStatus.afterNextRender(this, () => {
-                    this.addEventListener('position-changed', this._changePosition);
+                    // this.addEventListener('position-changed', this._changePosition);
                     this.notifyPath("position", this.position.y);
                     this.notifyPath("position", this.position.x);
                     this.$.critter.addEventListener('mouseover', this._onHover.bind(this));
@@ -402,7 +403,6 @@ Displays a critter.
                 this._numberOfStarts += 1;
                 this.path = this._computePath();
                 this.position = this.path.shift();
-                this._changePosition();
                 this.$.critter_container.style.transitionDuration = "3s";
                 setTimeout(() => {
                     this.init();
@@ -445,7 +445,6 @@ Displays a critter.
                     this._doElements();
                 }, this._interval * 0.7);
 
-                this._changePosition();
                 if (this.path.length > 1) {
                     setTimeout(() => {
                         this._doStep(start);
@@ -456,7 +455,7 @@ Displays a critter.
                     }, this._interval);
                 } else {
                     setTimeout(() => {
-                        this.dispatchEvent(new CustomEvent('_critterFinished', {detail: {human: this.human}}));
+                        this.dispatchEvent(new CustomEvent('_critterFinished', {detail: {human: this.human}, bubbles: true, composed: true }));
                         this.$.critter_container.style.display = "none";
                     }, this._interval * 0.5);
                 }
@@ -464,14 +463,15 @@ Displays a critter.
 
             /** updates the styling**/
             _changePosition() {
-                this.$.critter_container.style.top = (this.position.y * 40) + "px";
-                this.$.critter_container.style.left = (this.position.x * 40) + "px";
+                if(this.position && this.position.x !== -1 && this.position.y !== -1) {
+                    this.$.critter_container.style.top = (this.position.y * 40) + "px";
+                    this.$.critter_container.style.left = (this.position.x * 40) + "px";
+                }
             }
 
             /** computes a path to the tower **/
             _computePath() {
-                let source = this.position = (this.position.x !== -1 && this.position !== -1 ? this.position : this._globalData.spawn);
-
+                let source = this.position = (this.position && this.position.x !== -1 && this.position !== -1 ? this.position : this._globalData.spawn);
                 return this.findPath(source);
             }
 
@@ -530,7 +530,7 @@ Displays a critter.
                     if(!this.animate){
                         return;
                     }
-                    this.dispatchEvent(new CustomEvent('_critterKilled', {detail: {x: x, y: y, human: this.human}}));
+                    this.dispatchEvent(new CustomEvent('_critterKilled', {detail: {x: x, y: y, human: this.human}, bubbles: true, composed: true }));
                     this.animate = false;
                     this.updateStyles({
                         '--critter-display': 'none'

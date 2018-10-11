@@ -83,7 +83,7 @@ A Simple Button
           }
       }
         _onValueChange(){
-          this.dispatchEvent(new CustomEvent('valueChanged', {detail: {name: this.value}}));
+          this.dispatchEvent(new CustomEvent('valueChanged', {detail: {name: this.value}, bubbles: true, composed: true}));
         }
 
         _onValidChange() {

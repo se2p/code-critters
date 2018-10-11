@@ -115,7 +115,9 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
         super.connectedCallback();
 
         Polymer.RenderStatus.afterNextRender(this, function () {
+          let rootNode = window.Core.GameRoot;
           this.$.blockly_frame.addEventListener("load", () => this._updateIFrame());
+          rootNode.addEventListener("_levelNameUpdated", this._updateLevelData.bind(this));
           this._globalData = window.Core.CritterLevelData;
         });
       }
