@@ -4,6 +4,7 @@ import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.application.service.LevelService;
 import de.grubermi.code_critters.web.dto.LevelDTO;
 import de.grubermi.code_critters.web.dto.ResultDTO;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class LevelController {
     /**
      * Returns the CUT
      */
+    @Deprecated
     @GetMapping(path = "/CUT")
     public String getCUT(@RequestParam String level, HttpServletResponse response) {
         /*try {
@@ -47,12 +51,14 @@ public class LevelController {
             logger.info("Error writing file to output stream. Filename was '{}'", level, ex);
             throw new RuntimeException("IOError writing file to output stream");
         }*/
+        logger.warn("A deprecated method was called");
         return levelService.getCUT(level);
     }
 
     /**
      * Returns the init code
      */
+    @Deprecated
     @GetMapping(path = "/init")
     public String getInit(@RequestParam String level, HttpServletResponse response) {
         /*try {
@@ -65,12 +71,14 @@ public class LevelController {
             logger.info("Error writing file to output stream. Filename was '{}'", level, ex);
             throw new RuntimeException("IOError writing file to output stream");
         }*/
+        logger.warn("A deprecated method was called");
         return levelService.getInit(level);
     }
 
     /**
-     * Returns the CUT
+     * Returns the test
      */
+    @Deprecated
     @GetMapping(path = "/test")
     public HashMap getTest(@RequestParam String level, HttpServletResponse response) {
         String toolbox = "<category name=\"Attributes\" colour=\"330\">\n" +
@@ -123,6 +131,8 @@ public class LevelController {
             throw new RuntimeException("IOError writing file to output stream");
         }*/
 
+        logger.warn("A deprecated method was called");
+
         HashMap map = new HashMap<String, Object>();
         map.put("code", levelService.getTest(level));
         map.put("toolbox", toolbox);
@@ -130,45 +140,24 @@ public class LevelController {
     }
 
     /**
-     * Returns the level data
+     * Returns the entire level data
      */
     @GetMapping(path = "/get")
     public HashMap getLevelData(@RequestParam String level, HttpServletResponse response) {
-        /*String[][] level = {
-                {"wood", "wood", "wood", "grass", "grass", "grass", "grass", "grass", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood"},
-                {"wood", "grass", "grass", "grass", "wood", "wood", "wood", "grass", "wood", "wood", "wood", "grass", "wood", "wood", "wood", "wood"},
-                {"grass", "grass", "grass", "grass", "wood", "wood", "wood", "grass", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood"},
-                {"dirt", "grass", "grass", "grass", "wood", "wood", "wood", "grass", "wood", "wood", "wood", "wood", "wood", "wood", "wood", "wood"},
-                {"dirt", "dirt", "grass", "grass", "grass", "grass", "grass", "grass", "water", "water", "ice", "ice", "ice", "ice", "ice", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "grass", "water", "water", "water", "ice", "ice", "ice", "ice", "ice", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "grass", "water", "water", "water", "water", "water", "water", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "water", "water", "water", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "grass", "grass", "grass", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "grass", "grass", "grass", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "grass", "grass", "grass", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "grass", "grass", "grass", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "water", "water", "water", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "water", "water", "water", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "water", "water", "water", "water", "water", "water", "water", "grass"},
-                {"dirt", "dirt", "dirt", "dirt", "grass", "grass", "water", "water", "grass", "grass", "grass", "grass", "grass", "grass", "grass", "grass"}
-        };
-
-        HashMap tower = new HashMap<String, Integer>();
-        tower.put("x", 3);
-        tower.put("y", 3);
-
-        HashMap spawn = new HashMap<String, Integer>();
-        spawn.put("x", 5);
-        spawn.put("y", 5);
-
-        HashMap map = new HashMap<String, Object>();
-        map.put("level", level);
-        map.put("tower", tower);
-        map.put("spawn", spawn);
-        map.put("width", 16);
-        map.put("height", 16);*/
-        LevelDTO dto;
+                LevelDTO dto;
         dto = levelService.getLevel(level);
+        String toolbox;
+        try {
+            // get your file as InputStream
+            InputStream is = this.getClass().getResourceAsStream("/data/user_toolbox.tb");
+            // copy it to response's OutputStream
+            StringWriter writer = new StringWriter();
+            toolbox = IOUtils.toString(is, "UTF-8");
+            is.close();
+        } catch (IOException ex) {
+            logger.info("Error writing file to output stream. Filename was '{}'", ex);
+            throw new RuntimeException("IOError writing file to output stream");
+        }
 
 
         HashMap map = new HashMap<String, Object>();
@@ -179,6 +168,11 @@ public class LevelController {
         map.put("height", 16);
         map.put("numberOfCritters", dto.getNumberOfCritters());
         map.put("numberOfHumans", dto.getNumberOfHumans());
+        map.put("cut", dto.getCUT());
+        map.put("init", dto.getInit());
+        map.put("test", dto.getTest());
+        map.put("toolbox", toolbox);
+
         return map;
 
     }

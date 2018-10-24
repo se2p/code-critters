@@ -75,6 +75,30 @@ A Simple Button
                         value: [],
                         notify: true
                     },
+
+                    test: {
+                        type: String,
+                        value: '',
+                        observer: '_testCodeChanged'
+                    },
+
+                    cut: {
+                        type: String,
+                        value: '',
+                        observer: '_cutCodeChanged'
+                    },
+
+                    init: {
+                        type: String,
+                        value: '',
+                        observer: '_initCodeChanged'
+                    },
+
+                    toolbox: {
+                        type: String,
+                        value: '',
+                        observer: '_toolboxChanged'
+                    }
                 }
             }
 
@@ -90,13 +114,6 @@ A Simple Button
                 window.Core.CritterLevelData = this;
             }
 
-            _updateLevelData() {
-                if (this.levelName === '') {
-                    return;
-                }
-                this.dispatchEvent(new CustomEvent('_levelNameUpdated', { detail: {}, bubbles: true, composed: true }));
-            }
-
             _dataChanged() {
                 this.dispatchEvent(new CustomEvent('_levelDataChanged', { detail: {}, bubbles: true, composed: true }));
             }
@@ -104,6 +121,61 @@ A Simple Button
             _sizeChanged() {
                 this.dispatchEvent(new CustomEvent('_levelSizeChanged', { detail: {}, bubbles: true, composed: true }));
             }
+
+            _testCodeChanged() {
+                this.dispatchEvent(new CustomEvent('_testCodeChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            _initCodeChanged() {
+                this.dispatchEvent(new CustomEvent('_initCodeChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            _cutCodeChanged() {
+                this.dispatchEvent(new CustomEvent('_cutCodeChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            _toolboxChanged() {
+                this.dispatchEvent(new CustomEvent('_toolboxChanged', { detail: {}, bubbles: true, composed: true }));
+            }
+
+            /** performs an ajax call to get level data from the server **/
+            _updateLevelData() {
+                if (this.levelName === '') {
+                    return;
+                }
+
+                let req = document.createElement('iron-ajax');
+                req.url = "/level/get";
+                req.method = "GET";
+                req.handleAs = 'json';
+                req.contentType = 'application/json';
+                req.bubbles = true;
+                req.rejectWithRequest = true;
+                req.params = {level: this.levelName};
+
+                req.addEventListener('response', e => {
+                    let data = e.detail.__data.response;
+                    this.level = data.level;
+                    this.spawn = data.spawn;
+                    this.tower = data.tower;
+                    this.width = data.width;
+                    this.height = data.height;
+                    this.numberOfHumans = data.numberOfHumans;
+                    this.numberOfCritters = data.numberOfCritters;
+                    this.cut = data.cut;
+                    this.init = data.init;
+                    this.test = data.test;
+                    this.toolbox = data.toolbox;
+                });
+
+                let genRequest = req.generateRequest();
+                req.completes = genRequest.completes;
+
+                this.dispatchEvent(new CustomEvent('_levelNameUpdated', { detail: {}, bubbles: true, composed: true }));
+
+                return req;
+            }
+
         }
 
         window.customElements.define(CritterDataStore.is, CritterDataStore)

@@ -168,33 +168,6 @@ Holds general functions for code-critter Levels
                 });
             }
 
-            /** performs an ajax call to get level data from the server **/
-            getLevelData() {
-                let req = document.createElement('iron-ajax');
-                req.url = "/level/get";
-                req.method = "GET";
-                req.handleAs = 'json';
-                req.contentType = 'application/json';
-                req.bubbles = true;
-                req.rejectWithRequest = true;
-                req.params = {level: this._globalData.levelName};
-
-                req.addEventListener('response', e => {
-                    let data = e.detail.__data.response;
-                    this._globalData.level = data.level;
-                    this._globalData.spawn = data.spawn;
-                    this._globalData.tower = data.tower;
-                    this._globalData.width = data.width;
-                    this._globalData.height = data.height;
-                    this._globalData.numberOfHumans = data.numberOfHumans;
-                    this._globalData.numberOfCritters = data.numberOfCritters;
-                });
-
-                let genRequest = req.generateRequest();
-                req.completes = genRequest.completes;
-                return req;
-            }
-
             _shuffleArray(array) {
                 let currentIndex = array.length, temporaryValue, randomIndex;
                 while (0 !== currentIndex) {

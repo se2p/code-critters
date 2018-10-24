@@ -1,0 +1,37 @@
+<category name="Attributes" colour="330">
+        <block type="properties"  x="663" y="138">
+        </block>
+</category>  <category name="Colour" colour="20">
+        <label text="Body Colours"></label>
+        <block type="colour_picker">
+                <field name="COLOUR">#ff0000</field>
+        </block>
+        <label text="Hair Colours"></label>
+        <block type="custom_colour_picker">
+                <field name="COLOUR">#f0e527</field>
+        </block>
+</category>
+<category name="Assert" colour="120">
+         <block type="assert"  x="663" y="138">
+         </block>
+</category>
+<category name="Math" colour="230">
+         <block type="math_number" id="Eem[Vxht-;;+ILj@@lxp" x="263" y="113">
+                     <field name="NUM">1</field>
+         </block>
+         <block type="math_number_property" id="F5fxuP.thK*x0d;HVreV" x="287" y="113">
+                     <mutation divisor_input="false"></mutation>
+                     <field name="PROPERTY">EVEN</field>
+                     <value name="NUMBER_TO_CHECK">
+                     </value>
+         </block>
+         <block type="math_arithmetic" id="M]Qfng[KcxW;Qdz%;CdX" x="287" y="163">
+                     <field name="OP">ADD</field>
+                     <value name="A"></value>
+                      <value name="B"></value>
+          </block>
+</category>
+<category name="Variables" colour="270">
+         <block type="variable"  x="663" y="138">
+         </block>
+</category>

@@ -285,7 +285,6 @@ Displays the game elements
                     this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
                     this.addEventListener("_levelFinished", () => this._onLevelFinished());
-                    this.addEventListener("_levelNameUpdated", this.getLevelData);
                     this.addEventListener("_critterKilled", (event) => this._onCritterKilled(event));
                     this.addEventListener("_critterFinished", (event) => this._onCritterFinished(event));
 
@@ -449,6 +448,10 @@ Displays the game elements
             }
 
             _storeResult() {
+
+                //Function disabled
+                return;
+
                 this._globalData.mines.forEach((mine) => {
                     mine.code = mine.code.toString();
                 });

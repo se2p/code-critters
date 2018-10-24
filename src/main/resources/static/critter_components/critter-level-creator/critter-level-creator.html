@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../critter-data-store/critter-data-store.html">
 <link rel="import" href="../critter-level-mixin/critter-level-mixin.html">
 <link rel="import" href="../critter-gameboard/critter-board.html">
 <link rel="import" href="../critter-critter/critter-critter.html">
@@ -9,7 +10,6 @@
 <link rel="import" href="../critter-mutant-creator/critter-mutant-creator.html">
 <link rel="import" href="../critter-input/critter-input.html">
 <link rel="import" href="../critter-toaster/critter-toaster.html">
-<link rel="import" href="../critter-data-store/critter-data-store.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 
@@ -147,7 +147,7 @@ Displays the game elements
 
                     _boardHeight: {
                         type: Number,
-                        computed: '_computeBoardHeight(height, _blockSize)'
+                        computed: '_computeBoardHeight(_globalData.height, _blockSize)'
                     },
 
                     _blockSize: {
@@ -189,7 +189,10 @@ Displays the game elements
             connectedCallback() {
                 super.connectedCallback();
 
+                window.Core.GameRoot = this;
+
                 Polymer.RenderStatus.afterNextRender(this, function () {
+                    this._globalData = window.Core.CritterLevelData;
                     this.$.save_button.addEventListener("click", this._saveLevel.bind(this));
                     this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
                     this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
@@ -197,7 +200,6 @@ Displays the game elements
                     this.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
                     this._initLevel();
                     this._initNames();
-                    this._globalData = window.Core.CritterLevelData;
                 });
             }
 

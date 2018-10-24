@@ -46,7 +46,7 @@ public class GeneratorController {
     public void getToolbox(HttpServletResponse response) {
         try {
             // get your file as InputStream
-            InputStream is = this.getClass().getResourceAsStream("/data/toolbox.tb");
+            InputStream is = this.getClass().getResourceAsStream("/data/full_toolbox.tb");
             // copy it to response's OutputStream
             IOUtils.copy(is, response.getOutputStream());
             is.close();

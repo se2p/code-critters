@@ -119,10 +119,11 @@ Renders the gameboard and its textures.
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     let rootNode = window.Core.GameRoot;
                     this.addEventListener("_levelChanged", this.renderBoard);
-
-                    rootNode.addEventListener("_critterKilled", (event) => this._playExplosion(event));
-                    rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
-                    rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
+                    if(rootNode) {
+                        rootNode.addEventListener("_critterKilled", (event) => this._playExplosion(event));
+                        rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
+                        rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
+                    }
                     this._globalData = window.Core.CritterLevelData;
                     this.renderGrid();
                 });
@@ -131,7 +132,7 @@ Renders the gameboard and its textures.
 
             /** creates and renders the gameboard **/
             renderBoard() {
-                if (!this._globalData.level || this._globalData.level.length !== this._globalData.height) {
+                if (!this._globalData || !this._globalData.level || this._globalData.level.length !== this._globalData.height) {
                     return;
                 }
 
