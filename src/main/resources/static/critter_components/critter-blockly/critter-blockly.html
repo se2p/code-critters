@@ -73,12 +73,14 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
 
           cut: {
             type: Boolean,
-            value: false
+            value: false,
+              observer: '_codeChanged'
           },
 
           init: {
               type: Boolean,
-              value: false
+              value: false,
+              observer: '_codeChanged'
           },
 
           readOnly: {
@@ -86,12 +88,6 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
               value: false,
             observer: '_readOnlyChanged'
           },
-
-          generator: {
-              type: Boolean,
-              value: false,
-              observer: '_generatorChanged'
-          }
 
         };
       }
@@ -104,7 +100,9 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
           this.$.blockly_frame.addEventListener("load", () => this._updateIFrame());
           rootNode.addEventListener("_toolboxChanged", this._toolboxChanged);
           this._globalData = window.Core.CritterLevelData;
-          this._generatorChanged();
+          if(window.Core.Generator) {
+            this._loadFullToolBox();
+          }
         });
       }
 
@@ -139,7 +137,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
             if(!this.$.blockly_frame || !this.$.blockly_frame.contentWindow.setToolbox) {
                 return;
             }
-            if (((this.generator || (!this.cut && !this.init)))) {
+            if (((window.Core.Generator || (!this.cut && !this.init)))) {
               this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox);
             } else{
                 this.$.blockly_frame.contentWindow.setToolbox("");
@@ -162,6 +160,9 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
 
         /** updates the code of the IFrame **/
         _codeChanged() {
+          if(!this._globalData){
+              return
+          }
           let code = "";
           if(this.init) {
               code = this._globalData.init;
@@ -172,9 +173,10 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
           }
 
           if (this.$.blockly_frame.contentWindow.setCode) {
-            this.$.blockly_frame.contentWindow.setCode(code);
+              this.$.blockly_frame.contentWindow.setCode(code);
           }
-      }
+    }
+
 
         /** disables changing the blockly code **/
         _readOnlyChanged() {
@@ -199,9 +201,9 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
           }
         }
 
-      /** loads full toolbox if it is a generator element **/
-      _generatorChanged() {
-          if(this.generator && this._globalData){
+      /** loads full toolbox **/
+      _loadFullToolBox() {
+          if(this._globalData){
               let req = document.createElement('iron-ajax');
               req.url = "/generator/toolbox";
               req.method = "GET";

@@ -117,7 +117,7 @@ A Simple Button
         }
         this.shadowRoot.querySelector('.title-' + this._selectedElement).classList.remove("selected");
         this.shadowRoot.querySelector('.title-' + event.model.index).classList.add("selected");
-        this.dispatchEvent(new CustomEvent('tabChanged', {detail: {new: event.model.index, old: this._selectedElement}, bubbles: true, composed: true }));
+        this.dispatchEvent(new CustomEvent('tabChanged', {detail: {new: event.model.index, old: this._selectedElement}}));
         this._selectedElement = event.model.index;
       }
 

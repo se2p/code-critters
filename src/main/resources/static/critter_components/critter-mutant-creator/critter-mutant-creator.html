@@ -35,16 +35,16 @@ A creator for mutated critters
       }
     </style>
     <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
-    <critter-blockly class="tab init tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut generator>
+    <critter-blockly class="tab init tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
       <span>Mutant init Code</span>
     </critter-blockly>
-    <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" init generator>
+    <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" init>
       <span>Mutant Code</span>
     </critter-blockly>
 
   </template>
   <script>
-      class CritterMutantCreator extends Polymer.Element {
+      class CritterMutantCreator extends CritterMixins.Level(Polymer.Element) {
           static get is() {
               return 'critter-mutant-creator';
           }
@@ -64,16 +64,6 @@ A creator for mutated critters
                       ]
                   },
 
-                  cut: {
-                      type: String,
-                      value: ''
-                  },
-
-                  init: {
-                      type: String,
-                      value: ''
-                  },
-
                   _boardHeight: {
                       type: Number,
                       computed: '_computeBoardHeight(height)'
@@ -90,7 +80,8 @@ A creator for mutated critters
               super.connectedCallback();
 
               Polymer.RenderStatus.afterNextRender(this, function () {
-                  this.addEventListener("tabChanged", (event) => this._onTabChanged(event));
+                  this._globalData = window.Core.CritterLevelData;
+                  this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
               });
           }
 
@@ -125,20 +116,18 @@ A creator for mutated critters
               let newTab = document.createElement("critter-blockly");
               newTab.className = "tab init tab-" + number;
               newTab.trashcan = true;
-              newTab.generator = true;
               newTab.height = this._boardHeight;
               newTab.controls = true;
-              newTab.code = this.init;
+              newTab.init = true;
               newTab.innerHTML = "<span>Mutant init Code</span>";
               this.shadowRoot.append(newTab);
 
               let newTab2 = document.createElement("critter-blockly");
               newTab2.className = "tab code tab-" + number;
               newTab2.trashcan = true;
-              newTab2.generator = true;
               newTab2.height = this._boardHeight;
               newTab2.controls = true;
-              newTab2.code = this.cut;
+              newTab2.cut = true;
               newTab2.innerHTML = "<span>Mutant Code</span>";
               this.shadowRoot.append(newTab2);
           }

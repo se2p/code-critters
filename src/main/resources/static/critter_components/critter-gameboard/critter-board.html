@@ -104,11 +104,6 @@ Renders the gameboard and its textures.
 
                     selectedElement: {
                         type: String
-                    },
-
-                    generator: {
-                        type: Boolean,
-                        value: false
                     }
                 };
             }
@@ -184,7 +179,7 @@ Renders the gameboard and its textures.
 
             /** adds the given element to the gameboard and the List **/
             addElement(element) {
-                if (!this.generator) {
+                if (!window.Core.generator) {
                     this.dispatchEvent(new CustomEvent('fieldClicked', {detail: element, bubbles: true, composed: true}));
                     if (element.code && element.xml) {
                         switch (this.selectedElement) {

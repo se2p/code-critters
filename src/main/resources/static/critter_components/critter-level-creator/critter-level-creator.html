@@ -92,20 +92,20 @@ Displays the game elements
 
         <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
         <div class="tab-0 tab">
-            <critter-gameboard id="gameboard"  selected-element="{{selectedElement}}" show-grid="false" generator></critter-gameboard>
+            <critter-gameboard id="gameboard"  selected-element="{{selectedElement}}" show-grid="false"></critter-gameboard>
             <critter-element-selector id="element_selector"  selected-element="{{selectedElement}}" height$="{{ _boardHeight}}">
             </critter-element-selector>
         </div>
         <div  class="tab-1 tab">
-            <critter-blockly id="blockly_init" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut generator>
+            <critter-blockly id="blockly_init" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
                 <span>Init Code</span>
             </critter-blockly>
-            <critter-blockly id="blockly_CUT" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut generator>
+            <critter-blockly id="blockly_CUT" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
                 <span>CUT</span>
             </critter-blockly>
         </div>
         <div class="tab-2 tab">
-            <critter-blockly id="blockly_test" height$="{{ _boardHeight}}" trashcan="true" controls="true" generator>
+            <critter-blockly id="blockly_test" height$="{{ _boardHeight}}" trashcan="true" controls="true">
             </critter-blockly>
         </div>
         <div class="tab-3 tab">
@@ -118,6 +118,9 @@ Displays the game elements
 
     </template>
     <script>
+
+        window.Core = window.Core || {};
+
         class CritterLevelCreator extends CritterMixins.Level(Polymer.Element) {
             static get is() {
                 return 'critter-level-creator';
@@ -168,11 +171,6 @@ Displays the game elements
                         type: Number
                     },
 
-                    generator: {
-                        type: Boolean,
-                        value: true
-                    },
-
                     _names: {
                         type: Array,
                         value: []
@@ -190,6 +188,7 @@ Displays the game elements
                 super.connectedCallback();
 
                 window.Core.GameRoot = this;
+                window.Core.Generator = true;
 
                 Polymer.RenderStatus.afterNextRender(this, function () {
                     this._globalData = window.Core.CritterLevelData;
@@ -197,7 +196,7 @@ Displays the game elements
                     this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
                     this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
                     this.addEventListener("valueChanged", (event) => this._validateLevelName(event));
-                    this.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
+                    this.$.tabs.addEventListener("tabChanged", (event)=> this._onTabChanged(event));
                     this._initLevel();
                     this._initNames();
                 });
@@ -362,8 +361,8 @@ Displays the game elements
                     this.shadowRoot.querySelector('#coordinate_container').style.display = "block";
                 }
                 if(detail.new === 3) {
-                    this.$.mutant_creator.cut = this.$.blockly_CUT.getXML();
-                    this.$.mutant_creator.init = this.$.blockly_init.getXML();
+                    this._globalData.cut = this.$.blockly_CUT.getXML();
+                    this._globalData.init = this.$.blockly_init.getXML();
                 }
             }
 
