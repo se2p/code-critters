@@ -146,8 +146,7 @@ Displays the game elements
         </critter-dialog>
 
         <div id="board_container">
-            <critter-gameboard id="gameboard" selected-element="{{selectedElement}}" show-grid="{{showGrid}}"
-                               generator="{{generator}}">
+            <critter-gameboard id="gameboard" selected-element="{{selectedElement}}" show-grid="{{showGrid}}">
 
             </critter-gameboard>
             <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
@@ -234,11 +233,6 @@ Displays the game elements
                         type: Number
                     },
 
-                    generator: {
-                        type: Boolean,
-                        value: false
-                    },
-
                     _crittersSent: {
                         type: Boolean,
                         value: false
@@ -275,6 +269,8 @@ Displays the game elements
                 super.connectedCallback();
 
                 window.Core.GameRoot = this;
+                window.Core.Generator = false;
+
 
                 this._globalData = window.Core.CritterLevelData;
 
