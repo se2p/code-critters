@@ -1,6 +1,7 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {htmlLiteral} from '/lib/@polymer/polymer/lib/utils/html-tag.js';
 
-<!--
+/*
 # critter-gameboard
 
 Renders the gameboard and its textures.
@@ -11,17 +12,19 @@ Renders the gameboard and its textures.
 ```
 
 @demo
--->
+*/
 
-<dom-module id="critter-gameboard-field">
-    <template>
+class CritterGameboardField extends PolymerElement {
+
+    static get template() {
+        return html`
         <style>
             :host {
                 display: block;
             }
 
             #field {
-                background-image: url(./image/texture.png);
+                background-image: url(image/texture.png);
                 width: 40px;
                 height: 40px;
                 float: left;
@@ -46,7 +49,7 @@ Renders the gameboard and its textures.
             }
 
             .background-grass::before{
-                background-image: url(./image/texture.png);
+                background-image: url(image/texture.png);
             }
 
             .grass0 {
@@ -284,7 +287,7 @@ Renders the gameboard and its textures.
             }
 
             .wood::before {
-                background-image: url(./image/texture.png);
+                background-image: url(image/texture.png);
                 background-position: -520px -360px;
             }
 
@@ -869,7 +872,7 @@ Renders the gameboard and its textures.
 
             .towerField::after {
                 content: " ";
-                background-image: url(./image/buildings.png);
+                background-image: url(image/buildings.png);
                 background-position: -96px 0;
                 width: 40px;
                 height: 90px;
@@ -882,7 +885,7 @@ Renders the gameboard and its textures.
 
             .spawnField::after{
                 content: " ";
-                background-image: url(./image/buildings.png);
+                background-image: url(image/buildings.png);
                 background-position: 0 -36px;
                 width: 50px;
                 height: 50px;
@@ -895,7 +898,7 @@ Renders the gameboard and its textures.
 
             .mine::after {
                 content: " ";
-                background-image: url(./image/mine.png);
+                background-image: url(image/mine.png);
                 background-position: 0 0;
                 width: 25px;
                 height: 25px;
@@ -932,42 +935,47 @@ Renders the gameboard and its textures.
 
         </style>
         <div id="field" class$="[[class]]"></div>
-    </template>
-    <script>
-        class CritterGameboardField extends Polymer.Element {
-            static get is() {
-                return 'critter-gameboard-field';
+    `;
+    }
+
+    static get importMeta() { return import.meta; }
+
+    static get urlTemplate() {
+        let string = new URL('.', import.meta.url).toString();
+        return string;
+    }
+
+    static get is() {
+        return 'critter-gameboard-field';
+    }
+
+    static get properties() {
+
+        return {
+            x: {
+                type: Number,
+                value: 0
+            },
+
+            y: {
+                type: Number,
+                value: 0
+            },
+
+            class: {
+                type: String,
+                value: ''
             }
+        };
+    }
 
-            static get properties() {
+    playExplosion() {
+        this.class += ' explosion';
+        setTimeout(() => {
+            this.class = this.class.replace(' explosion', '');
+        }, 1000);
+    }
 
-                return {
-                    x: {
-                        type: Number,
-                        value: 0
-                    },
+}
 
-                    y: {
-                        type: Number,
-                        value: 0
-                    },
-
-                    class: {
-                        type: String,
-                        value: ''
-                    }
-                };
-            }
-
-            playExplosion(){
-                this.class += ' explosion';
-                setTimeout(() => {
-                    this.class = this.class.replace(' explosion', '');
-                }, 1000 );
-            }
-
-        }
-
-        window.customElements.define(CritterGameboardField.is, CritterGameboardField)
-    </script>
-</dom-module>
+window.customElements.define(CritterGameboardField.is, CritterGameboardField);

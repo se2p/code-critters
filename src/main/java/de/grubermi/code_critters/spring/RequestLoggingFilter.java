@@ -21,11 +21,7 @@ public class RequestLoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        if(httpRequest.getMethod().equals("POST")){
-            logger.info(httpRequest.getMethod() + ":" + httpRequest.getRequestURI());
-        } else {
-            logger.debug(httpRequest.getMethod() + ":" + httpRequest.getRequestURI());
-        }
+//        logger.info(httpRequest.getMethod() + ":" + httpRequest.getRequestURI());
         chain.doFilter(request, response);
     }
 

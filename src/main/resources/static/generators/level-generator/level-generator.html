@@ -3,12 +3,13 @@
 <html>
 <head>
     <title>Code Critters | Level Generator</title>
-    <script src="./bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script>
         window.Polymer = window.Polymer || {};
         window.Polymer.dom = 'shadow';
     </script>
-    <link rel="import" href="./critter_components/critter-level-creator/critter-level-creator.html">
+    <script type=module src="./critter_components/critter-level-creator/critter-level-creator.js">
+    </script>
 </head>
 <body>
 

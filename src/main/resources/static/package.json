@@ -1,0 +1,16 @@
+{
+  "description": "A mutation testing game for cchildren",
+  "keywords": [
+    "polymer"
+  ],
+  "name": "code-critters",
+  "version": "3.0.0",
+  "dependencies": {
+    "@polymer/iron-ajax": "latest",
+    "@polymer/iron-icons": "latest",
+    "@polymer/polymer": "latest",
+    "@webcomponents/webcomponentsjs": "latest",
+    "blockly": "https://github.com/google/blockly.git",
+    "pathfinding": "https://github.com/imor/pathfinding-bower.git"
+  }
+}
