@@ -23,6 +23,7 @@ class CritterButton extends PolymerElement {
         display: block;
         width: -moz-fit-content;
         width: fit-content;
+         border-radius: 4px;
         cursor: pointer !important;
       }
 
@@ -32,7 +33,6 @@ class CritterButton extends PolymerElement {
 
 
       #button {
-        min-width: 100px;
         min-height: 40px;
         color: whitesmoke;
         text-align: center;

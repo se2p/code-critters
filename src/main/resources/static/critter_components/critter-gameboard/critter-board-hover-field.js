@@ -25,6 +25,7 @@ class CritterGameboardHoverField extends PolymerElement {
                     width: 40px;
                     height: 40px;
                     float: left;
+                    cursor: pointer;
                 }
     
                 .good:hover{
@@ -157,11 +158,6 @@ class CritterGameboardHoverField extends PolymerElement {
                 value: 0
             },
 
-            state: {
-                type: String,
-                value: 'good'
-            },
-
             element: {
                 type: String
             }
@@ -183,13 +179,11 @@ class CritterGameboardHoverField extends PolymerElement {
             });
 
             this.addEventListener("click", () => {
-                if (this.state === 'good') {
-                    this.dispatchEvent(new CustomEvent('fieldClicked', {
-                        detail: {x: this.x, y: this.y},
-                        bubbles: true,
-                        composed: true
-                    }));
-                }
+                this.dispatchEvent(new CustomEvent('fieldClicked', {
+                    detail: {x: this.x, y: this.y},
+                    bubbles: true,
+                    composed: true
+                }));
             });
 
         });

@@ -174,9 +174,14 @@ class CritterBlockly extends Level(PolymerElement) {
         } else if (this.cut) {
             code = this._globalData.cut;
         } else {
-            code = this._globalData.test;
+            return
         }
 
+        this.setCode(code);
+    }
+
+    /** sets the blockly code**/
+    setCode(code){
         if (this.$.blockly_frame.contentWindow.setCode) {
             this.$.blockly_frame.contentWindow.setCode(code);
         }

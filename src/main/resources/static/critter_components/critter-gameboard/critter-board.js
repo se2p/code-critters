@@ -184,19 +184,7 @@ class CritterGameboard extends Level(PolymerElement) {
     /** adds the given element to the gameboard and the List **/
     addElement(element) {
         if (!window.Core.generator) {
-            this.dispatchEvent(new CustomEvent('fieldClicked', {detail: element, bubbles: true, composed: true}));
-            if (element.code && element.xml) {
-                switch (this.selectedElement) {
-                    case "mine" :
-                        this.shadowRoot.querySelector('#hover-field-' + element.x + "-" + element.y).state = "bad";
-                        let mineField = this.shadowRoot.querySelector('#field-' + element.x + "-" + element.y);
-                        mineField.class += " mine";
-                        break;
-                    default:
-                        console.error("Could not handle selectedElement " + this.selectedElement);
-                        break;
-                }
-            }
+            return
         } else {
             switch (this.selectedElement) {
                 case "water" :
@@ -237,9 +225,7 @@ class CritterGameboard extends Level(PolymerElement) {
         });
 
         hoverField.addEventListener("fieldClicked", (event) => this.addElement(event.detail));
-        if (this._isElementOnPosition(j, i)) {
-            hoverField.state = "bad";
-        }
+
         gameboardOverlay.append(hoverField);
     }
 
