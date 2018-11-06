@@ -1,6 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 
-<!--
+/*
 # critter-button
 
 A Simple Button
@@ -11,10 +11,12 @@ A Simple Button
 ```
 
 @demo
--->
+*/
 
-<dom-module id="critter-button">
-  <template>
+
+class CritterButton extends PolymerElement {
+    static get template() {
+        return html`
     <style>
       :host {
         background-color: #039BE5;
@@ -48,32 +50,30 @@ A Simple Button
      <div id="button" class$="[[_disabledString]]">
           <slot></slot>
      </div>
-  </template>
-  <script>
-    class CritterButton extends Polymer.Element {
-      static get is() {
+    `;
+    }
+
+    static get is() {
         return 'critter-button';
-      }
+    }
 
-      static get properties() {
-          return {
-              disabled: {
-                  type: Boolean,
-                  value: false
-              },
+    static get properties() {
+        return {
+            disabled: {
+                type: Boolean,
+                value: false
+            },
 
-              _disabledString: {
-                  computed: "_isDisabled(disabled)"
-              },
+            _disabledString: {
+                computed: "_isDisabled(disabled)"
+            },
 
-          }
-      }
-
-        _isDisabled(disabled) {
-            return (disabled ? "disabled" : "");
         }
     }
 
-    window.customElements.define(CritterButton.is, CritterButton)
-  </script>
-</dom-module>
+    _isDisabled(disabled) {
+        return (disabled ? "disabled" : "");
+    }
+}
+
+window.customElements.define(CritterButton.is, CritterButton);

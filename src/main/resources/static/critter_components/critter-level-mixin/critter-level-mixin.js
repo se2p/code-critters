@@ -1,18 +1,14 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../critter-toaster/critter-toaster.html">
-<script src="../../bower_components/pathfinding/pathfinding-browser.min.js"></script>
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+import { dedupingMixin } from '/lib/@polymer/polymer/lib/utils/mixin.js';
 
-<!--
+import '/lib/@polymer/iron-ajax/iron-ajax.js';
+import '/lib/pathfinding/pathfinding-browser.min.js';
+
+/*
 #CritterMixins.Level
 
 Holds general functions for code-critter Levels
 
--->
-
-<script>
-    window.CritterMixins = window.CritterMixins || {};
-
+*/
 
     /**
      * # CritterMixins.Level
@@ -22,7 +18,7 @@ Holds general functions for code-critter Levels
      * @polymerBehavior CritterMixins.Level
      */
 
-    CritterMixins.Level = Polymer.dedupingMixin(function (superClass) {
+    export const Level = dedupingMixin(function(superClass) {
         return class extends superClass {
 
             static get properties() {
@@ -183,4 +179,3 @@ Holds general functions for code-critter Levels
 
         }
     });
-</script>
