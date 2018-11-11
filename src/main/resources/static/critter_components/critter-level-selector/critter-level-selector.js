@@ -25,6 +25,11 @@ class CritterLevelSelector extends PolymerElement {
                 #load_button{
                     margin: var( --margin-selector-button);
                 }
+                
+                critter-button {
+                min-width: 100px;
+                min-height: 40px;
+            }
             </style>
             <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>
             <br>

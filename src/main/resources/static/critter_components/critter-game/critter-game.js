@@ -1,14 +1,14 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import '../critter-level-selector/critter-level-selector.js';
 import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
 import '../critter-button/critter-button.js';
 import '../critter-blockly/critter-blockly.js';
 import '../critter-dialog/critter-dialog.js';
-import '../critter-toaster/critter-toaster.js';
-import '../critter-popup/critter-popup.js';
+import '../critter-test-popup/critter-test-popup.js';
 
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
@@ -136,31 +136,7 @@ class CritterGame extends Level(PolymerElement) {
                 --margin-selector-button: auto;
             }
             
-            #popup_blockly{
-                width: calc(100% - 50px);
-                float: left;
-            }
-            
-            #popup_buttons{
-                float: left;
-                width: 40px;
-                margin: auto;
-                margin-left: 10px;
-            }
-            
-            .popup_button{
-                width: 40px;
-                height: 40px;
-                margin-bottom: 5px;
-            }
-            
-            .popup_button iron-icon{
-                width: 35px;
-                height: 35px;
-                margin: auto;
-            }
-            
-            .game_button {
+            critter-button {
                 min-width: 100px;
                 min-height: 40px;
             }
@@ -187,26 +163,8 @@ class CritterGame extends Level(PolymerElement) {
             </critter-gameboard>
             <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
             </div>
-            <critter-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}">
-                <div id="popup_blockly">
-                    <critter-blockly id="blockly_test" height$="{{ _popupHeight}}" trashcan="true" controls="true">
-                    </critter-blockly>
-                </div>
-                <div id="popup_buttons">
-                    <critter-button id="popup_close_button" class="popup_button">
-                        <iron-icon icon="icons:close"></iron-icon>
-                    </critter-button>
-                    <critter-button id="popup_copy_button" class="popup_button">
-                        <iron-icon icon="icons::content-copy"></iron-icon>
-                    </critter-button>
-                    <critter-button id="popup_paste_button" class="popup_button">
-                        <iron-icon icon="icons::content-paste"></iron-icon>
-                    </critter-button>
-                    <critter-button id="popup_help_button" class="popup_button">
-                        <iron-icon icon="icons:help"></iron-icon>
-                    </critter-button>
-                </div>
-            </critter-popup>
+            <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
+            </critter-test-popup>
         </div>
         <div id="blockly_container" style$="width: calc(-{{ _boardWidth }}px - 70px + 100vw)">
             <critter-blockly id="blockly_init" class="half_blockly" height$="{{ _boardHeight}}" controls="true"
@@ -299,11 +257,6 @@ class CritterGame extends Level(PolymerElement) {
             _doneCritters: {
                 type: Number,
                 value: 0
-            },
-
-            _toasterTime: {
-                type: Number,
-                value: 5000
             }
         };
     }
@@ -320,7 +273,6 @@ class CritterGame extends Level(PolymerElement) {
         afterNextRender(this, function () {
             this.$.grid_button.addEventListener("click", () => this._showGrid(this));
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
-            this.$.popup_close_button.addEventListener("click", () => this._popupClose(this));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
@@ -349,16 +301,12 @@ class CritterGame extends Level(PolymerElement) {
             this._crittersSent = true;
             this.$.send_button.innerHTML = "Speed Up"
         } else {
-            this.$.send_button.disabeld = true;
+            this.$.send_button.disabled = true;
             this._critterList.forEach((critter) => {
                 critter.speedy = true;
             });
             this._interval = 1500;
         }
-    }
-
-    _popupClose(node){
-        this.$.mine_popup.hide();
     }
 
     /** sends one critter after another**/
@@ -449,18 +397,6 @@ class CritterGame extends Level(PolymerElement) {
     _onFieldClicked(event) {
         let detail = event.detail;
         this.$.mine_popup.show(detail);
-        let code = this.$.blockly_test.getJavaScript();
-        if (code === '') {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "You have to create a test first";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
-            return;
-        }
-        detail.code = new Function('x', 'y', code);
-        detail.xml = this.$.blockly_test.getXML();
-        this._globalData.mines.push(detail);
     }
 
     _updateScore(x) {

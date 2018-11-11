@@ -36,11 +36,13 @@ class CritterDataStore extends PolymerElement {
             },
 
             numberOfCritters: {
-                type: Number
+                type: Number,
+                notify: true
             },
 
             numberOfHumans: {
-                type: Number
+                type: Number,
+                notify: true
             },
 
             tower: {
@@ -115,6 +117,7 @@ class CritterDataStore extends PolymerElement {
     }
 
     _sizeChanged() {
+        this.mines = Array.from({length: this.width}, () => Array.from({length: this.height}, () => undefined));
         this.dispatchEvent(new CustomEvent('_levelSizeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 

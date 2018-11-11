@@ -19,30 +19,33 @@ class CritterButton extends PolymerElement {
         return html`
     <style>
       :host {
-        background-color: #039BE5;
         display: block;
         width: -moz-fit-content;
         width: fit-content;
-         border-radius: 4px;
-        cursor: pointer !important;
-      }
-
-      :host(:hover) {
-        background: #00b0ff;
       }
 
 
       #button {
+        border-radius: 4px;
         min-height: 40px;
         color: whitesmoke;
         text-align: center;
         justify-content: center;
         align-items: center;
         display: flex;
+        background-color: #039BE5;
+        cursor: pointer;
+      }
+      
+      #button:hover{
+         background: #00b0ff;
       }
 
-        .disabled {
+        #button.disabled,
+        #button.disabled:hover{
             background: #677d91;
+            cursor: not-allowed;
+            color: gainsboro;
         }
 
 
@@ -61,12 +64,13 @@ class CritterButton extends PolymerElement {
         return {
             disabled: {
                 type: Boolean,
-                value: false
+                value: false,
+                notify: true
             },
 
             _disabledString: {
                 computed: "_isDisabled(disabled)"
-            },
+            }
 
         }
     }

@@ -525,11 +525,10 @@ class CritterCritter extends Level(PolymerElement) {
     }
 
     _doMines() {
-        this._globalData.mines.forEach((mine) => {
-            if (this.position.x === mine.x && this.position.y === mine.y) {
-                mine.code.bind(this)(mine.x, mine.y);
-            }
-        });
+        let mine;
+        if(mine = this._globalData.mines[this.position.x][this.position.y]){
+            mine.code.bind(this)(this.position.x,this.position.y);
+        }
     }
 
 
@@ -547,7 +546,7 @@ class CritterCritter extends Level(PolymerElement) {
             this.updateStyles({
                 '--critter-display': 'none'
             });
-        }, 500);
+        }, this._interval * 0.17);
     }
 
     _onHover() {

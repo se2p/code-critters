@@ -122,6 +122,8 @@ class CritterGameboard extends Level(PolymerElement) {
                 rootNode.addEventListener("_critterKilled", (event) => this._playExplosion(event));
                 rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
                 rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
+                rootNode.addEventListener("_mineSet", (event) => this.setMine(event));
+                rootNode.addEventListener("_mineRemoved", (event) => this.removeMine(event));
             }
             this._globalData = window.Core.CritterLevelData;
             this.renderGrid();
@@ -161,10 +163,26 @@ class CritterGameboard extends Level(PolymerElement) {
 
     /** adds the mines to the gameboard **/
     placeMines() {
-        this._globalData.mines.forEach((mine) => {
-            let mineField = this.shadowRoot.querySelector('#field-' + mine.x + "-" + mine.y);
-            mineField.class += " mine";
-        });
+        // this._globalData.mines.forEach((mine) => {
+        //     let mineField = this.shadowRoot.querySelector('#field-' + mine.x + "-" + mine.y);
+        //     mineField.class += " mine";
+        // });
+    }
+
+    setMine(e) {
+        let position = e.detail.position;
+        let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
+
+        if(!mineField.classList.contains("mine")){
+            mineField.classList.add("mine");
+        }
+    }
+
+    removeMine(e) {
+        let position = e.detail.position;
+        let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
+        mineField.classList.remove("mine");
+
     }
 
 
@@ -235,88 +253,90 @@ class CritterGameboard extends Level(PolymerElement) {
         field.x = j;
         field.y = i;
         field.id = "field-" + j + "-" + i;
-        field.class = this._computeClass(i, j);
+        this._computeClass(i, j).forEach(elem => {
+            field.classList.add(elem);
+        });
         gameboard.append(field);
     }
 
     _computeClass(i, j) {
-        let className;
+        let className = [];
         switch (this._globalData.level[i][j]) {
             case "grass":
-                className = "grass" + this._randomNumber(0, 3) + " ";
+                className.push("grass" + this._randomNumber(0, 3));
                 break;
             case "dirt":
-                className = " dirt ";
+                className.push("dirt");
 
                 let tempName = this._computeClassNames(i, j, "dirt");
-                if (tempName !== "") {
-                    className += tempName;
+                if (tempName.length !== 0) {
+                    className = className.concat(tempName);
                 } else {
-                    className += "dirt" + this._randomNumber(0, 2) + " ";
+                    className.push("dirt" + this._randomNumber(0, 2));
                 }
                 break;
             case "water":
-                className = " water ";
+                className.push("water");
 
                 let tempName2 = this._computeClassNames(i, j, "water");
-                if (tempName2 !== "") {
-                    className += tempName2;
+                if (tempName2.length !== 0) {
+                    className = className.concat(tempName2);
                 } else {
-                    className += "water" + this._randomNumber(0, 3) + " ";
+                    className.push("water" + this._randomNumber(0, 3));
                 }
                 break;
             case "ice":
-                className = " ice ";
+                className.push("ice");
 
                 let tempName3 = this._computeClassNames(i, j, "ice");
-                if (tempName3 !== "") {
-                    className += tempName3;
+                if (tempName3.length !== 0) {
+                    className = className.concat(tempName3);
                 } else {
-                    className += "ice" + this._randomNumber(0, 3) + " ";
+                    className.push("ice" + this._randomNumber(0, 3));
                 }
                 break;
             case "wood":
-                className = "wood";
+                className.push("wood");
                 if (j > 0 && this._globalData.level[i][j - 1] !== "wood") {
-                    className += " wood-left";
+                    className.push("wood-left");
                 }
                 if (j < this._globalData.width - 1 && this._globalData.level[i][j + 1] !== "wood") {
-                    className += " wood-right";
+                    className.push("wood-right");
                 }
                 if (i > 0 && this._globalData.level[i - 1][j] !== "wood") {
-                    className += " wood-up";
+                    className.push("wood-up");
                 }
                 if (i < this._globalData.height - 1 && this._globalData.level[i + 1][j] !== "wood") {
-                    className += " wood-down";
+                    className.push("wood-down");
                 }
                 if (j > 0 && i < this._globalData.height - 1 && this._globalData.level[i + 1][j - 1] !== "wood" && this._globalData.level[i + 1][j] === "wood" && this._globalData.level[i][j - 1] === "wood") {
-                    className += " wood-left-down";
+                    className.push("wood-left-down");
                 }
                 if (j < this._globalData.width - 1 && i < this._globalData.height - 1 && this._globalData.level[i + 1][j + 1] !== "wood" && this._globalData.level[i + 1][j] === "wood" && this._globalData.level[i][j + 1] === "wood") {
-                    className += " wood-right-down";
+                    className.push("wood-right-down");
                 }
                 if (j > 0 && i > 0 && this._globalData.level[i - 1][j - 1] !== "wood" && this._globalData.level[i - 1][j] === "wood" && this._globalData.level[i][j - 1] === "wood") {
-                    className += " wood-left-up";
+                    className.push("wood-left-up");
                 }
                 if (j < this._globalData.width - 1 && i > 0 && this._globalData.level[i - 1][j + 1] !== "wood" && this._globalData.level[i - 1][j] === "wood" && this._globalData.level[i][j + 1] === "wood") {
-                    className += " wood-right-up";
+                    className.push("wood-right-up");
                 }
                 break;
             default:
-                className = "grass"
+                className.push("grass");
         }
 
         if (this._globalData.tower && this._globalData.tower.x === j && i === this._globalData.tower.y) {
-            className += " towerField";
+            className.push("towerField");
         } else if (this._globalData.spawn && j === this._globalData.spawn.x && i === this._globalData.spawn.y) {
-            className += " spawnField";
+            className.push("spawnField");
         }
         return className;
     }
 
     _computeClassNames(i, j, name) {
         let array = [];
-        let className = "";
+        let className = [];
 
         /*  Encode as follows 1 === texture of the field is name)
             000 = 0
@@ -372,13 +392,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-only" + " background-grass";
+                                className.push(name + "-only","background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-up" + " background-grass";
+                                className.push(name + "-vertical-up", "background-grass");
                                 break;
                         }
                         break;
@@ -388,15 +408,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-left" + " background-grass";
+                                className.push(name + "-horizontal-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-bow-down-right" + " background-grass";
+                                className.push(name + "-bow-down-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-left " + name + "-up" + " background-grass";
+                                className.push(name + "-left",  name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -406,15 +426,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-right" + " background-grass";
+                                className.push(name + "-horizontal-right",  "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-bow-down-left" + " background-grass";
+                                className.push(name + "-bow-down-left", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-right " + name + "-up" + " background-grass";
+                                className.push(name + "-right",  name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -424,19 +444,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-horizontal" + " background-grass";
+                                className.push(name + "-horizontal", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-horizontal-down" + " background-grass";
+                                className.push(name + "-horizontal-down", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-horizontal-down-right" + " background-grass";
+                                className.push(name + "-horizontal-down-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-horizontal-down-left" + " background-grass";
+                                className.push(name + "-horizontal-down-left", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-up" + " background-grass";
+                                className.push(name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -450,13 +470,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-only" + " background-grass";
+                                className.push(name + "-only", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-up" + " background-grass";
+                                className.push(name + "-vertical-up", "background-grass");
                                 break;
                         }
                         break;
@@ -466,15 +486,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-left" + " background-grass";
+                                className.push(name + "-horizontal-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-bow-down-right" + " background-grass";
+                                className.push(name + "-bow-down-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-up " + name + "-left" + " background-grass";
+                                className.push(name + "-up", name + "-left", "background-grass");
                                 break;
                         }
                         break;
@@ -484,15 +504,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-right" + " background-grass";
+                                className.push(name + "-horizontal-right", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-bow-down-right" + " background-grass";
+                                className.push(name + "-bow-down-right", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-up " + name + "-right" + " background-grass";
+                                className.push(name + "-up", name + "-right", "background-grass");
                                 break;
                         }
                         break;
@@ -502,19 +522,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-horizontal" + " background-grass";
+                                className.push(name + "-horizontal", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-horizontal-down" + " background-grass";
+                                className.push(name + "-horizontal-down", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-horizontal-down-right" + " background-grass";
+                                className.push(name + "-horizontal-down-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-horizontal-down-left" + " background-grass";
+                                className.push(name + "-horizontal-down-left", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-up" + " background-grass";
+                                className.push(name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -528,13 +548,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-vertical-down" + " background-grass";
+                                className.push(name + "-vertical-down", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical" + " background-grass";
+                                className.push(name + "-vertical", "background-grass");
                                 break;
                         }
                         break;
@@ -544,15 +564,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-bow-up-right" + " background-grass";
+                                className.push(name + "-bow-up-right", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-vertical-right" + " background-grass";
+                                className.push(name + "-vertical-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-vertical-right-down" + " background-grass";
+                                className.push(name + "-vertical-right-down", "background-grass");
                                 break;
                         }
                         break;
@@ -562,15 +582,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-bow-up-left" + " background-grass";
+                                className.push(name + "-bow-up-left", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-vertical-left" + " background-grass";
+                                className.push(name + "-vertical-left", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-left-down" + " background-grass";
+                                className.push(name + "-vertical-left-down", "background-grass");
                                 break;
                         }
                         break;
@@ -580,19 +600,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-up" + " background-grass";
+                                className.push(name + "-horizontal-up", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-cross" + " background-grass";
+                                className.push(name + "-cross", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-full-down-right" + " background-grass";
+                                className.push(name + "-full-down-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-full-down-left" + " background-grass";
+                                className.push(name + "-full-down-left", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-t-up" + " background-grass";
+                                className.push(name + "-t-up", "background-grass");
                                 break;
                         }
                         break;
@@ -606,13 +626,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-only" + " background-grass";
+                                className.push(name + "-only", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-up" + " background-grass";
+                                className.push(name + "-vertical-up", "background-grass");
                                 break;
                         }
                         break;
@@ -622,15 +642,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-left" + " background-grass";
+                                className.push(name + "-horizontal-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-bow-down-right" + " background-grass";
+                                className.push(name + "-bow-down-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-up " + name + "-left" + " background-grass";
+                                className.push(name + "-up", name + "-left", "background-grass");
                                 break;
                         }
                         break;
@@ -640,15 +660,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-right" + " background-grass";
+                                className.push(name + "-horizontal-right", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-bow-down-left" + " background-grass";
+                                className.push(name + "-bow-down-left", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-up " + name + "-right" + " background-grass";
+                                className.push(name + "-up", name + "-right", "background-grass");
                                 break;
                         }
                         break;
@@ -658,19 +678,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-horizontal" + " background-grass";
+                                className.push(name + "-horizontal", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-horizontal-down" + " background-grass";
+                                className.push(name + "-horizontal-down", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-horizontal-right" + " background-grass";
+                                className.push(name + "-horizontal-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-horizontal-down-left" + " background-grass";
+                                className.push(name + "-horizontal-down-left", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-up" + " background-grass";
+                                className.push(name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -684,13 +704,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-vertical-down" + " background-grass";
+                                className.push(name + "-vertical-down", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical" + " background-grass";
+                                className.push(name + "-vertical", "background-grass");
                                 break;
                         }
                         break;
@@ -700,15 +720,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-down " + name + "-left" + " background-grass";
+                                className.push(name + "-down", name + "-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-vertical-right-up" + " background-grass";
+                                className.push(name + "-vertical-right-up", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-left" + " background-grass";
+                                className.push(name + "-left", "background-grass");
                                 break;
                         }
                         break;
@@ -718,15 +738,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-bow-up-left" + " background-grass";
+                                className.push(name + "-bow-up-left", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-vertical-left" + " background-grass";
+                                className.push(name + "-vertical-left", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-left-down" + " background-grass";
+                                className.push(name + "-vertical-left-down", "background-grass");
                                 break;
                         }
                         break;
@@ -736,19 +756,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-up-right" + " background-grass";
+                                className.push(name + "-horizontal-up-right", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-full-up-right" + " background-grass";
+                                className.push(name + "-full-up-right", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-t-left" + " background-grass";
+                                className.push(name + "-t-left", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-diagonal-up-right" + " background-grass";
+                                className.push(name + "-diagonal-up-right", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-left-up" + " background-grass";
+                                className.push(name + "-left-up", "background-grass");
                                 break;
                         }
                         break;
@@ -763,13 +783,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-vertical-down" + " background-grass";
+                                className.push(name + "-vertical-down", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical" + " background-grass";
+                                className.push(name + "-vertical", "background-grass");
                                 break;
                         }
                         break;
@@ -779,15 +799,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-bow-up-right" + " background-grass";
+                                className.push(name + "-bow-up-right", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-vertical-right" + " background-grass";
+                                className.push(name + "-vertical-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-vertical-right-down" + " background-grass";
+                                className.push(name + "-vertical-right-down", "background-grass");
                                 break;
                         }
                         break;
@@ -796,16 +816,16 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 0 :
                             case 1 :
                             case 3 :
-                                className += name + "-down " + name + "-right" + " background-grass";
+                                className.push(name + "-down", name + "-right", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 6 :
-                                className += name + "-vertical-left-up" + " background-grass";
+                                className.push(name + "-vertical-left-up", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-right" + " background-grass";
+                                className.push(name + "-right", "background-grass");
                                 break;
                         }
                         break;
@@ -815,19 +835,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-up-left" + " background-grass";
+                                className.push(name + "-horizontal-up-left", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-full-up-left" + " background-grass";
+                                className.push(name + "-full-up-left", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-diagonal-down-right" + " background-grass";
+                                className.push(name + "-diagonal-down-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-t-right" + " background-grass";
+                                className.push(name + "-t-right", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-right-up" + " background-grass";
+                                className.push(name + "-right-up", "background-grass");
                                 break;
                         }
                         break;
@@ -841,13 +861,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-only" + " background-grass";
+                                className.push(name + "-only", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical-up" + " background-grass";
+                                className.push(name + "-vertical-up", "background-grass");
                                 break;
                         }
                         break;
@@ -857,15 +877,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-left" + " background-grass";
+                                className.push(name + "-horizontal-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-bow-down-right" + " background-grass";
+                                className.push(name + "-bow-down-right", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-up " + name + "-left" + " background-grass";
+                                className.push(name + "-up", name + "-left", "background-grass");
                                 break;
                         }
                         break;
@@ -875,15 +895,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-horizontal-right" + " background-grass";
+                                className.push(name + "-horizontal-right", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-bow-down-left" + " background-grass";
+                                className.push(name + "-bow-down-left", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-right " + name + "-up" + " background-grass";
+                                className.push(name + "-right", name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -893,19 +913,19 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6:
-                                className += name + "-horizontal" + " background-grass";
+                                className.push(name + "-horizontal", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-horizontal-down" + " background-grass";
+                                className.push(name + "-horizontal-down", "background-grass");
                                 break;
                             case 4 :
-                                className += name + "-horizontal-down-right" + " background-grass";
+                                className.push(name + "-horizontal-down-right", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-horizontal-down-left" + " background-grass";
+                                className.push(name + "-horizontal-down-left", "background-grass");
                                 break;
                             case 7 :
-                                className += name + "-up" + " background-grass";
+                                className.push(name + "-up", "background-grass");
                                 break;
                         }
                         break;
@@ -920,13 +940,13 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-vertical-down" + " background-grass";
+                                className.push(name + "-vertical-down", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
                             case 5 :
                             case 7 :
-                                className += name + "-vertical" + " background-grass";
+                                className.push(name + "-vertical", "background-grass");
                                 break;
                         }
                         break;
@@ -936,15 +956,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-down " + name + "-left" + " background-grass";
+                                className.push(name + "-down", name + "-left", "background-grass");
                                 break;
                             case 2 :
                             case 5 :
-                                className += name + "-vertical-right-up" + " background-grass";
+                                className.push(name + "-vertical-right-up", "background-grass");
                                 break;
                             case 4 :
                             case 7 :
-                                className += name + "-left" + " background-grass";
+                                className.push(name + "-left", "background-grass");
                                 break;
                         }
                         break;
@@ -954,15 +974,15 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 1 :
                             case 3 :
                             case 6 :
-                                className += name + "-down " + name + "-right" + " background-grass";
+                                className.push(name + "-down", name + "-right", "background-grass");
                                 break;
                             case 2 :
                             case 4 :
-                                className += name + "-vertical-left-up" + " background-grass";
+                                className.push(name + "-vertical-left-up", "background-grass");
                                 break;
                             case 5 :
                             case 7 :
-                                className += name + "-right" + " background-grass";
+                                className.push(name + "-right", "background-grass");
                                 break;
                         }
                         break;
@@ -972,24 +992,24 @@ class CritterGameboard extends Level(PolymerElement) {
                             case 6 :
                             case 1 :
                             case 3 :
-                                className += name + "-down" + " background-grass";
+                                className.push(name + "-down", "background-grass");
                                 break;
                             case 2 :
-                                className += name + "-t-down" + " background-grass";
+                                className.push(name + "-t-down", "background-grass");
                                 break;
 
                             case 4 :
-                                className += name + "-left-down" + " background-grass";
+                                className.push(name + "-left-down", "background-grass");
                                 break;
                             case 5 :
-                                className += name + "-right-down" + " background-grass";
+                                className.push(name + "-right-down", "background-grass");
                                 break;
                         }
                         break;
                 }
                 break;
         }
-        return className
+        return className;
     }
 
     /** creates an renders the grid **/

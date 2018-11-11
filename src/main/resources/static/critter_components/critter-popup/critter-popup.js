@@ -22,6 +22,7 @@ class CritterPopup extends PolymerElement {
                 --display-popup-top: none;
                 --display-popup-bottom: none;
                 --display-popup-arrow-left: 0px;
+                pointer-events: all;
             }
 
             #popup{
@@ -43,7 +44,7 @@ class CritterPopup extends PolymerElement {
               border-right: 20px solid transparent;
               border-bottom: 20px solid white;
               position: absolute;
-              top: -26px;
+              top: -25px;
               margin-left: -6px;
               display: var(--display-popup-top);
               left: var(--display-popup-arrow-left);
@@ -57,7 +58,7 @@ class CritterPopup extends PolymerElement {
               border-left: 20px solid transparent;
               border-right: 20px solid transparent;
               border-top: 20px solid white;
-              bottom: -26px;
+              bottom: -25px;
               margin-left: -6px;
               display: var(--display-popup-bottom);
               left: var(--display-popup-arrow-left);

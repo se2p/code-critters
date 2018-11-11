@@ -970,9 +970,9 @@ class CritterGameboardField extends PolymerElement {
     }
 
     playExplosion() {
-        this.class += ' explosion';
+        this.$.field.classList.add("explosion");
         setTimeout(() => {
-            this.class = this.class.replace(' explosion', '');
+            this.$.field.classList.remove("explosion");
         }, 1000);
     }
 
