@@ -72,6 +72,7 @@ public class LevelService {
         dto.setTest(level.getTest());
         dto.setSpawn(level.getSpawn());
         dto.setInit(level.getInit());
+        dto.setXml(level.getXml());
         dto.setTower(level.getTower());
         dto.setNumberOfCritters(level.getNumberOfCritters());
         dto.setNumberOfHumans(level.getNumberOfHumans());

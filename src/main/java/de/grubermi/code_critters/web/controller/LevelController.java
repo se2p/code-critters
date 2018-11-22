@@ -170,6 +170,7 @@ public class LevelController {
         map.put("numberOfHumans", dto.getNumberOfHumans());
         map.put("cut", dto.getCUT());
         map.put("init", dto.getInit());
+        map.put("xml", dto.getXml());
         map.put("test", dto.getTest());
         map.put("toolbox", toolbox);
 

@@ -20,6 +20,7 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/xml-generator/**").addResourceLocations("classpath:/static/generators/xml-generator/");
         registry.addResourceHandler("/level-generator/**").addResourceLocations("classpath:/static/generators/level-generator/");
         registry.addResourceHandler("/lib/**").addResourceLocations("classpath:/static/node_modules/");
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/node_modules/");
         registry.addResourceHandler("/critter_components/**").addResourceLocations("classpath:/static/critter_components/");
 
    }

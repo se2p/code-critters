@@ -1,3 +1,7 @@
+<category name="Heads" colour="0">
+    <block type="init_head"> </block>
+     <block type="cut_head"> </block>
+</category>
 <category name="Logic" colour="210">
     <block type="controls_if"></block>
     <block type="logic_compare" id="Updh4`dmqWOl8d}M;g8y" x="438" y="113">

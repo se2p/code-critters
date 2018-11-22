@@ -359,3 +359,41 @@ function cloneObject(obj) {
     }
     return clone;
 }
+
+Blockly.Blocks['cut_head'] = {
+    init: function() {
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("Code under Test");
+        this.appendStatementInput("Content")
+            .setCheck(null);
+        this.setColour(120);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.JavaScript['cut_head'] = function(block) {
+    let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
+    let code = '//CUT_START\n' + statements_content + "\n//CUT_END\n";
+    return code;
+};
+
+Blockly.Blocks['init_head'] = {
+    init: function() {
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("Initialization");
+        this.appendStatementInput("Content")
+            .setCheck(null);
+        this.setColour(300);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.JavaScript['init_head'] = function(block) {
+    let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
+    let code = '//INIT_START\n' + statements_content + "\n//INIT_END\n";
+    return code;
+};

@@ -41,8 +41,8 @@ class CritterGame extends Level(PolymerElement) {
 
             #critter_container {
                 position: absolute;
-                top: 8px;
-                left: 29px;
+                top: -1px;
+                left: 21px;
                 pointer-events: none;
             }
 
@@ -50,8 +50,8 @@ class CritterGame extends Level(PolymerElement) {
                 pointer-events: all;
             }
 
-            .half_blockly{
-                width: 45%;
+            .full_blockly{
+                width: 95%;
                 margin-right: 5%;
                 float: left;
             }
@@ -167,11 +167,7 @@ class CritterGame extends Level(PolymerElement) {
             </critter-test-popup>
         </div>
         <div id="blockly_container" style$="width: calc(-{{ _boardWidth }}px - 70px + 100vw)">
-            <critter-blockly id="blockly_init" class="half_blockly" height$="{{ _boardHeight}}" controls="true"
-                             init read-only>
-                <span>Init Code</span>
-            </critter-blockly>
-            <critter-blockly id="blockly_CUT" class="half_blockly" height$="{{ _boardHeight}}" controls="true" cut
+            <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
                              read-only>
                 <span>Code under Test</span>
             </critter-blockly>
@@ -293,9 +289,7 @@ class CritterGame extends Level(PolymerElement) {
     /** starts the critters**/
     _startCritters(node) {
         if (!this._crittersSent) {
-            let cut = this.$.blockly_CUT.getJavaScript();
-            let init = this.$.blockly_init.getJavaScript();
-            this._addHumans(cut, init);
+            this._addHumans();
             this._addCritters();
             this._sendCritters();
             this._crittersSent = true;
@@ -326,10 +320,10 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     /** creates and append humans**/
-    _addHumans(cut, init) {
+    _addHumans() {
         let i = 0;
         while (i++ < this._globalData.numberOfHumans) {
-            this._createCritter(true, cut, init);
+            this._createCritter(true, this._globalData.cut, this._globalData.init);
         }
     }
 
@@ -337,8 +331,8 @@ class CritterGame extends Level(PolymerElement) {
         let container = this.$.critter_container;
         let critter = document.createElement("critter-critter");
         critter.human = human;
-        critter.cut = new Function(cut);
-        critter.init = new Function(init);
+        critter.cut = cut;
+        critter.init = init;
         container.append(critter);
         this._critterList.push(critter);
     }
@@ -356,7 +350,7 @@ class CritterGame extends Level(PolymerElement) {
         req.addEventListener('response', e => {
             let mutants = e.detail.__data.response;
             for (let i = 0; i < this._globalData.numberOfCritters; i++) {
-                this._createCritter(false, mutants[i % (mutants.length)].code, mutants[i % (mutants.length)].init);
+                this._createCritter(false, new Function (mutants[i % (mutants.length)].code), new Function (mutants[i % (mutants.length)].init));
             }
             this._critterList = this._shuffleArray(this._critterList);
 

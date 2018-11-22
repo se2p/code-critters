@@ -80,15 +80,17 @@ class CritterDataStore extends PolymerElement {
             },
 
             cut: {
-                type: String,
-                value: '',
-                observer: '_cutCodeChanged'
+                type: Function
             },
 
             init: {
+                type: Function
+            },
+
+            xml: {
                 type: String,
                 value: '',
-                observer: '_initCodeChanged'
+                observer: '_xmlCodeChanged'
             },
 
             toolbox: {
@@ -129,12 +131,8 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_testCodeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
-    _initCodeChanged() {
-        this.dispatchEvent(new CustomEvent('_initCodeChanged', {detail: {}, bubbles: true, composed: true}));
-    }
-
-    _cutCodeChanged() {
-        this.dispatchEvent(new CustomEvent('_cutCodeChanged', {detail: {}, bubbles: true, composed: true}));
+    _xmlCodeChanged() {
+        this.dispatchEvent(new CustomEvent('_xmlCodeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     _toolboxChanged() {
@@ -165,8 +163,9 @@ class CritterDataStore extends PolymerElement {
             this.height = data.height;
             this.numberOfHumans = data.numberOfHumans;
             this.numberOfCritters = data.numberOfCritters;
-            this.cut = data.cut;
-            this.init = data.init;
+            this.cut = new Function(data.cut);
+            this.init = new Function(data.init);
+            this.xml = data.xml;
             this.test = data.test;
             this.toolbox = data.toolbox;
         });

@@ -113,18 +113,12 @@ class CritterBlockly extends Level(PolymerElement) {
 
     _attachEventListeners() {
         let rootNode = window.Core.GameRoot;
-        if (this.init) {
-            rootNode.addEventListener("_initCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_cutCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("testCodeChanged", this._codeChanged);
-        } else if (this.cut) {
-            rootNode.addEventListener("_cutCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_initCodeChanged", this._codeChanged);
+        if (this.cut) {
+            rootNode.addEventListener("_xmlCodeChanged", this._codeChanged);
             rootNode.removeEventListener("_testCodeChanged", this._codeChanged);
         } else {
             rootNode.addEventListener("_testCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_initCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_cutCodeChanged", this._codeChanged);
+            rootNode.removeEventListener("_xmlCodeChanged", this._codeChanged);
         }
     }
 
@@ -169,10 +163,8 @@ class CritterBlockly extends Level(PolymerElement) {
             return
         }
         let code = "";
-        if (this.init) {
-            code = this._globalData.init;
-        } else if (this.cut) {
-            code = this._globalData.cut;
+        if (this.cut) {
+            code = this._globalData.xml;
         } else {
             return
         }
