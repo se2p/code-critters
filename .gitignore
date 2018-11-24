@@ -16,3 +16,5 @@ src/main/resources/static/package-lock\.json
 src/main/resources/static/yarn-error\.log
 
 src/main/resources/static/yarn\.lock
+
+temp/
