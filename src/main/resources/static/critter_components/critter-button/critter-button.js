@@ -22,30 +22,36 @@ class CritterButton extends PolymerElement {
         display: block;
         width: -moz-fit-content;
         width: fit-content;
+        
+        --critter-button-color-disabled: #677d91;
+        --critter-button-color: #039BE5;
+        --critter-button-text-color: whitesmoke;
+        --critter-button-text-color-disabled: gainsboro;
+
       }
 
 
       #button {
         border-radius: 4px;
         min-height: 40px;
-        color: whitesmoke;
+        color: var(--critter-button-text-color);
         text-align: center;
         justify-content: center;
         align-items: center;
         display: flex;
-        background-color: #039BE5;
+        background-color: var(--critter-button-color);
         cursor: pointer;
       }
       
       #button:hover{
-         background: #00b0ff;
+         background-color: var(--critter-button-color);
       }
 
         #button.disabled,
         #button.disabled:hover{
-            background: #677d91;
+            background-color: var(--critter-button-color-disabled);
             cursor: not-allowed;
-            color: gainsboro;
+            color: var(--critter-button-text-color-disabled);
         }
 
 

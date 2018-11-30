@@ -119,7 +119,7 @@ class CritterDataStore extends PolymerElement {
     }
 
     _sizeChanged() {
-        this.mines = Array.from({length: this.width}, () => Array.from({length: this.height}, () => undefined));
+        this.deleteMines();
         this.dispatchEvent(new CustomEvent('_levelSizeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
@@ -137,6 +137,22 @@ class CritterDataStore extends PolymerElement {
 
     _toolboxChanged() {
         this.dispatchEvent(new CustomEvent('_toolboxChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
+    deleteMines(){
+        this.mines = Array.from({length: this.width}, () => Array.from({length: this.height}, () => undefined));
+    }
+
+    countMines(){
+        let count = 0;
+        this.mines.forEach(row => {
+            row.forEach(elem =>{
+                if(elem){
+                    count++;
+                }
+            });
+        });
+        return count;
     }
 
     /** performs an ajax call to get level data from the server **/

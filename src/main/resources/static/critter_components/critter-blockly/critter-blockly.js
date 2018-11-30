@@ -165,6 +165,26 @@ class CritterBlockly extends Level(PolymerElement) {
         let code = "";
         if (this.cut) {
             code = this._globalData.xml;
+            this.setCode(code);
+            let cutWidth = this.$.blockly_frame.contentWindow.getBlockById("cut_head").width;
+            let initWidth = this.$.blockly_frame.contentWindow.getBlockById("init_head").width;
+
+            let initX = 0;
+            let initY = 0;
+            let cutX = 0;
+            let cutY = 0;
+
+            if (this.$.blockly_frame.offsetWidth > cutWidth + initWidth + 50) {
+                cutX = initWidth + 25;
+            } else {
+                let initHeight = this.$.blockly_frame.contentWindow.getBlockById("init_head").height;
+                cutY = initHeight + 75;
+            }
+            code = code.replace(/(id="cut_head".{0,50}x=")(.*?)(")/ig, "$1" + cutX + "$3");
+            code = code.replace(/(id="init_head".{0,50}x=")(.*?)(")/ig, "$1" + initX + "$3");
+            code = code.replace(/(id="cut_head".{0,50}y=")(.*?)(")/ig, "$1" + cutY + "$3");
+            code = code.replace(/(id="init_head".{0,50}y=")(.*?)(")/ig, "$1" + initY + "$3");
+            this._globalData.xml = code;
         } else {
             return
         }

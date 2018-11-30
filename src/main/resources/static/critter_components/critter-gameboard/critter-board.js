@@ -123,7 +123,7 @@ class CritterGameboard extends Level(PolymerElement) {
                 rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
                 rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
                 rootNode.addEventListener("_mineSet", (event) => this.setMine(event));
-                rootNode.addEventListener("_mineRemoved", (event) => this.removeMine(event));
+                rootNode.addEventListener("_mineRemoved", (event) => this.removeMine(event.detail.position));
             }
             this._globalData = window.Core.CritterLevelData;
             this.renderGrid();
@@ -178,8 +178,7 @@ class CritterGameboard extends Level(PolymerElement) {
         }
     }
 
-    removeMine(e) {
-        let position = e.detail.position;
+    removeMine(position) {
         let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
         mineField.classList.remove("mine");
 
@@ -1046,11 +1045,22 @@ class CritterGameboard extends Level(PolymerElement) {
 
     _playExplosion(event) {
         let audio = document.createElement("audio");
-        audio.src = this.importPath + "/sounds/bomb.flac";
+        audio.src = this.importPath + "/sounds/magic.mp3";
         audio.play();
         let detail = event.detail;
         let field = this.shadowRoot.querySelector('#field-' + detail.x + "-" + detail.y);
         field.playExplosion();
+    }
+
+    removeAllMines(){
+        for(let i = 0; i < this._globalData.width; ++i){
+            for(let j = 0; j < this._globalData.width; ++j){
+                this.removeMine({
+                    x: i,
+                    y: j
+                });
+            }
+        }
     }
 }
 

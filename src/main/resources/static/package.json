@@ -8,6 +8,7 @@
   "dependencies": {
     "@polymer/iron-ajax": "latest",
     "@polymer/iron-icons": "latest",
+    "@polymer/iron-iconset-svg": "latest",
     "@polymer/polymer": "latest",
     "@webcomponents/webcomponentsjs": "latest",
     "blockly": "https://github.com/google/blockly.git",

@@ -900,14 +900,15 @@ class CritterGameboardField extends PolymerElement {
                 content: " ";
                 background-image: url(image/mine.png);
                 background-position: 0 0;
-                width: 25px;
-                height: 25px;
+                width: 40px;
+                height: 40px;
                 display: block;
                 position: relative;
-                bottom: 33px;
-                left: 7px;
+                top: -40px;
+                left: 0;
                 z-index: 3;
                 cursor: pointer;
+                pointer-events: none;
             }
 
             .mine.explosion::after {
@@ -920,7 +921,7 @@ class CritterGameboardField extends PolymerElement {
                     background-position: 0 0;
                 }
                 100% {
-                    background-position: 275px 0;
+                    background-position: 440px 0;
                 }
             }
 
@@ -929,7 +930,7 @@ class CritterGameboardField extends PolymerElement {
                     background-position: 0 0;
                 }
                 100% {
-                    background-position: 275px 0;
+                    background-position: 440px 0;
                 }
             }
 
@@ -971,7 +972,7 @@ class CritterGameboardField extends PolymerElement {
 
     playExplosion() {
         this.$.field.classList.add("explosion");
-        setTimeout(() => {
+        window.Core.timeouts.add(() => {
             this.$.field.classList.remove("explosion");
         }, 1000);
     }

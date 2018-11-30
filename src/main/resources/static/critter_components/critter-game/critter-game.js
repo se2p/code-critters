@@ -6,9 +6,11 @@ import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
 import '../critter-button/critter-button.js';
+import '../critter-control-button/critter-control-button.js';
 import '../critter-blockly/critter-blockly.js';
 import '../critter-dialog/critter-dialog.js';
 import '../critter-test-popup/critter-test-popup.js';
+import '../critter-timeout/critter-timeout-manager.js';
 
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
@@ -66,11 +68,16 @@ class CritterGame extends Level(PolymerElement) {
                 margin-left: 10px;
             }
 
-            #grid_button,
+
             #send_button,
-            #search_button,
+            #speedUp_button,
             #coordinate_container{
                 margin-left: 20px;
+                float: left;
+            }
+            
+            #reload_button{
+            margin-left: 100px;
                 float: left;
             }
 
@@ -98,13 +105,10 @@ class CritterGame extends Level(PolymerElement) {
                 clear: both;
             }
 
-            #grid_button {
+            #send_button {
                 clear: both;
             }
 
-            #blockly_test {
-                margin-bottom: 5px;
-            }
 
             #blockly_CUT {
                 margin-bottom: 5px;
@@ -144,6 +148,8 @@ class CritterGame extends Level(PolymerElement) {
         </style>
 
         <critter-data-store></critter-data-store>
+        <critter-timeout-manager></critter-timeout-manager>
+
 
         <critter-dialog id="score_dialog">
             <div id="star_container">
@@ -173,8 +179,9 @@ class CritterGame extends Level(PolymerElement) {
             </critter-blockly>
         </div>
         <br>
-        <critter-button id="grid_button" class="game_button">Show Grid</critter-button>
-        <critter-button id="send_button" class="game_button">Send Critters</critter-button>
+        <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
+        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
+        <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
         <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
         <div id="finished_container">{{_finishedHumans}} of&nbsp;<span id="humansNumber"></span>&nbsp;humans has finished</div>
         <div id="killed_container">{{_killedCritters}} of&nbsp;<span id="critterNumber"></span> &nbsp;critters has been detected</div>
@@ -253,6 +260,11 @@ class CritterGame extends Level(PolymerElement) {
             _doneCritters: {
                 type: Number,
                 value: 0
+            },
+
+            _paused: {
+                type: Boolean,
+                value: true
             }
         };
     }
@@ -265,10 +277,12 @@ class CritterGame extends Level(PolymerElement) {
 
 
         this._globalData = window.Core.CritterLevelData;
+        this._timeoutManager = window.Core.timeouts;
 
         afterNextRender(this, function () {
-            this.$.grid_button.addEventListener("click", () => this._showGrid(this));
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
+            this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
+            this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
@@ -281,39 +295,74 @@ class CritterGame extends Level(PolymerElement) {
         });
     }
 
-    /** change the grid rendering**/
-    _showGrid(node) {
-        node.showGrid = !node.showGrid;
-    }
-
-    /** starts the critters**/
-    _startCritters(node) {
-        if (!this._crittersSent) {
-            this._addHumans();
-            this._addCritters();
-            this._sendCritters();
-            this._crittersSent = true;
-            this.$.send_button.innerHTML = "Speed Up"
-        } else {
-            this.$.send_button.disabled = true;
+    _speedUpGame() {
+        if(this._crittersSent) {
             this._critterList.forEach((critter) => {
                 critter.speedy = true;
             });
             this._interval = 1500;
+        }
+        this.$.speedUp_button.disabled = true;
+    }
+
+    _reloadGame() {
+        this._paused = true;
+        this._crittersSent = false;
+        this._finishedHumans = 0;
+        this._doneCritters = 0;
+        this._killedCritters = 0;
+        this.score = 0;
+        this._interval = 2000;
+        this._critterList.forEach(critter => {
+            critter.remove();
+        });
+        this._critterList = [];
+        this._timeoutManager.clear();
+        this._globalData.deleteMines();
+        this.$.gameboard.removeAllMines();
+        this.$.send_button.shape = "play";
+        this.$.speedUp_button.disabled = true;
+    }
+
+
+    /** starts the critters**/
+    _startCritters(node) {
+        if (this._paused) {
+            this._paused = false;
+            this.$.send_button.shape = "pause";
+            if(!this._crittersSent) {
+                this._addHumans();
+                this._addCritters();
+                this._sendCritters();
+                this._crittersSent = true;
+                this.$.speedUp_button.disabled = false;
+            } else {
+                this._timeoutManager.resumeAll();
+                this._critterList.forEach(critter => {
+                    critter.resume();
+                });
+            }
+        } else {
+            this._timeoutManager.pauseAll();
+            this._critterList.forEach(critter => {
+                critter.pause();
+            });
+            this.$.send_button.shape = "play";
+            this._paused = true;
         }
     }
 
     /** sends one critter after another**/
     _sendCritters(i = 0) {
         if (!i && this._critterList.length !== this._globalData.numberOfHumans + this._globalData.numberOfCritters) {
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this._sendCritters(0);
             }, 100);
             return;
         }
         if (i < this._critterList.length) {
             this._critterList[i].startAnimation();
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this._sendCritters(++i);
             }, this._randomNumber(this._interval * 0.6, this._interval));
         }
@@ -421,7 +470,7 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _onLevelFinished() {
-        this.score -= 25 * (this._globalData.mines.length);
+        this.score -= 25 * (this._globalData.countMines());
         this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
         this._storeResult();

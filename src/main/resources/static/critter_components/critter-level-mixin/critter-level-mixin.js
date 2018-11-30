@@ -25,6 +25,10 @@ Holds general functions for code-critter Levels
                 return {
                     _globalData:{
                         type: Object
+                    },
+
+                    _timeoutManager:{
+                        type: Object
                     }
 
                 };

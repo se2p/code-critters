@@ -25,15 +25,15 @@ public class PolymerResourceCacheFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         // only /lib files needs to be modified
-        if(httpRequest.getRequestURI().startsWith("/lib/")) {
+        if (httpRequest.getRequestURI().startsWith("/lib/")) {
             File file = new File(TEMPDIR + httpRequest.getRequestURI());
-            if(file.exists() && !file.isDirectory()) {
+            if (file.exists() && !file.isDirectory()) {
                 //check age of the file
                 RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
-                if(file.lastModified() >= bean.getStartTime()) {
+                if (file.lastModified() >= bean.getStartTime()) {
                     //If younger then runtime use existing one
                     InputStream is = new FileInputStream(file);
-                    response.setContentLength((int)file.length());
+                    response.setContentLength((int) file.length());
                     response.setContentType("application/javascript;charset=ISO-8859-1");
                     IOUtils.copy(is, response.getOutputStream());
                     is.close();
@@ -55,15 +55,27 @@ public class PolymerResourceCacheFilter implements Filter {
         }
     }
 
+    /**
+     * Caches the files addressed by /lib/* and changes their content so that the
+     * browser can resolve the paths
+     *
+     * @param request   Request coming from the browser
+     * @param response  Response to send back to the browser
+     * @param chain     Filterchain doing some more filters and executes the reques
+     * @param f         The file to write the data in
+     * @return          the responses string content
+     * @throws IOException  if an error occurs during writing the file
+     * @throws ServletException comes from the filter chain
+     */
     private String cacheFile(ServletRequest request, ServletResponse response, FilterChain chain, File f) throws IOException, ServletException {
         HtmlResponseWrapper capturingResponseWrapper = new HtmlResponseWrapper(
                 (HttpServletResponse) response);
         chain.doFilter(request, capturingResponseWrapper);
         //add "/lib/" in import paths in the file where "@polymer" or "@webcombonent" is
-        String pattern ="(?<=(import\\s.{0,100}))(?=(@.{3,20}/))";
+        String pattern = "(?<=(import\\s.{0,100}))(?=(@.{3,20}/))";
         String[] componentsArray = capturingResponseWrapper.getCaptureAsString().split(pattern);
         String responseContent = componentsArray[0];
-        for(int i = 1; i < componentsArray.length; ++i){
+        for (int i = 1; i < componentsArray.length; ++i) {
             responseContent += "/lib/" + componentsArray[i];
         }
         //create directory and file

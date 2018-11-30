@@ -164,7 +164,9 @@ class CritterCritter extends Level(PolymerElement) {
                 animation: walk_south 1s steps(9) infinite reverse;
             }
 
-            .critter-stay {
+            .critter-stay,
+             .critter-stay::after,
+             .critter-stay::before{
                 animation: none !important;
             }
 
@@ -287,7 +289,8 @@ class CritterCritter extends Level(PolymerElement) {
 
             animate: {
                 type: Boolean,
-                value: false
+                value: false,
+                notify: true
             },
 
             _playAnimation: {
@@ -381,6 +384,11 @@ class CritterCritter extends Level(PolymerElement) {
             _numberOfStarts: {
                 type: Number,
                 value: 0
+            },
+
+            _paused: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -395,6 +403,7 @@ class CritterCritter extends Level(PolymerElement) {
             this.$.critter.addEventListener('mouseover', this._onHover.bind(this));
             this.$.critter.addEventListener('mouseout', this._onHoverOut.bind(this));
             this._globalData = window.Core.CritterLevelData;
+            this._timeoutManager = window.Core.timeouts;
         });
     }
 
@@ -408,10 +417,10 @@ class CritterCritter extends Level(PolymerElement) {
         this.path = this._computePath();
         this.position = this.path.shift();
         this.$.critter_container.style.transitionDuration = "3s";
-        setTimeout(() => {
+        this._timeoutManager.add(() => {
             this.init();
             this._doStep(this._numberOfStarts);
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this.$.critter_container.style.visibility = "visible";
             }, this._interval * 0.5);
         }, 100);
@@ -438,27 +447,27 @@ class CritterCritter extends Level(PolymerElement) {
         }
 
         //runs CUT
-        setTimeout(() => {
+        this._timeoutManager.add(() => {
             this.cut();
             this._updateTooltip();
         }, this._interval * 0.5);
 
 
         //runs tests
-        setTimeout(() => {
+        this._timeoutManager.add(() => {
             this._doElements();
         }, this._interval * 0.7);
 
         if (this.path.length > 1) {
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this._doStep(start);
             }, this._interval);
         } else if (!last) {
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this._doStep(start, true);
             }, this._interval);
         } else {
-            setTimeout(() => {
+            this._timeoutManager.add(() => {
                 this.dispatchEvent(new CustomEvent('_critterFinished', {
                     detail: {human: this.human},
                     bubbles: true,
@@ -533,20 +542,20 @@ class CritterCritter extends Level(PolymerElement) {
 
 
     _killCritter(x, y) {
-        setTimeout(() => {
-            if (!this.animate) {
-                return;
-            }
-            this.dispatchEvent(new CustomEvent('_critterKilled', {
-                detail: {x: x, y: y, human: this.human},
-                bubbles: true,
-                composed: true
-            }));
+        if (!this.animate) {
+            return;
+        }
+        this.dispatchEvent(new CustomEvent('_critterKilled', {
+            detail: {x: x, y: y, human: this.human},
+            bubbles: true,
+            composed: true
+        }));
+        this._timeoutManager.add(() => {
             this.animate = false;
             this.updateStyles({
                 '--critter-display': 'none'
             });
-        }, this._interval * 0.17);
+        }, this._interval * 0.3);
     }
 
     _onHover() {
@@ -588,6 +597,27 @@ class CritterCritter extends Level(PolymerElement) {
                 temp[prop].innerHTML = prop + ": " + this["variable_" + prop];
             }
             this.variables = temp;
+        }
+    }
+
+    pause() {
+        if(this.animate) {
+            this.animate = false;
+            this.paused = true;
+            var computedStyle = window.getComputedStyle(this.$.critter_container);
+            this.$.critter_container.style.top = computedStyle.getPropertyValue('top');
+            this.$.critter_container.style.left = computedStyle.getPropertyValue('left');
+            this.$.critter_container.style.transitionDuration = null;
+        }
+    }
+
+    resume() {
+        if(this.paused) {
+            this.animate = true;
+            this.paused = false;
+            this.$.critter_container.style.transitionDuration = "3s";
+            this.$.critter_container.style.top = (this.position.y * 40) + "px";
+            this.$.critter_container.style.left = (this.position.x * 40) + "px";
         }
     }
 }
