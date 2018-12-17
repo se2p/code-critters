@@ -85,8 +85,8 @@ class CritterTestPopup extends Level(PolymerElement) {
             }
             
             #delete_button:hover{
-                margin-top: 0;
-                height: 45px;
+                margin-top: -2px;
+                height: 42px;
             }
             
             #delete_button:hover iron-icon{
@@ -122,9 +122,6 @@ class CritterTestPopup extends Level(PolymerElement) {
                     <critter-button id="help_button" class="popup_button">
                         <iron-icon icon="icons:help-outline"></iron-icon>
                     </critter-button>
-                    <critter-button id="save_button" class="popup_button">
-                        <iron-icon icon="icons:check"></iron-icon>
-                    </critter-button>
                     <critter-button id="delete_button" class="popup_button">
                         <!--<iron-icon icon="icons:delete"></iron-icon> -->
                          <iron-iconset-svg name="inline">
@@ -140,14 +137,15 @@ class CritterTestPopup extends Level(PolymerElement) {
                               <path
                                  style="stroke-width:1"
                                  d="m 6.1528276,19.209525 c 0,1.1 0.9,2 2,2 h 8.0000014 c 1.1,0 2,-0.9 2,-2 V 7.2095242 H 6.1528276 Z"
-                                 id="delete_bottom"
-                                 inkscape:connector-curvature="0"
-                                 sodipodi:nodetypes="ssssccs" />
+                                 id="delete_bottom"/>
                                  </g>
                                </defs>
                           </svg>
                           </iron-iconset-svg>
                           <iron-icon icon="inline:delete"></iron-icon>
+                    </critter-button>
+                    <critter-button id="save_button" class="popup_button">
+                        <iron-icon icon="icons:check"></iron-icon>
                     </critter-button>
                 </div>
             </critter-popup>

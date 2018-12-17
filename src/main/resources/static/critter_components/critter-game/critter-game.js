@@ -11,6 +11,7 @@ import '../critter-blockly/critter-blockly.js';
 import '../critter-dialog/critter-dialog.js';
 import '../critter-test-popup/critter-test-popup.js';
 import '../critter-timeout/critter-timeout-manager.js';
+import '../critter-score/critter-score.js';
 
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
@@ -144,6 +145,10 @@ class CritterGame extends Level(PolymerElement) {
                 min-width: 100px;
                 min-height: 40px;
             }
+            
+            critter-store {
+                font-size: 0.85em;
+            }
 
         </style>
 
@@ -156,7 +161,7 @@ class CritterGame extends Level(PolymerElement) {
                 <iron-icon id="star" icon="icons:star"></iron-icon>
             </div>
             <div id="dialog_text">
-                Score: [[score]] points
+                <critter-score id="dialog_score"></critter-score>
             </div>
             <div id="selector_container">
                 <h3>Select the next level:</h3>
@@ -447,7 +452,7 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _onCritterKilled(e) {
-        this._updateScore(e.detail.human ? -100 : 50);
+        // this._updateScore(e.detail.human ? -100 : 50);
         if (!e.detail.human) {
             this._killedCritters++;
         }
@@ -455,7 +460,7 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _onCritterFinished(e) {
-        this._updateScore(e.detail.human ? 50 : -100);
+        // this._updateScore(e.detail.human ? 50 : -100);
         if (e.detail.human) {
             this._finishedHumans++;
         }
@@ -470,10 +475,33 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _onLevelFinished() {
-        this.score -= 25 * (this._globalData.countMines());
-        this.score = (this.score < 0 ? 0 : this.score);
+        // this.score -= 25 * (this._globalData.countMines());
+        // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
+        this.showScore();
         this._storeResult();
+    }
+
+    showScore() {
+        let dialogScore = this.$.dialog_score;
+        let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
+        let killedHumansPercentage = 100 - finishedHumansPercentage;
+        let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
+        let finishedCritterPercentage = 100 - killedCritterPercentage;
+        let finishedCritters = this._globalData.numberOfCritters - this._killedCritters;
+        let killedHumans = this._globalData.numberOfHumans - this._finishedHumans;
+        dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%").then(() => {
+            dialogScore.insertData("killed_humans_line", killedHumans * -100, killedHumansPercentage, "%").then(() => {
+                dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%").then(() => {
+                    dialogScore.insertData("finished_critters_line", finishedCritters * -100, finishedCritterPercentage, "%").then(() => {
+                        dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines()).then(() => {
+                            dialogScore.insertData("time_line", 0, 0);
+                        })
+                    })
+                })
+            })
+        })
+
     }
 
     _onCritterNumberChanged() {

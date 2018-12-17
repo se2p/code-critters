@@ -1,7 +1,7 @@
 import { dedupingMixin } from '/lib/@polymer/polymer/lib/utils/mixin.js';
 
 import '/lib/@polymer/iron-ajax/iron-ajax.js';
-import '/lib/pathfinding/pathfinding-browser.min.js';
+import '/static/pathfinding/pathfinding-browser.min.js';
 
 /*
 #CritterMixins.Level
@@ -65,7 +65,7 @@ Holds general functions for code-critter Levels
 
                 let tempArray = this._computeGrid();
 
-                tempArray[this._globalData.spawn.x][this._globalData.spawn.y] = 1;
+                tempArray[this._globalData.spawn.y][this._globalData.spawn.x] = 1;
 
                 let path = [source];
                 let possibilities = this._findPossibility(tempArray, source);
