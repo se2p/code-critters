@@ -97,6 +97,9 @@ public class LevelService {
         if (dto.getInit() != null) {
             level.setInit(dto.getInit());
         }
+        if (dto.getXml() != null) {
+            level.setXml(dto.getXml());
+        }
         if (dto.getTest() != null) {
             level.setTest(dto.getTest());
         }

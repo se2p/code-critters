@@ -912,6 +912,10 @@ class CritterGameboardField extends PolymerElement {
             }
 
             .mine.explosion::after {
+                animation-name: explode;
+                animation-duration: 1s;
+                animation-timing-function: steps(11);
+                animation-iteration-count: 1;
                 -webkit-animation: explode 1s steps(11) 1;
                 animation: explode 1s steps(11) 1;
             }

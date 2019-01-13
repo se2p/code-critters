@@ -11,6 +11,8 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/game").setViewName("forward:/game.html");
+        registry.addViewController("/levels").setViewName("forward:/levels.html");
+        registry.addViewController("/profile").setViewName("forward:/profile.html");
         registry.addViewController("/xml-generator").setViewName("forward:/generators/xml-generator/xml-generator.html");
         registry.addViewController("/level-generator").setViewName("forward:/generators/level-generator/level-generator.html");
         registry.addViewController("/customBlocks.js").setViewName("forward:/critter_components/critter-blockly/iFrame/customBlocks.js");

@@ -159,7 +159,7 @@ class CritterBlockly extends Level(PolymerElement) {
 
     /** updates the code of the IFrame **/
     _codeChanged() {
-        if (!this._globalData) {
+        if (!this._globalData || window.Core.Generator) {
             return
         }
         let code = "";

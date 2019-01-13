@@ -3,13 +3,13 @@
   "keywords": [
     "polymer"
   ],
+  "license": "GPL-2.0",
   "name": "code-critters",
   "version": "3.0.0",
   "dependencies": {
+    "@polymer/polymer": "latest",
     "@polymer/iron-ajax": "latest",
     "@polymer/iron-icons": "latest",
-    "@polymer/iron-iconset-svg": "latest",
-    "@polymer/polymer": "latest",
     "@webcomponents/webcomponentsjs": "latest",
     "blockly": "https://github.com/google/blockly.git",
     "pathfinding": "https://github.com/imor/pathfinding-bower.git"

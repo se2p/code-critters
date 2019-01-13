@@ -191,7 +191,12 @@ class CritterGameboard extends Level(PolymerElement) {
                 for (let j = -1; j <= 1; ++j) {
                     if (0 <= element.y + j && this._globalData.height > element.y + j) {
                         let field = this.shadowRoot.querySelector('#field-' + (element.x + i) + "-" + (element.y + j));
-                        field.class = this._computeClass((element.y + j), (element.x + i));
+                        while (field.classList.length > 0) {
+                            field.classList.remove(field.classList.item(0));
+                        }
+                        this._computeClass((element.y + j), (element.x + i)).forEach(elem => {
+                            field.classList.add(elem);
+                        });
                     }
                 }
             }
@@ -200,7 +205,7 @@ class CritterGameboard extends Level(PolymerElement) {
 
     /** adds the given element to the gameboard and the List **/
     addElement(element) {
-        if (!window.Core.generator) {
+        if (!window.Core.Generator) {
             return
         } else {
             switch (this.selectedElement) {

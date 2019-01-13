@@ -12,6 +12,7 @@ import '../critter-dialog/critter-dialog.js';
 import '../critter-test-popup/critter-test-popup.js';
 import '../critter-timeout/critter-timeout-manager.js';
 import '../critter-score/critter-score.js';
+import '../critter-header/critter-header.js';
 
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
@@ -168,6 +169,7 @@ class CritterGame extends Level(PolymerElement) {
                 <critter-level-selector></critter-level-selector>
             </div>
         </critter-dialog>
+        <critter-header></critter-header>
 
         <div id="board_container">
             <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
@@ -332,6 +334,10 @@ class CritterGame extends Level(PolymerElement) {
 
     /** starts the critters**/
     _startCritters(node) {
+        window.onbeforeunload = function() {
+            return true;
+        };
+
         if (this._paused) {
             this._paused = false;
             this.$.send_button.shape = "pause";
@@ -479,6 +485,7 @@ class CritterGame extends Level(PolymerElement) {
         // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
         this.showScore();
+        window.onbeforeunload = null;
         this._storeResult();
     }
 

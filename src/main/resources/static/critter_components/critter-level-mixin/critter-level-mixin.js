@@ -68,7 +68,7 @@ Holds general functions for code-critter Levels
                 tempArray[this._globalData.spawn.y][this._globalData.spawn.x] = 1;
 
                 let path = [source];
-                let possibilities = this._findPossibility(tempArray, source);
+                let possibilities = this._findPossibility(tempArray, source, this._globalData.tower);
                 while (possibilities.length !== 1 || !(possibilities[0].x === this._globalData.tower.x
                             && possibilities[0].y === this._globalData.tower.y)) {
                     if (possibilities.length > 0) {
@@ -97,7 +97,7 @@ Holds general functions for code-critter Levels
                         }
                         source = path[path.length - 1];
                     }
-                    possibilities = this._findPossibility(tempArray, source);
+                    possibilities = this._findPossibility(tempArray, source, this._globalData.tower);
                 }
                 path.push(this._globalData.tower);
                 return path;
@@ -110,7 +110,7 @@ Holds general functions for code-critter Levels
 
             /** searches for possibilities and return list of possible waypoints or the location of the tower, if the tower
              * is in range **/
-            _findPossibility(tempArray, source) {
+            _findPossibility(tempArray, source, tower) {
                 let possibilities = [];
                 if (tempArray[source.y][source.x + 1] === 0) {
                     possibilities.push({y: source.y, x: (source.x + 1)});
@@ -125,8 +125,8 @@ Holds general functions for code-critter Levels
                     possibilities.push({y: (source.y) - 1, x: source.x});
                 }
                 for (let i = 0; i < possibilities.length; ++i) {
-                    if (possibilities[i].x === this._globalData.tower.x && possibilities[i].y === this._globalData.tower.y) {
-                        return [this._globalData.tower];
+                    if (possibilities[i].x === tower.x && possibilities[i].y === tower.y) {
+                        return [tower];
                     }
                 }
                 return possibilities;

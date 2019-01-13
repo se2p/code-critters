@@ -18,3 +18,5 @@ src/main/resources/static/yarn-error\.log
 src/main/resources/static/yarn\.lock
 
 temp/
+
+src/main/resources/static/**/*\.psd

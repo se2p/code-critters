@@ -7,23 +7,85 @@
 
     <script type=module src="./critter_components/critter-level-selector/critter-level-selector.js">
     </script>
+    <script type=module src="./critter_components/critter-header/critter-header.js">
+    </script>
+    <script type=module src="./critter_components/critter-background/critter-background.js">
+    </script>
 
 
     <custom-style>
         <style>
             body {
-                background: #F3F4F6;
                 font-family: Arial;
                 font-size: 0.8em;
+                height: 100vh;
+                margin: 0;
+                background-color: #2f8136;
+            }
+            #foreground_container{
+                z-index: 2;
+                position: relative;
+                width: 900px;
+                height: 100vh;
+                margin: auto;
+                background-color: rgba(217, 248, 239, 0.4);
+            }
+
+            .text{
+                text-align: center;
+                font-size: 1.5em;
+                color: #F3F4F6;
+            }
+            .text{
+                text-align: left;
+                font-size: 1.3em;
+            }
+
+            critter-background{
+                z-index: 1;
+            }
+
+            .content{
+                margin: 15px;
             }
         </style>
 
     </custom-style>
 
 </head>
-<critter-level-selector></critter-level-selector>
 <body>
-
+    <div id="foreground_container">
+        <critter-header></critter-header>
+        <!--TODO: LANDING PAGE-->
+        <div class="content">
+            <div class="text">
+                <h1>Help the Critters to find the Mutants</h1>
+                <p>The Critters are a peaceable, yet unknown colony living in the forest next to the Smurfs.
+                    They have build small houses where they live in peace and harmony.</p>
+                <p>But recently a black wizard found the Critters and sent some mutants to the Critters, that look quite identically as the Critters.
+                Since the critters cannot distinguish between a mutated and non mutated Critter, they need your help!<br>
+                On the way to a save tower, they behave according to some rules, but the mutated ones do not now how to behave correctly.
+                It's your task, to place some magic spots on their way, that check the correct behaviour of the Critters and charm the mutated ones away.</p>
+                <p>Help the to save the peace of the Critters. Start with the <a href="/game?level=level_1">first level</a> or select another <a href="/levels">level</a>.</p>
+            </div>
+        </div>
+    </div>
 </body>
+<script>
+    renderBachground = () => {
+        let bg;
+        if(window.innerWidth >= 1150 && !document.querySelector("critter-background")){
+            bg = document.createElement("critter-background");
+            bg.mainContainerWidth = 900;
+            document.querySelector("body").append(bg);
+        } else if (window.innerWidth < 1150 && (bg = document.querySelector("critter-background"))) {
+            bg.detach();
+            document.querySelector("body").removeChild(bg);
+        }
+    };
+
+    window.addEventListener("resize", renderBachground);
+    renderBachground();
+</script>
 
 </html>

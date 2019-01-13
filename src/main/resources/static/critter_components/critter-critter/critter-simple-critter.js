@@ -15,7 +15,7 @@ Displays a critter.
 @demo
 */
 
-class CritterCritter extends Level(PolymerElement) {
+class CritterSimpleCritter extends PolymerElement {
     static get template() {
         return html`
         <style>
@@ -33,18 +33,6 @@ class CritterCritter extends Level(PolymerElement) {
                 visibility: hidden;
                 z-index: 5;
                 display:  var(--critter-display);
-            }
-
-            #critter_container.speedy{
-                transition-duration: 1.5s !important;
-            }
-
-            #tooltip {
-                padding: 5px;
-                font-size: 0.8em;
-                width: 130px;
-                background-color: #f9edbe;
-                display: var(--tooltip-display);
             }
 
             #critter:before {
@@ -167,18 +155,6 @@ class CritterCritter extends Level(PolymerElement) {
                 animation: walk_south 1s steps(9) infinite reverse;
             }
 
-            .critter-stay,
-             .critter-stay::after,
-             .critter-stay::before{
-                animation: none !important;
-                -webkit-animation: none !important;
-            }
-
-            #critter.speedy{
-                -webkit-animation-duration: 0.5s !important;
-                animation-duration: 0.5s !important;
-            }
-
             @keyframes walk_east {
                 0% {
                     background-position: 0 40px;
@@ -252,20 +228,10 @@ class CritterCritter extends Level(PolymerElement) {
             }
 
         </style>
-        <div id="critter_container" class$="{{_speedyString}}">
+        <div id="critter_container" >
             <div id="critter"
                  class$="critter-{{direction}} critter-{{color}} hair-{{hair}} critter-size-{{size}} {{_humanString}}
-                 {{_speedyString}} {{_playAnimation}}">
-
-            </div>
-            <div id="tooltip">
-                <span><h3>Attributes:</h3></span>
-                <span>Color: [[color]]</span><br>
-                <span>Size: [[size]]</span><br>
-                <span>canWalkOnWater: [[canWalkOnWater]]</span><br>
-                <span>canWalkOnSnow: [[canWalkOnSnow]]</span><br>
-                <span>direction: [[direction]]</span><br>
-                <span><h3>Variables:</h3></span>
+                 critter-move">
             </div>
         </div>
         `;
@@ -274,7 +240,7 @@ class CritterCritter extends Level(PolymerElement) {
     static get importMeta() { return import.meta; }
 
     static get is() {
-        return 'critter-critter';
+        return 'critter-simple-critter';
     }
 
     static get properties() {
@@ -289,16 +255,6 @@ class CritterCritter extends Level(PolymerElement) {
             hair: {
                 type: String,
                 value: "blond"
-            },
-
-            animate: {
-                type: Boolean,
-                value: false,
-                notify: true
-            },
-
-            _playAnimation: {
-                computed: "_isAnimated(animate)"
             },
 
             human: {
@@ -320,32 +276,6 @@ class CritterCritter extends Level(PolymerElement) {
                 value: 10
             },
 
-            canWalkOnWater: {
-                type: Boolean,
-                value: false
-            },
-
-            canWalkOnSnow: {
-                type: Boolean,
-                value: true
-            },
-
-            canWalkOnLava: {
-                type: Boolean,
-                value: false
-            },
-
-            cut: {
-                type: Function,
-                observer: '_displayVariables'
-            },
-
-            init: {
-                type: Function,
-                observer: '_displayVariables'
-            },
-
-
             position: {
                 type: Object,
                 value: {
@@ -353,15 +283,6 @@ class CritterCritter extends Level(PolymerElement) {
                     y: -1
                 },
                 observer: '_changePosition'
-            },
-
-            speedy: {
-                type: Boolean,
-                value: false
-            },
-
-            _speedyString: {
-                computed: "_isSpeedy(speedy)"
             },
 
 
@@ -380,51 +301,24 @@ class CritterCritter extends Level(PolymerElement) {
                 value: 3000
             },
 
-            _backup: {
-                type: Object,
-                value: {}
-            },
-
-            _numberOfStarts: {
-                type: Number,
-                value: 0
-            },
-
-            _paused: {
+            _detached: {
                 type: Boolean,
                 value: false
             }
         };
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-
-        afterNextRender(this, () => {
-            // this.addEventListener('position-changed', this._changePosition);
-            this.notifyPath("position", this.position.y);
-            this.notifyPath("position", this.position.x);
-            this.$.critter.addEventListener('mouseover', this._onHover.bind(this));
-            this.$.critter.addEventListener('mouseout', this._onHoverOut.bind(this));
-            this._globalData = window.Core.CritterLevelData;
-            this._timeoutManager = window.Core.timeouts;
-        });
+    detach() {
+        this._detached = true;
     }
 
     /** starts the animation of the critter **/
     startAnimation() {
-        if (this._numberOfStarts === 0) {
-            this.animate = true;
-            this._saveInitialData();
-        }
-        this._numberOfStarts += 1;
-        this.path = this._computePath();
         this.position = this.path.shift();
         this.$.critter_container.style.transitionDuration = "3s";
-        this._timeoutManager.add(() => {
-            this.init();
-            this._doStep(this._numberOfStarts);
-            this._timeoutManager.add(() => {
+        setTimeout(() => {
+            this._doStep();
+            setTimeout(() => {
                 this.$.critter_container.style.visibility = "visible";
             }, this._interval * 0.5);
         }, 100);
@@ -432,9 +326,6 @@ class CritterCritter extends Level(PolymerElement) {
 
     /** perform the next Step **/
     _doStep(start, last = false) {
-        if (start !== this._numberOfStarts || !this.animate) {
-            return;
-        }
 
         let temp = this.position;
         this.position = this.path.shift();
@@ -450,33 +341,23 @@ class CritterCritter extends Level(PolymerElement) {
             this.direction = "north";
         }
 
-        //runs CUT
-        this._timeoutManager.add(() => {
-            this.cut();
-            this._updateTooltip();
-        }, this._interval * 0.5);
-
-
-        //runs tests
-        this._timeoutManager.add(() => {
-            this._doElements();
-        }, this._interval * 0.7);
-
         if (this.path.length > 1) {
-            this._timeoutManager.add(() => {
+            setTimeout(() => {
                 this._doStep(start);
             }, this._interval);
         } else if (!last) {
-            this._timeoutManager.add(() => {
+            setTimeout(() => {
                 this._doStep(start, true);
             }, this._interval);
         } else {
-            this._timeoutManager.add(() => {
-                this.dispatchEvent(new CustomEvent('_critterFinished', {
-                    detail: {human: this.human},
-                    bubbles: true,
-                    composed: true
-                }));
+            setTimeout(() => {
+                if(!this._detached) {
+                    this.dispatchEvent(new CustomEvent('_critterFinished', {
+                        detail: {human: this.human},
+                        bubbles: true,
+                        composed: true
+                    }));
+                }
                 this.$.critter_container.style.display = "none";
             }, this._interval * 0.5);
         }
@@ -490,140 +371,10 @@ class CritterCritter extends Level(PolymerElement) {
         }
     }
 
-    /** computes a path to the tower **/
-    _computePath() {
-        let source = this.position = (this.position && this.position.x !== -1 && this.position !== -1 ? this.position : this._globalData.spawn);
-        return this.findPath(source);
-    }
-
-    /** computes the value for animating critters **/
-    _isAnimated(animate) {
-        return (animate ? "critter-move" : "critter-stay");
-    }
-
     /** computes the string value for weather human or critter **/
     _isHuman(human) {
         return (human ? "human" : "critter");
     }
-
-    /** computes the string value for weather speedy or not **/
-    _isSpeedy(speedy) {
-        if (speedy) {
-            this._interval = 1500;
-            return "speedy";
-        }
-        return "";
-    }
-
-    /** stores the initial critterData **/
-    _saveInitialData() {
-        this._backup.color = this.color;
-        this._backup.size = this.size;
-        this._backup.canWalkOnLava = this.canWalkOnLava;
-        this._backup.canWalkOnSnow = this.canWalkOnSnow;
-        this._backup.canWalkOnWater = this.canWalkOnWater;
-    }
-
-    /** resets the initial critterData **/
-    _resetCritter() {
-        this.color = this._backup.color;
-        this.size = this._backup.size;
-        this.canWalkOnLava = this._backup.canWalkOnLava;
-        this.canWalkOnSnow = this._backup.canWalkOnSnow;
-        this.canWalkOnWater = this._backup.canWalkOnWater;
-    }
-
-    _doElements() {
-        this._doMines();
-    }
-
-    _doMines() {
-        let mine;
-        if(mine = this._globalData.mines[this.position.x][this.position.y]){
-            mine.code.bind(this)(this.position.x,this.position.y);
-        }
-    }
-
-
-    _killCritter(x, y) {
-        if (!this.animate) {
-            return;
-        }
-        this.dispatchEvent(new CustomEvent('_critterKilled', {
-            detail: {x: x, y: y, human: this.human},
-            bubbles: true,
-            composed: true
-        }));
-        this._timeoutManager.add(() => {
-            this.animate = false;
-            this.updateStyles({
-                '--critter-display': 'none'
-            });
-        }, this._interval * 0.3);
-    }
-
-    _onHover() {
-        this.updateStyles({
-            '--tooltip-display': 'block'
-        });
-    }
-
-    _onHoverOut() {
-        this.updateStyles({
-            '--tooltip-display': 'none'
-        });
-    }
-
-    _displayVariables(newValue) {
-        let str = newValue.toString();
-        let i = 0;
-        while ((i = str.indexOf("variable_", i)) !== -1) {
-            let temp = str.substring(i + 9, i = str.indexOf(")", i));
-            if (this.variables[temp] === undefined) {
-                let span = document.createElement("span");
-                span.innerHTML = temp + ": " + this["variable_" + temp];
-                this.$.tooltip.append(span);
-                this.$.tooltip.append(document.createElement("br"));
-                let temp2 = Object.assign({}, this.variables);
-                temp2[temp] = span;
-                this.variables = temp2;
-            }
-        }
-    }
-
-    _updateTooltip() {
-        if (this.variables !== {}) {
-            let temp = Object.assign({}, this.variables);
-            for (let prop in temp) {
-                // skip loop if the property is from prototype
-                if (!temp.hasOwnProperty(prop)) continue;
-
-                temp[prop].innerHTML = prop + ": " + this["variable_" + prop];
-            }
-            this.variables = temp;
-        }
-    }
-
-    pause() {
-        if(this.animate) {
-            this.animate = false;
-            this.paused = true;
-            var computedStyle = window.getComputedStyle(this.$.critter_container);
-            this.$.critter_container.style.top = computedStyle.getPropertyValue('top');
-            this.$.critter_container.style.left = computedStyle.getPropertyValue('left');
-            this.$.critter_container.style.transitionDuration = null;
-        }
-    }
-
-    resume() {
-        if(this.paused) {
-            this.animate = true;
-            this.paused = false;
-            this.$.critter_container.style.transitionDuration = "3s";
-            this.$.critter_container.style.top = (this.position.y * 40) + "px";
-            this.$.critter_container.style.left = (this.position.x * 40) + "px";
-        }
-    }
 }
 
-window.customElements.define(CritterCritter.is, CritterCritter);
+window.customElements.define(CritterSimpleCritter.is, CritterSimpleCritter);

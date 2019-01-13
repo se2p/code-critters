@@ -194,7 +194,6 @@ class CritterLevelCreator extends Level(PolymerElement) {
             this._globalData = window.Core.CritterLevelData;
             this.$.save_button.addEventListener("click", this._saveLevel.bind(this));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
-            this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
             this.addEventListener("valueChanged", (event) => this._validateLevelName(event));
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
             this._initLevel();
@@ -303,10 +302,11 @@ class CritterLevelCreator extends Level(PolymerElement) {
             spawn: this._globalData.spawn,
             numberOfCritters: this._globalData.numberOfCritters,
             numberOfHumans: this._globalData.numberOfHumans,
-            cut: this.$.blockly_CUT.getXML(),
-            init: this.$.blockly_init.getXML(),
-            test: this.$.blockly_test.getXML()
-        };
+            cut: this.$.blockly_CUT.getJavaScript(),
+            init: this.$.blockly_init.getJavaScript(),
+            test: this.$.blockly_test.getXML(),
+            xml: this.getXmlWithHeads(),
+    };
 
         req.addEventListener('response', e => {
             let data = e.detail;
@@ -327,6 +327,31 @@ class CritterLevelCreator extends Level(PolymerElement) {
         return req;
     }
 
+    getXmlWithHeads(){
+        let xml = '<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n';
+        let initXML;
+        let cutXML;
+        if(initXML = this.$.blockly_init.getXML()){
+            xml += '<block type="cut_head" id="init_head" x="42" y="105">\n' +
+                '<statement name="Content">\n';
+            let div = document.createElement('div');
+            div.innerHTML = initXML;
+            xml += div.firstChild.innerHTML;
+            xml += '</statement>\n' +
+                '</block>\n';
+        }if(cutXML = this.$.blockly_CUT.getXML()){
+            xml += '<block type="init_head" id="cut_head" x="450" y="105">\n' +
+                '<statement name="Content">\n';
+            let div = document.createElement('div');
+            div.innerHTML = cutXML;
+            xml += div.firstChild.innerHTML;
+            xml += '</statement>\n' +
+                '</block>\n';
+        }
+        console.log(xml);
+        return  xml + '</xml>';
+    }
+
     /** computes the heights of critter-board**/
     _computeBoardHeight(height, size) {
         return height * size;
@@ -337,19 +362,6 @@ class CritterLevelCreator extends Level(PolymerElement) {
         let detail = event.detail;
         this._hoverX = detail.x + 1;
         this._hoverY = this._globalData.width - detail.y;
-    }
-
-    /** handels the clickField event and creates the element **/
-    _onFieldClicked(event) {
-        let detail = event.detail;
-        let code = this.$.blockly_test.getJavaScript();
-        if (code === '') {
-            //TODO warning
-            return;
-        }
-        detail.code = new Function('x', 'y', code);
-        detail.xml = this.$.blockly_test.getXML();
-        this.mines.push(detail);
     }
 
     _onTabChanged(event) {
