@@ -30,7 +30,8 @@ class CritterGameboardField extends PolymerElement {
                 float: left;
             }
 
-            #field::before {
+            #field::before,
+            .mine{
                 content: " ";
                 width: 40px;
                 height: 40px;
@@ -38,6 +39,10 @@ class CritterGameboardField extends PolymerElement {
                 position: relative;
                 bottom: 0;
                 right: 0;
+            }
+            
+            .mine{
+                position:absolute;
             }
 
             .no_background {
@@ -896,7 +901,7 @@ class CritterGameboardField extends PolymerElement {
                 z-index: 3;
             }
 
-            .mine::after {
+            .mine {
                 content: " ";
                 background-image: url(image/mine.png);
                 background-position: 0 0;
@@ -911,7 +916,7 @@ class CritterGameboardField extends PolymerElement {
                 pointer-events: none;
             }
 
-            .mine.explosion::after {
+            .mine.explosion{
                 animation-name: explode;
                 animation-duration: 1s;
                 animation-timing-function: steps(11);
@@ -939,7 +944,10 @@ class CritterGameboardField extends PolymerElement {
             }
 
         </style>
-        <div id="field" class$="[[class]]"></div>
+        <div id="field" class$="[[class]]">
+            <div id="mineField" class$="[[_mineString]]">
+            </div>
+        </div>
     `;
     }
 
@@ -970,14 +978,28 @@ class CritterGameboardField extends PolymerElement {
             class: {
                 type: String,
                 value: ''
+            },
+
+            mine: {
+                type: Boolean,
+                value: false
+            },
+
+            _mineString: {
+                computed: "_isMine(mine)"
             }
         };
     }
 
+    /** computes the string value for weather ther is a mine or not **/
+    _isMine(mine) {
+        return (mine ? "mine" : "");
+    }
+
     playExplosion() {
-        this.$.field.classList.add("explosion");
+        this.$.mineField.classList.add("explosion");
         window.Core.timeouts.add(() => {
-            this.$.field.classList.remove("explosion");
+            this.$.mineField.classList.remove("explosion");
         }, 1000);
     }
 

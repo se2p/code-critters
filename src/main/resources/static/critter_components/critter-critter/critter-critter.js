@@ -47,32 +47,24 @@ class CritterCritter extends Level(PolymerElement) {
                 display: var(--tooltip-display);
             }
 
-            #critter:before {
-                z-index: -1;
-            }
 
             #critter,
-            #critter::before,
-            #critter::after{
+            #ccritter,
+            #hcritter{
                 width: 40px;
                 height: 40px;
                 animation-duration: 1s;
                 animation-timing-function: steps(9);
                 animation-iteration-count: infinite;
                 animation-direction: reverse;
-            }
-
-            #critter::before,
-            #critter::after{
-                content: " ";
                 position: absolute;
             }
 
-            .critter::before {
+            .critter {
                 background-image: url(image/critter.png)
             }
 
-            .human::before {
+            .human {
                 background-image: url(image/human.png)
             }
 
@@ -112,141 +104,133 @@ class CritterCritter extends Level(PolymerElement) {
                 background-image: url(image/cloth_red.png);
             }
 
-            .hair-red::after {
+            .hair-red {
                 background-image: url(image/hair_red.png);
             }
 
-            .hair-black::after {
+            .hair-black {
                 background-image: url(image/hair_black.png);
             }
 
-            .hair-blond::after {
+            .hair-blond {
                 background-image: url(image/hair_blond.png);
             }
 
-            .hair-brown::after {
+            .hair-brown {
                 background-image: url(image/hair_brown.png);
             }
 
-            .hair-gray::after {
+            .hair-gray {
                 background-image: url(image/hair_gray.png);
             }
 
-            .critter-north,
-            .critter-north::after,
-            .critter-north::before{
+            .critter-north{
                 animation-name: walk_north;
                 -webkit-animation: walk_north 1s steps(9) infinite reverse;
                 animation: walk_north 1s steps(9) infinite reverse;
             }
 
-            .critter-east,
-            .critter-east::after,
-            .critter-east::before {
-                nimation-name: walk_east;
+            .critter-east{
+                animation-name: walk_east;
                 background-position: 0 40px;
                 -webkit-animation: walk_east 1s steps(9) infinite reverse;
                 animation: walk_east 1s steps(9) infinite reverse;
             }
 
-            .critter-west,
-            .critter-west::after,
-            .critter-west::before {
+            .critter-west{
                 animation-name: walk_west;
                 background-position: 0 120px;
                 -webkit-animation: walk_west 1s steps(9) infinite reverse;
                 animation: walk_west 1s steps(9) infinite reverse;
             }
 
-            .critter-south,
-            .critter-south::after,
-            .critter-south::before {
+            .critter-south{
                 animation-name: walk_south;
                 background-position: 0 80px;
                 -webkit-animation: walk_south 1s steps(9) infinite reverse;
                 animation: walk_south 1s steps(9) infinite reverse;
             }
 
-            .critter-stay,
-             .critter-stay::after,
-             .critter-stay::before{
+            .critter-stay{
                 animation: none !important;
                 -webkit-animation: none !important;
             }
 
-            #critter.speedy{
+            #critter.speedy,
+            #hcritter.speedy,
+            #ccritter.speedy{
                 -webkit-animation-duration: 0.5s !important;
                 animation-duration: 0.5s !important;
             }
 
             @keyframes walk_east {
-                0% {
+                 from {
                     background-position: 0 40px;
                 }
-                100% {
+                to {
                     background-position: 374px 40px;
                 }
             }
 
             @keyframes walk_north {
-                0% {
+                from {
                     background-position: 0 0;
                 }
-                100% {
+                to {
                     background-position: 374px 0;
                 }
             }
 
             @keyframes walk_south {
-                0% {
+                from {
                     background-position: 0 80px;
                 }
-                100% {
+                to {
                     background-position: 374px 80px;
                 }
             }
 
             @keyframes walk_west {
-                0% {
+                from {
                     background-position: 0 120px;
                 }
-                100% {
+                to {
                     background-position: 374px 120px;
                 }
             }
 
             @-webkit-keyframes walk_east {
-                0% {
+                from {
                     background-position: 0 40px;
                 }
-                100% {
+                to {
                     background-position: 374px 40px;
                 }
             }
 
             @-webkit-keyframes walk_north {
-                0% {
+                from {
                     background-position: 0 0;
                 }
-                100% {
+                to {
                     background-position: 374px 0;
                 }
             }
 
             @-webkit-keyframes walk_south {
-                0% {
+                from {
                     background-position: 0 80px;
                 }
-                100% {
+                to {
                     background-position: 374px 80px;
                 }
             }
 
             @-webkit-keyframes walk_west {
-                0% {
+                from {
                     background-position: 0 120px;
                 }
-                100% {
+                to {
                     background-position: 374px 120px;
                 }
             }
@@ -254,9 +238,16 @@ class CritterCritter extends Level(PolymerElement) {
         </style>
         <div id="critter_container" class$="{{_speedyString}}">
             <div id="critter"
-                 class$="critter-{{direction}} critter-{{color}} hair-{{hair}} critter-size-{{size}} {{_humanString}}
+                 class$="critter-{{direction}} critter-size-{{size}} {{_humanString}}
                  {{_speedyString}} {{_playAnimation}}">
-
+            </div>
+            <div id="ccritter"
+                 class$="critter-{{direction}} critter-{{color}} critter-size-{{size}}
+                 {{_speedyString}} {{_playAnimation}}">
+            </div>
+            <div id="hcritter"
+                 class$="critter-{{direction}} hair-{{hair}} critter-size-{{size}}
+                 {{_speedyString}} {{_playAnimation}}">
             </div>
             <div id="tooltip">
                 <span><h3>Attributes:</h3></span>

@@ -34,33 +34,26 @@ class CritterSimpleCritter extends PolymerElement {
                 z-index: 5;
                 display:  var(--critter-display);
             }
-
-            #critter:before {
-                z-index: -1;
-            }
+            
 
             #critter,
-            #critter::before,
-            #critter::after{
+            #ccritter,
+            #hcritter{
                 width: 40px;
                 height: 40px;
                 animation-duration: 1s;
                 animation-timing-function: steps(9);
                 animation-iteration-count: infinite;
                 animation-direction: reverse;
-            }
-
-            #critter::before,
-            #critter::after{
-                content: " ";
                 position: absolute;
             }
 
-            .critter::before {
+
+            .critter {
                 background-image: url(image/critter.png)
             }
 
-            .human::before {
+            .human {
                 background-image: url(image/human.png)
             }
 
@@ -100,55 +93,47 @@ class CritterSimpleCritter extends PolymerElement {
                 background-image: url(image/cloth_red.png);
             }
 
-            .hair-red::after {
+            .hair-red {
                 background-image: url(image/hair_red.png);
             }
 
-            .hair-black::after {
+            .hair-black {
                 background-image: url(image/hair_black.png);
             }
 
-            .hair-blond::after {
+            .hair-blond {
                 background-image: url(image/hair_blond.png);
             }
 
-            .hair-brown::after {
+            .hair-brown {
                 background-image: url(image/hair_brown.png);
             }
 
-            .hair-gray::after {
+            .hair-gray {
                 background-image: url(image/hair_gray.png);
             }
 
-            .critter-north,
-            .critter-north::after,
-            .critter-north::before{
+            .critter-north{
                 animation-name: walk_north;
                 -webkit-animation: walk_north 1s steps(9) infinite reverse;
                 animation: walk_north 1s steps(9) infinite reverse;
             }
 
-            .critter-east,
-            .critter-east::after,
-            .critter-east::before {
-                nimation-name: walk_east;
+            .critter-east {
+                animation-name: walk_east;
                 background-position: 0 40px;
                 -webkit-animation: walk_east 1s steps(9) infinite reverse;
                 animation: walk_east 1s steps(9) infinite reverse;
             }
 
-            .critter-west,
-            .critter-west::after,
-            .critter-west::before {
+            .critter-west {
                 animation-name: walk_west;
                 background-position: 0 120px;
                 -webkit-animation: walk_west 1s steps(9) infinite reverse;
                 animation: walk_west 1s steps(9) infinite reverse;
             }
 
-            .critter-south,
-            .critter-south::after,
-            .critter-south::before {
+            .critter-south{
                 animation-name: walk_south;
                 background-position: 0 80px;
                 -webkit-animation: walk_south 1s steps(9) infinite reverse;
@@ -232,6 +217,22 @@ class CritterSimpleCritter extends PolymerElement {
             <div id="critter"
                  class$="critter-{{direction}} critter-{{color}} hair-{{hair}} critter-size-{{size}} {{_humanString}}
                  critter-move">
+                  <div id="icritter"
+                         class$="icritter-{{direction}} icritter-{{color}} ihair-{{hair}} icritter-size-{{size}} i{{_humanString}}
+                         critter-move">
+                    </div>
+            </div>
+            <div id="critter"
+                 class$="critter-{{direction}} critter-size-{{size}} {{_humanString}}
+                 critter-move">
+            </div>
+            <div id="ccritter"
+                 class$="critter-{{direction}} critter-{{color}} critter-size-{{size}}
+                 critter-move">
+            </div>
+            <div id="hcritter"
+                 class$="critter-{{direction}} hair-{{hair}} critter-size-{{size}}
+                 {critter-move">
             </div>
         </div>
         `;

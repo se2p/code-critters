@@ -32,7 +32,9 @@ be loaded. This needs to be done in the `resources/static` and you can either us
 npm install
 ```
 or yarn:
-- Apache Maven
+```bash
+yarn install
+```
 
 #### Configuration
 

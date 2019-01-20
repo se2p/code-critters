@@ -173,14 +173,12 @@ class CritterGameboard extends Level(PolymerElement) {
         let position = e.detail.position;
         let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
 
-        if(!mineField.classList.contains("mine")){
-            mineField.classList.add("mine");
-        }
+        mineField.mine = true;
     }
 
     removeMine(position) {
         let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
-        mineField.classList.remove("mine");
+        mineField.mine = false;
 
     }
 

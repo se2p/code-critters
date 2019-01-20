@@ -190,8 +190,8 @@ class CritterGame extends Level(PolymerElement) {
         <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
         <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
         <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-        <div id="finished_container">{{_finishedHumans}} of&nbsp;<span id="humansNumber"></span>&nbsp;humans has finished</div>
-        <div id="killed_container">{{_killedCritters}} of&nbsp;<span id="critterNumber"></span> &nbsp;critters has been detected</div>
+        <div id="finished_container">{{_finishedHumans}} of&nbsp;<span id="humansNumber"></span>&nbsp;humans have finished</div>
+        <div id="killed_container">{{_killedCritters}} of&nbsp;<span id="critterNumber"></span> &nbsp;critters have been detected</div>
         `;
     }
 
