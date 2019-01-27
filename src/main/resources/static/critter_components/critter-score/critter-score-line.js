@@ -98,6 +98,7 @@ class CritterScoreLine extends PolymerElement {
     }
     count() {
         this._show = true;
+        this._shownPercentage = this.percentage;
 
         return new Promise(resolve => {
             let interval = setInterval(() => {
@@ -119,6 +120,7 @@ class CritterScoreLine extends PolymerElement {
     _onPercentageChange(){
         if(!this.percentage || this.percentage < 0) {
             this.$.percentage_cell.style.visability = "hidden";
+            this._renderPercentageText();
         }
     }
 

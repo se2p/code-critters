@@ -93,6 +93,11 @@ class CritterDataStore extends PolymerElement {
                 observer: '_xmlCodeChanged'
             },
 
+            freeSeconds: {
+                type: Number,
+                value: 10
+            },
+
             toolbox: {
                 type: String,
                 value: '',

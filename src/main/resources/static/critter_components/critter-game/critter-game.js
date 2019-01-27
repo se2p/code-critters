@@ -272,7 +272,18 @@ class CritterGame extends Level(PolymerElement) {
             _paused: {
                 type: Boolean,
                 value: true
+            },
+
+            _startTime: {
+                type: Number,
+                value: 0
+            },
+
+            _totalTime: {
+                type: Number,
+                value: 0
             }
+
         };
     }
 
@@ -299,6 +310,8 @@ class CritterGame extends Level(PolymerElement) {
             this.addEventListener("_critterNumberChanged", (event) => this._onCritterNumberChanged(event));
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
+
+            this._startTime = Date.now();
         });
     }
 
@@ -341,6 +354,8 @@ class CritterGame extends Level(PolymerElement) {
         this.dispatchEvent(new CustomEvent('_crittersStarted', {detail: {}, bubbles: true, composed: true}));
 
         if (this._paused) {
+            this._totalTime += (Date.now() -  this._startTime);
+
             this._paused = false;
             this.$.send_button.shape = "pause";
             if(!this._crittersSent) {
@@ -356,6 +371,7 @@ class CritterGame extends Level(PolymerElement) {
                 });
             }
         } else {
+            this._startTime = Date.now();
             this._timeoutManager.pauseAll();
             this._critterList.forEach(critter => {
                 critter.pause();
@@ -504,7 +520,7 @@ class CritterGame extends Level(PolymerElement) {
                 dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%").then(() => {
                     dialogScore.insertData("finished_critters_line", finishedCritters * -100, finishedCritterPercentage, "%").then(() => {
                         dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines()).then(() => {
-                            dialogScore.insertData("time_line", 0, 0);
+                            dialogScore.insertData("time_line", (Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, this._globalData.freeSeconds, 's');
                         })
                     })
                 })
