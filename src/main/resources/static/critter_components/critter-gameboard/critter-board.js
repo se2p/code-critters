@@ -108,6 +108,11 @@ class CritterGameboard extends Level(PolymerElement) {
 
             selectedElement: {
                 type: String
+            },
+
+            _audioList: {
+                type: Array,
+                value: []
             }
         };
     }
@@ -120,6 +125,7 @@ class CritterGameboard extends Level(PolymerElement) {
             this.addEventListener("_levelChanged", this.renderBoard);
             if (rootNode) {
                 rootNode.addEventListener("_critterKilled", (event) => this._playExplosion(event));
+                rootNode.addEventListener("_crittersStarted", this._startAudio.bind(this));
                 rootNode.addEventListener("_levelSizeChanged", this.renderGrid.bind(this));
                 rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
                 rootNode.addEventListener("_mineSet", (event) => this.setMine(event));
@@ -1046,9 +1052,19 @@ class CritterGameboard extends Level(PolymerElement) {
         }
     }
 
+    _startAudio(){
+        for(let i = 0; i < this._globalData.numberOfHumans +
+                            this._globalData.numberOfCritters; ++i) {
+            let audio = document.createElement("audio");
+            audio.src = this.importPath + "/sounds/magic.mp3";
+            audio.play();
+            audio.pause();
+            this._audioList.push(audio);
+        }
+    }
+
     _playExplosion(event) {
-        let audio = document.createElement("audio");
-        audio.src = this.importPath + "/sounds/magic.mp3";
+        let audio = this._audioList.pop();
         audio.play();
         let detail = event.detail;
         let field = this.shadowRoot.querySelector('#field-' + detail.x + "-" + detail.y);

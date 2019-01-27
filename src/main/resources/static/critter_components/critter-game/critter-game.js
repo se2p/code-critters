@@ -338,6 +338,8 @@ class CritterGame extends Level(PolymerElement) {
             return true;
         };
 
+        this.dispatchEvent(new CustomEvent('_crittersStarted', {detail: {}, bubbles: true, composed: true}));
+
         if (this._paused) {
             this._paused = false;
             this.$.send_button.shape = "pause";
