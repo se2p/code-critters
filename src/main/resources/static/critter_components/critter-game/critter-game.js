@@ -90,6 +90,7 @@ class CritterGame extends Level(PolymerElement) {
                 align-items: center;
                 display: flex;
                 width: 165px;
+                visibility: hidden;
             }
             #killed_container{
                 float: left;
@@ -301,6 +302,8 @@ class CritterGame extends Level(PolymerElement) {
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
             this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
             this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
+            this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
+            this.$.board_container.addEventListener("mouseout", () => this._renderCoordinates(false));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
@@ -456,6 +459,10 @@ class CritterGame extends Level(PolymerElement) {
 
     _compoutePopupHeight(height, size){
         return ((height * 0.5) * size) - 29;
+    }
+
+    _renderCoordinates(render) {
+        this.$.coordinate_container.style.visibility = (render ? "visible" : "hidden");
     }
 
     /** handels the hover event and displays the coordinates **/
