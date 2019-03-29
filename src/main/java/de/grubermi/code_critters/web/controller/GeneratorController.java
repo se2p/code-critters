@@ -10,9 +10,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -59,6 +61,14 @@ public class GeneratorController {
 
     /**
      * Creates a new level
+     */
+    @PostMapping(path = "/level/image")
+    public void createLevel (@RequestParam("file") MultipartFile image) {
+       levelService.storeImage(image);
+    }
+
+    /**
+     * Creates a new image
      */
     @PostMapping(path = "/level/create")
     public void createLevel (@RequestBody LevelDTO dto, HttpServletResponse response) {

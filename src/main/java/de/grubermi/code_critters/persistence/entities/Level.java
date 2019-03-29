@@ -40,9 +40,13 @@ public class Level {
     @NotEmpty
     @Type(type = "de.grubermi.code_critters.persistence.customDataTypes.CoordinateDataType")
     private HashMap<String, Integer> spawn;
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "row.id")
+    private Row row;
 
 
-    public Level(String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
+    public Level(Row row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
+        this.row = row;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
         this.numberOfHumans = numberOfHumans;
@@ -146,5 +150,13 @@ public class Level {
 
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    public Row getRow() {
+        return row;
+    }
+
+    public void setRow(Row row) {
+        this.row = row;
     }
 }

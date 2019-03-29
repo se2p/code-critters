@@ -1,9 +1,7 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
-import './critter-level-row.js';
-import '../critter-data-store/critter-data-store.js';
-import {Level} from '../critter-level-mixin/critter-level-mixin.js';
-
+import '../critter-button/critter-button.js';
+import '../critter-selector/critter-selector.js';
 
 import '/lib/@polymer/iron-ajax/iron-ajax.js';
 
@@ -20,7 +18,7 @@ A Simple Button
 @demo
 */
 
-class CritterLevelSelector extends Level(PolymerElement) {
+class CritterLevelSelectorSimple extends PolymerElement {
     static get template() {
         return html`
             <style>
@@ -33,15 +31,14 @@ class CritterLevelSelector extends Level(PolymerElement) {
                 min-height: 40px;
             }
             </style>
-            
-            <critter-data-store></critter-data-store>
-            <div id="preview_container">
-            </div>
+            <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>
+            <br>
+            <critter-button id="load_button">Load Level</critter-button>
     `;
     }
 
     static get is() {
-        return 'critter-level-selector';
+        return 'critter-level-selector-simple';
     }
 
     static get properties() {
@@ -60,9 +57,8 @@ class CritterLevelSelector extends Level(PolymerElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this._globalData = window.Core.CritterLevelData;
-
         afterNextRender(this, function () {
+            this.$.load_button.addEventListener("click", this._loadLevel.bind(this));
             this._initNames();
         });
     }
@@ -70,22 +66,15 @@ class CritterLevelSelector extends Level(PolymerElement) {
     /** gets all existing level names **/
     _initNames() {
         let req = document.createElement('iron-ajax');
-        req.url = "level/levels";
+        req.url = "/generator/names";
         req.method = "GET";
         req.handleAs = 'json';
         req.contentType = 'application/json';
         req.bubbles = true;
         req.rejectWithRequest = true;
-        req.params = {cookie: this._globalData.cookie};
 
         req.addEventListener('response', e => {
-            this.$.preview_container.innerHtml = "";
-            e.detail.__data.response.forEach((rowData) => {
-                let row = document.createElement("critter-level-row");
-                row.name = rowData.name;
-                row.levels = rowData.levels;
-                this.$.preview_container.append(row);
-            })
+            this.levels = e.detail.__data.response;
         });
 
         let genRequest = req.generateRequest();
@@ -98,4 +87,4 @@ class CritterLevelSelector extends Level(PolymerElement) {
     }
 }
 
-window.customElements.define(CritterLevelSelector.is, CritterLevelSelector);
+window.customElements.define(CritterLevelSelectorSimple.is, CritterLevelSelectorSimple);

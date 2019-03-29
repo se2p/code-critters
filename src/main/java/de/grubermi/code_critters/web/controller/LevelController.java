@@ -34,118 +34,12 @@ public class LevelController {
     public LevelController(LevelService levelService) {
         this.levelService = levelService;
     }
-
-    /**
-     * Returns the CUT
-     */
-    @Deprecated
-    @GetMapping(path = "/CUT")
-    public String getCUT(@RequestParam String level, HttpServletResponse response) {
-        /*try {
-            // get your file as InputStream
-            InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("data/testlevel.lvl");
-            // copy it to response's OutputStream
-            IOUtils.copy(is, response.getOutputStream());
-            response.flushBuffer();
-        } catch (IOException ex) {
-            logger.info("Error writing file to output stream. Filename was '{}'", level, ex);
-            throw new RuntimeException("IOError writing file to output stream");
-        }*/
-        logger.warn("A deprecated method was called");
-        return levelService.getCUT(level);
-    }
-
-    /**
-     * Returns the init code
-     */
-    @Deprecated
-    @GetMapping(path = "/init")
-    public String getInit(@RequestParam String level, HttpServletResponse response) {
-        /*try {
-            // get your file as InputStream
-            InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("data/testlevel.lvl");
-            // copy it to response's OutputStream
-            IOUtils.copy(is, response.getOutputStream());
-            response.flushBuffer();
-        } catch (IOException ex) {
-            logger.info("Error writing file to output stream. Filename was '{}'", level, ex);
-            throw new RuntimeException("IOError writing file to output stream");
-        }*/
-        logger.warn("A deprecated method was called");
-        return levelService.getInit(level);
-    }
-
-    /**
-     * Returns the test
-     */
-    @Deprecated
-    @GetMapping(path = "/test")
-    public HashMap getTest(@RequestParam String level, HttpServletResponse response) {
-        String toolbox = "<category name=\"Attributes\" colour=\"330\">\n" +
-                "        <block type=\"properties\"  x=\"663\" y=\"138\">\n" +
-                "        </block>\n" +
-                "    </category>" +
-                "  <category name=\"Colour\" colour=\"20\">\n" +
-                "       <label text=\"Body Colours\"></label>\n" +
-                "        <block type=\"colour_picker\">\n" +
-                "            <field name=\"COLOUR\">#ff0000</field>\n" +
-                "        </block>\n" +
-                "        <label text=\"Hair Colours\"></label>\n" +
-                "        <block type=\"custom_colour_picker\">\n" +
-                "            <field name=\"COLOUR\">#f0e527</field>\n" +
-                "        </block>" +
-                "    </category>" +
-                "<category name=\"Assert\" colour=\"120\">\n" +
-                "        <block type=\"assert\"  x=\"663\" y=\"138\">\n" +
-                "        </block>\n" +
-                "    </category>\n" +
-                " <category name=\"Math\" colour=\"230\">\n" +
-                "        <block type=\"math_number\" id=\"Eem[Vxht-;;+ILj@@lxp\" x=\"263\" y=\"113\">\n" +
-                "            <field name=\"NUM\">1</field>\n" +
-                "        </block>\n" +
-                "        <block type=\"math_number_property\" id=\"F5fxuP.thK*x0d;HVreV\" x=\"287\" y=\"113\">\n" +
-                "            <mutation divisor_input=\"false\"></mutation>\n" +
-                "            <field name=\"PROPERTY\">EVEN</field>\n" +
-                "            <value name=\"NUMBER_TO_CHECK\">\n" +
-                "            </value>\n" +
-                "        </block>\n" +
-                "        <block type=\"math_arithmetic\" id=\"M]Qfng[KcxW;Qdz%;CdX\" x=\"287\" y=\"163\">\n" +
-                "            <field name=\"OP\">ADD</field>\n" +
-                "            <value name=\"A\">\n" +
-                "            </value>\n" +
-                "            <value name=\"B\">\n" +
-                "            </value>\n" +
-                "        </block>\n" +
-                "    </category>\n" +
-                "<category name=\"Variables\" colour=\"270\">\n" +
-                "        <block type=\"variable\"  x=\"663\" y=\"138\">\n" +
-                "        </block>\n" +
-                "    </category>" ;
-       /* try {
-            // get your file as InputStream
-            InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("data/testlevel.lvl");
-
-            code = IOUtils.toString(is, "UTF-8");
-        } catch (IOException ex) {
-            logger.info("Error writing file to output stream. Filename was '{}'", level, ex);
-            throw new RuntimeException("IOError writing file to output stream");
-        }*/
-
-        logger.warn("A deprecated method was called");
-
-        HashMap map = new HashMap<String, Object>();
-        map.put("code", levelService.getTest(level));
-        map.put("toolbox", toolbox);
-        return map;
-    }
-
-    /**
+        /**
      * Returns the entire level data
      */
     @GetMapping(path = "/get")
     public HashMap getLevelData(@RequestParam String level, HttpServletResponse response) {
-                LevelDTO dto;
-        dto = levelService.getLevel(level);
+        LevelDTO dto = levelService.getLevel(level);
         String toolbox;
         try {
             // get your file as InputStream
@@ -183,5 +77,9 @@ public class LevelController {
         return levelService.getMutants(level);
     }
 
+    @GetMapping(path = "/levels")
+    public List getLevels(@RequestParam String cookie) {
+        return levelService.getLevelsGrouped(cookie);
+    }
 
 }

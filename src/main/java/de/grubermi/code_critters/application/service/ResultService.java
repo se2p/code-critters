@@ -22,7 +22,7 @@ public class ResultService {
     }
 
     public void createResult(ResultDTO resultDTO) {
-        Result result = new Result(resultDTO.getScore(), resultDTO.getCookie(), resultDTO.getLevel());
+        Result result = new Result(resultDTO.getScore(), resultDTO.getCookie(), resultDTO.getLevel(), resultDTO.getStars());
         result = resultRepository.save(result);
         for (MineDTO mineDTO: resultDTO.getMines()) {
             Mine mine = new Mine(mineDTO.getX(), mineDTO.getY(), mineDTO.getCode(), mineDTO.getXml(), result);

@@ -102,6 +102,11 @@ class CritterDataStore extends PolymerElement {
                 type: String,
                 value: '',
                 observer: '_toolboxChanged'
+            },
+
+            cookie: {
+                type: String,
+                value: ''
             }
         }
     }
@@ -117,6 +122,7 @@ class CritterDataStore extends PolymerElement {
     connectedCallback() {
         super.connectedCallback();
         window.Core.CritterLevelData = this;
+        this.cookie = this.getCookie();
     }
 
     _dataChanged() {
@@ -197,6 +203,27 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_levelNameUpdated', {detail: {}, bubbles: true, composed: true}));
 
         return req;
+    }
+
+    setCookie(name, value) {
+        document.cookie = name + "=" + value + ";" + ";path=/";
+    }
+
+    getCookie() {
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf('id') == 0) {
+                return c.substring(3, c.length);
+            }
+        }
+        let cookie = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+        this.setCookie('id', cookie);
+        return cookie;
     }
 }
 
