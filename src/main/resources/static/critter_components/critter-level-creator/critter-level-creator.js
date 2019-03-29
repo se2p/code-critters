@@ -11,6 +11,7 @@ import '../critter-tab/critter-tab.js';
 import '../critter-element-selector/critter-element-selector.js';
 import '../critter-mutant-creator/critter-mutant-creator.js';
 import '../critter-input/critter-input.js';
+import '../critter-loading/critter-loading.js';
 
 import '/lib/@polymer/iron-ajax/iron-ajax.js';
 
@@ -58,7 +59,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
                     margin-right: 5%;
                 }
 
-                #save_button {
+                #save_button{
                     margin-left: 20px;
                     float: left;
                 }
@@ -92,7 +93,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
 
         <critter-data-store></critter-data-store>
 
-
+        <critter-loading id="loading"></critter-loading>
         <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
         <div class="tab-0 tab">
             <critter-gameboard id="gameboard"  selected-element="{{selectedElement}}" show-grid="false"></critter-gameboard>
@@ -238,6 +239,31 @@ class CritterLevelCreator extends Level(PolymerElement) {
         this.$.name_input.valid = !this._names.includes(event.detail.name);
     }
 
+    async _saveImg() {
+        let formData = new FormData();
+        formData.append("file", await this.$.gameboard.computeImg(), this.levelName + ".jpeg");
+
+        return new Promise( (resolve, reject) => {
+            let req = document.createElement('iron-ajax');
+            req.url = "/generator/level/image";
+            req.method = "post";
+            req.bubbles = true;
+            req.rejectWithRequest = true;
+            req.body = formData;
+
+            req.addEventListener('response', () => {
+                resolve();
+            });
+
+            req.addEventListener('error', () => {
+                reject();
+            });
+
+            let genRequest = req.generateRequest();
+            req.completes = genRequest.completes;
+        });
+    }
+
     /** saves the Level Data**/
     _saveLevel() {
         if (this.levelName === '') {
@@ -288,6 +314,8 @@ class CritterLevelCreator extends Level(PolymerElement) {
             return;
         }
 
+        this.$.loading.show();
+
         let req = document.createElement('iron-ajax');
         req.url = "/generator/level/create";
         req.method = "post";
@@ -306,11 +334,12 @@ class CritterLevelCreator extends Level(PolymerElement) {
             init: this.$.blockly_init.getJavaScript(),
             test: this.$.blockly_test.getXML(),
             xml: this.getXmlWithHeads(),
-    };
+        };
 
-        req.addEventListener('response', e => {
-            let data = e.detail;
+        req.addEventListener('response', async () => {
             this.$.mutant_creator.saveMutants(this.levelName);
+            await this._saveImg();
+            this.$.loading.hide();
         });
 
         req.addEventListener('error', e => {
@@ -319,6 +348,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
             toaster.msg = "Could not save level";
             this.shadowRoot.append(toaster);
             toaster.show(this._toasterTime);
+            this.$.loading.hide();
         });
 
         let genRequest = req.generateRequest();

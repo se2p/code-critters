@@ -10,8 +10,11 @@ import de.grubermi.code_critters.web.dto.LevelDTO;
 import de.grubermi.code_critters.web.dto.MutantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintViolationException;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -145,5 +148,16 @@ public class LevelService {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return init;
+    }
+    public void storeImage(MultipartFile image) {
+        String name = image.getOriginalFilename();
+        File file = new File("./images/" + name);
+        try {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+            image.transferTo(file.getAbsoluteFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
