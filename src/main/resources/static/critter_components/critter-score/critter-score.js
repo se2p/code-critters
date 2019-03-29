@@ -46,9 +46,7 @@ class CritterScore extends PolymerElement {
     
         <div id="score_table">
             <critter-score-line id="finished_humans_line">Finished Humans</critter-score-line>
-            <critter-score-line id="killed_humans_line">Killed Humans</critter-score-line>
             <critter-score-line id="killed_critters_line">Killed Critters</critter-score-line>
-            <critter-score-line id="finished_critters_line">Finished Critters</critter-score-line>
             <critter-score-line id="mines_line">Needed Mines</critter-score-line>
             <critter-score-line id="time_line">Time Bonus</critter-score-line>
             <div class="score_row" id="final_score_line">
@@ -74,6 +72,11 @@ class CritterScore extends PolymerElement {
             },
 
             _shownScore: {
+                type: Number,
+                value: 0
+            },
+
+            _prevScore: {
                 type: Number,
                 value: 0
             }
@@ -104,6 +107,15 @@ class CritterScore extends PolymerElement {
     }
 
     _onScoreIncreased(e) {
+        let newScore = this.score + e.detail.score;
+        if(this._prevScore < 950 && newScore >= 950) {
+            this.dispatchEvent(new CustomEvent('_thirdStarReached', {bubbles: true, composed: true}));
+        } else if (this._prevScore < 800 && newScore >= 800) {
+            this.dispatchEvent(new CustomEvent('_secondStarReached', {bubbles: true, composed: true}));
+        } else if (this._prevScore < 500 && newScore >= 500) {
+            this.dispatchEvent(new CustomEvent('_firstStarReached', {bubbles: true, composed: true}));
+        }
+        this._prevScore = newScore;
         this._shownScore = this.score + e.detail.score;
     }
 }

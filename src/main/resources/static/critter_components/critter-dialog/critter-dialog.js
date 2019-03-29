@@ -43,7 +43,7 @@ class CritterDialog extends PolymerElement {
                 margin-top: calc((100vh - 500px) * 0.5);
                 margin-left: calc((100vw - 300px) * 0.5);
                 z-index: 1000;
-                position: relative;
+                position: fixed;
             }
         </style>
     

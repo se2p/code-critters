@@ -31,6 +31,7 @@ class CritterScoreLine extends PolymerElement {
             }
             #percentage_cell{
                 padding-right: 10px;
+                font-size: 0.8em;
             }
         </style>
     

@@ -113,13 +113,33 @@ class CritterGame extends Level(PolymerElement) {
 
             #star_container{
                 color: gold;
-                width: 100%;
                 height: 50px;
-                text-align: center;
+                width: fit-content;
+                margin: auto;
             }
             #star_container iron-icon{
+                width: 100px;
+                height: 100px;
+                visibility: hidden;
+                transition: width 100ms, height 100ms;
+            }
+            
+            #star_container .star{
                 width: 50px;
                 height: 50px;
+                position: relative;
+                margin: 20px 8px 0 8px;
+                float: left;
+            }
+            
+            #star_container .visibleStar{
+                width: 50px;
+                height: 50px;
+                visibility: visible;
+            }
+            
+             #star_container .star.star2 {
+                margin-top: 0;
             }
 
             #dialog_text{
@@ -154,7 +174,15 @@ class CritterGame extends Level(PolymerElement) {
 
         <critter-dialog id="score_dialog">
             <div id="star_container">
-                <iron-icon id="star" icon="icons:star"></iron-icon>
+                <div class="star">
+                    <iron-icon id="star1" icon="icons:star"></iron-icon>
+                </div>
+                <div class="star star2">
+                    <iron-icon id="star2" icon="icons:star"></iron-icon>
+                </div>
+                <div class="star">
+                    <iron-icon id="star3" icon="icons:star"></iron-icon>
+                </div>
             </div>
             <div id="dialog_text">
                 <critter-score id="dialog_score"></critter-score>
@@ -252,6 +280,11 @@ class CritterGame extends Level(PolymerElement) {
                 value: 0
             },
 
+            stars: {
+                type: Number,
+                value: 0
+            },
+
             _killedCritters: {
                 type: Number,
                 value: 0
@@ -308,6 +341,11 @@ class CritterGame extends Level(PolymerElement) {
             this.addEventListener("_critterKilled", (event) => this._onCritterKilled(event));
             this.addEventListener("_critterFinished", (event) => this._onCritterFinished(event));
             this.addEventListener("_critterNumberChanged", (event) => this._onCritterNumberChanged(event));
+
+            this.addEventListener("_thirdStarReached", () => this._showStar(3));
+            this.addEventListener("_secondStarReached", () => this._showStar(2));
+            this.addEventListener("_firstStarReached", () => this._showStar(1));
+
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
 
@@ -509,30 +547,27 @@ class CritterGame extends Level(PolymerElement) {
         // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
         this.showScore();
+        this.score = (this._finishedHumans + this._killedCritters) * 50 +
+            (-25 * (this._globalData.countMines())) + //TODO subtract free mines
+            Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
         window.onbeforeunload = null;
         this._storeResult();
     }
 
-    showScore() {
+    async showScore() {
         let dialogScore = this.$.dialog_score;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
-        let killedHumansPercentage = 100 - finishedHumansPercentage;
         let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
-        let finishedCritterPercentage = 100 - killedCritterPercentage;
-        let finishedCritters = this._globalData.numberOfCritters - this._killedCritters;
-        let killedHumans = this._globalData.numberOfHumans - this._finishedHumans;
-        dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%").then(() => {
-            dialogScore.insertData("killed_humans_line", killedHumans * -100, killedHumansPercentage, "%").then(() => {
-                dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%").then(() => {
-                    dialogScore.insertData("finished_critters_line", finishedCritters * -100, finishedCritterPercentage, "%").then(() => {
-                        dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines()).then(() => {
-                            dialogScore.insertData("time_line", (Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, this._globalData.freeSeconds, 's');
-                        })
-                    })
-                })
-            })
-        })
+        await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
+        await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
+        await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines());
+        await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
+    }
 
+    _showStar(number) {
+        let star = this.shadowRoot.querySelector("#star" + number);
+        star.classList.add("visibleStar");
+        this.stars = number;
     }
 
     _onCritterNumberChanged() {
@@ -541,7 +576,6 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _storeResult() {
-
         //Function disabled
         return;
 
@@ -565,27 +599,6 @@ class CritterGame extends Level(PolymerElement) {
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
         return req;
-    }
-
-    setCookie(name, value) {
-        document.cookie = name + "=" + value + ";" + ";path=/";
-    }
-
-    getCookie() {
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf('id') == 0) {
-                return c.substring(3, c.length);
-            }
-        }
-        let cookie = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
-        this.setCookie('id', cookie);
-        return cookie;
     }
 }
 
