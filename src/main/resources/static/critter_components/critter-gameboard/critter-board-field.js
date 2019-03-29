@@ -1,5 +1,10 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {htmlLiteral} from '/lib/@polymer/polymer/lib/utils/html-tag.js';
+import {Generator} from '../critter-generator-mixin/critter-generator-mixin.js';
+
+
+import '/static/rasterizehtml/dist/rasterizeHTML.allinone.js';
+
 
 /*
 # critter-gameboard
@@ -14,7 +19,7 @@ Renders the gameboard and its textures.
 @demo
 */
 
-class CritterGameboardField extends PolymerElement {
+class CritterGameboardField extends Generator(PolymerElement) {
 
     static get template() {
         return html`
@@ -942,12 +947,19 @@ class CritterGameboardField extends PolymerElement {
                     background-position: 440px 0;
                 }
             }
+            
+            canvas{
+                display: none;
+            }
 
         </style>
         <div id="field" class$="[[class]]">
             <div id="mineField" class$="[[_mineString]]">
             </div>
         </div>
+        
+        <canvas id="cnavasBuffer" width="40" height="40"></canvas>     
+
     `;
     }
 
@@ -1001,6 +1013,48 @@ class CritterGameboardField extends PolymerElement {
         window.Core.timeouts.add(() => {
             this.$.mineField.classList.remove("explosion");
         }, 1000);
+    }
+
+    async computeImg(x, y) {
+        if(this.imgBuffer.has(this.class)){
+            return {x: x, y: y, img: this.imgBuffer.get(this.class)};
+        }
+        let canvas = this.$.cnavasBuffer;
+
+        if(this.class.includes("tower")){
+            canvas.height = 90;
+            let context = canvas.getContext('2d');
+            this.$.field.style.marginTop = "50px";
+            let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage( renderResult.image, -8, -8);
+            this.$.field.style.marginTop = null;
+            let img = new Image(40, 90);
+            img.src = canvas.toDataURL();
+            return {x: x, y: y, img: img};
+        }
+
+        if(this.class.includes("spawn")){
+            canvas.height = 50;
+            canvas.width = 50;
+            let context = canvas.getContext('2d');
+            this.$.field.style.marginTop = "10px";
+            let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage( renderResult.image, -8, -8);
+            this.$.field.style.marginTop = null;
+            let img = new Image(50, 50);
+            img.src = canvas.toDataURL();
+            return {x: x, y: y, img: img};
+        }
+
+        let context = canvas.getContext('2d');
+        let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
+        context.drawImage( renderResult.image, -8, -8);
+        let img = new Image(40, 40);
+        img.src = canvas.toDataURL();
+        this.imgBuffer.set(this.class, img);
+        return {x: x, y: y, img: img};
     }
 
 }
