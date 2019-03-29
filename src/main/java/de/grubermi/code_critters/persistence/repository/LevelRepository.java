@@ -33,6 +33,6 @@ public interface LevelRepository extends CrudRepository<Level, String> {
     @Query("SELECT l.name FROM Level as l WHERE l.row = :rid ORDER BY l.name ASC")
     List<String> getLevelNamesByGroup(@Param("rid") Row row);
 
-    @Query(nativeQuery = true, value = "SELECT l.name, r.score, r.stars FROM level as l LEFT JOIN ( SELECT r2.score, r2.level, r2.stars FROM result AS r2 WHERE r2.cookie = :cookie) AS r ON l.name = r.level WHERE l.row_id = :rid ORDER BY l.name ASC")
+    @Query(nativeQuery = true, value = "SELECT l.name, r.score, r.stars FROM level as l LEFT JOIN ( SELECT r2.score, r2.level_id, r2.stars FROM result AS r2 WHERE r2.cookie = :cookie) AS r ON l.id = r.level_id WHERE l.row_id = :rid ORDER BY l.name ASC")
     List<LevelResultType> getLevelNamesAndResultByGroup(@Param("rid") Row row, @Param("cookie") String cookie);
 }

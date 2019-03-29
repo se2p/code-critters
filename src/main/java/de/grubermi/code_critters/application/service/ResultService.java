@@ -1,10 +1,9 @@
 package de.grubermi.code_critters.application.service;
 
-import de.grubermi.code_critters.persistence.entities.Mine;
+import de.grubermi.code_critters.persistence.entities.Level;
 import de.grubermi.code_critters.persistence.entities.Result;
-import de.grubermi.code_critters.persistence.repository.MineRepository;
+import de.grubermi.code_critters.persistence.repository.LevelRepository;
 import de.grubermi.code_critters.persistence.repository.ResultRepository;
-import de.grubermi.code_critters.web.dto.MineDTO;
 import de.grubermi.code_critters.web.dto.ResultDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,21 +12,23 @@ import org.springframework.stereotype.Service;
 public class ResultService {
 
     private final ResultRepository resultRepository;
-    private final MineRepository mineRepository;
+    private final LevelRepository levelRepository;
 
     @Autowired
-    public ResultService(ResultRepository resultRepository, MineRepository mineRepository) {
+    public ResultService(ResultRepository resultRepository, LevelRepository levelRepository) {
         this.resultRepository = resultRepository;
-        this.mineRepository = mineRepository;
+        this.levelRepository = levelRepository;
     }
 
     public void createResult(ResultDTO resultDTO) {
-        Result result = new Result(resultDTO.getScore(), resultDTO.getCookie(), resultDTO.getLevel(), resultDTO.getStars());
-        result = resultRepository.save(result);
-        for (MineDTO mineDTO: resultDTO.getMines()) {
-            Mine mine = new Mine(mineDTO.getX(), mineDTO.getY(), mineDTO.getCode(), mineDTO.getXml(), result);
-            mineRepository.save(mine);
+        Level level = levelRepository.findByName(resultDTO.getLevel());
+        Result result = resultRepository.getResultByLevelAndCookie(level, resultDTO.getCookie());
+        if(result != null){
+            result.setScore(resultDTO.getScore());
+            result.setStars(resultDTO.getStars());
+        } else {
+            result = new Result(resultDTO.getScore(), resultDTO.getCookie(), level, resultDTO.getStars());
         }
-
+        resultRepository.save(result);
     }
 }

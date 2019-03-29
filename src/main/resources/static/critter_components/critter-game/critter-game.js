@@ -550,8 +550,16 @@ class CritterGame extends Level(PolymerElement) {
         this.score = (this._finishedHumans + this._killedCritters) * 50 +
             (-25 * (this._globalData.countMines())) + //TODO subtract free mines
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
+        let stars = 0;
+        if(this.score >= 950){
+            stars = 3;
+        } else if (this.score >= 800){
+            stars = 2;
+        } else if (this.score >= 500){
+            stars = 1;
+        }
         window.onbeforeunload = null;
-        this._storeResult();
+        this._storeResult(stars);
     }
 
     async showScore() {
@@ -575,13 +583,7 @@ class CritterGame extends Level(PolymerElement) {
         this.$.humansNumber.innerHTML = this._globalData.numberOfHumans;
     }
 
-    _storeResult() {
-        //Function disabled
-        return;
-
-        this._globalData.mines.forEach((mine) => {
-            mine.code = mine.code.toString();
-        });
+    _storeResult(stars) {
         let req = document.createElement('iron-ajax');
         req.url = "/result";
         req.method = "POST";
@@ -591,9 +593,9 @@ class CritterGame extends Level(PolymerElement) {
         req.rejectWithRequest = true;
         req.body = {
             level: this._globalData.levelName,
-            mines: this._globalData.mines,
-            score: this._globalData.score,
-            cookie: this.getCookie()
+            score: this.score,
+            stars: stars,
+            cookie: this._globalData.cookie
         };
 
         let genRequest = req.generateRequest();
