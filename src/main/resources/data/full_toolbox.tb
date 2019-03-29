@@ -34,14 +34,10 @@
     </block>
 </category>
 <category name="Colour" colour="20">
-    <label text="Body Colours"></label>
-        <block type="colour_picker">
-            <field name="COLOUR">#ff0000</field>
-        </block>
-        <label text="Hair Colours"></label>
-        <block type="custom_colour_picker">
-            <field name="COLOUR">#f0e527</field>
-        </block>
+    <block type="shirt_picker"  x="663" y="138">
+     </block>
+     <block type="hair_picker"  x="663" y="138">
+     </block>
 </category>
 <category name="Math" colour="230">
     <block type="math_number" id="Eem[Vxht-;;+ILj@@lxp" x="263" y="113">
