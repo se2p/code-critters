@@ -44,6 +44,9 @@ class CritterCritter extends Level(PolymerElement) {
                 font-size: 0.8em;
                 width: 130px;
                 background-color: #f9edbe;
+                    position: relative;
+                    left: 35px;
+                    top: 35px;
                 display: var(--tooltip-display);
             }
 
@@ -395,8 +398,8 @@ class CritterCritter extends Level(PolymerElement) {
             // this.addEventListener('position-changed', this._changePosition);
             this.notifyPath("position", this.position.y);
             this.notifyPath("position", this.position.x);
-            this.$.critter.addEventListener('mouseover', this._onHover.bind(this));
-            this.$.critter.addEventListener('mouseout', this._onHoverOut.bind(this));
+            this.$.critter_container.addEventListener('mouseover', this._onHover.bind(this));
+            this.$.critter_container.addEventListener('mouseout', this._onHoverOut.bind(this));
             this._globalData = window.Core.CritterLevelData;
             this._timeoutManager = window.Core.timeouts;
         });
@@ -599,7 +602,7 @@ class CritterCritter extends Level(PolymerElement) {
         if(this.animate) {
             this.animate = false;
             this.paused = true;
-            var computedStyle = window.getComputedStyle(this.$.critter_container);
+            let computedStyle = window.getComputedStyle(this.$.critter_container);
             this.$.critter_container.style.top = computedStyle.getPropertyValue('top');
             this.$.critter_container.style.left = computedStyle.getPropertyValue('left');
             this.$.critter_container.style.transitionDuration = null;
