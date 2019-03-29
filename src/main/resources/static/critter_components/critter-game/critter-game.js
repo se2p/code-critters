@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
-import '../critter-level-selector/critter-level-selector.js';
+import '../critter-level-selector/critter-level-selector-simple.js';
 import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
@@ -14,8 +14,10 @@ import '../critter-timeout/critter-timeout-manager.js';
 import '../critter-score/critter-score.js';
 import '../critter-header/critter-header.js';
 
-
 import '/lib/@polymer/iron-icons/iron-icons.js';
+
+import {critterStyle} from '/style/critter-botstrap.js'
+
 
 
 /*
@@ -38,6 +40,8 @@ window.Core.GameRoot = window.Core.GameRoot || [];
 class CritterGame extends Level(PolymerElement) {
     static get template() {
         return html`
+        ${critterStyle}
+
         <style>
             :host {
                 display: block;
@@ -46,7 +50,7 @@ class CritterGame extends Level(PolymerElement) {
             #critter_container {
                 position: absolute;
                 top: -1px;
-                left: 21px;
+                left: 36px;
                 pointer-events: none;
             }
 
@@ -58,16 +62,6 @@ class CritterGame extends Level(PolymerElement) {
                 width: 95%;
                 margin-right: 5%;
                 float: left;
-            }
-
-            #board_container,
-            #blockly_container {
-                float: left;
-                position: relative;
-            }
-
-            #blockly_container {
-                margin-left: 10px;
             }
 
 
@@ -167,24 +161,27 @@ class CritterGame extends Level(PolymerElement) {
             </div>
             <div id="selector_container">
                 <h3>Select the next level:</h3>
-                <critter-level-selector></critter-level-selector>
+                <critter-level-selector-simple></critter-level-selector-simple>
             </div>
         </critter-dialog>
         <critter-header></critter-header>
 
-        <div id="board_container">
-            <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
-            </critter-gameboard>
-            <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
+        <div class="row">
+            <!--<div id="board_container" class=" col-lg col-lg-6 col-md-12  mt-3 float-left mx-auto" style="width: fit-content">-->
+            <div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">
+                <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
+                </critter-gameboard>
+                <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
+                </div>
+                <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
+                </critter-test-popup>
             </div>
-            <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
-            </critter-test-popup>
-        </div>
-        <div id="blockly_container" style$="width: calc(-{{ _boardWidth }}px - 70px + 100vw)">
-            <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
-                             read-only>
-                <span>Code under Test</span>
-            </critter-blockly>
+            <!--<div id="blockly_container" class="col-lg-6 col-md-12 mt-3 float-left">-->
+            <div id="blockly_container" class="col-lg mt-3">
+                <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
+                                 read-only>
+                </critter-blockly>
+            </div>
         </div>
         <br>
         <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
@@ -329,6 +326,8 @@ class CritterGame extends Level(PolymerElement) {
     }
 
     _reloadGame() {
+        this._startTime = Date.now();
+        this._totalTime = 0;
         this._paused = true;
         this._crittersSent = false;
         this._finishedHumans = 0;

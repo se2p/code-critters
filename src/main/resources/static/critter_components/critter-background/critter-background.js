@@ -192,7 +192,7 @@ class CritterBackground extends Level(PolymerElement) {
             }
             this._map.push(row);
         }
-        this._map[2][3] = 1;
+        this._map[3][2] = 1;
         this._map[(countWidth-3)][(countHeight-3)] = 1;
         this.tower.x = countWidth-3;
         this.tower.y = countHeight-3;
@@ -222,7 +222,7 @@ class CritterBackground extends Level(PolymerElement) {
         }, 6000);
     }
 
-    computePath() {
+    computePath(steps = 0) {
         let tempArray = JSON.parse(JSON.stringify(this._map));
         let path = [this.spawn];
         let source = JSON.parse(JSON.stringify(this.spawn));
@@ -237,7 +237,10 @@ class CritterBackground extends Level(PolymerElement) {
                 path.pop();
                 if (path.length === 0) {
                         console.log((steps + 1) + "steps were needed!");
-                        return this.findPath(source, ++steps);
+                        if(steps > 3) {
+                            return;
+                        }
+                        return this.computePath(steps + 1);
                 }
                 source = path[path.length - 1];
             }

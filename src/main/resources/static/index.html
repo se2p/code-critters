@@ -12,6 +12,8 @@
     <script type=module src="./critter_components/critter-background/critter-background.js">
     </script>
 
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+
 
     <custom-style>
         <style>
@@ -23,19 +25,15 @@
                 background-color: #2f8136;
             }
             #foreground_container{
-                z-index: 2;
+                max-width: 900px;
                 position: relative;
-                width: 900px;
                 height: 100vh;
                 margin: auto;
-                background-color: rgba(217, 248, 239, 0.4);
+                /*background-color: rgba(217, 248, 239, 0.4);*/
+                background-color: #F3F4F6;
+                z-index: 2;
             }
 
-            .text{
-                text-align: center;
-                font-size: 1.5em;
-                color: #F3F4F6;
-            }
             .text{
                 text-align: left;
                 font-size: 1.3em;
@@ -45,7 +43,10 @@
                 z-index: 1;
             }
 
+
             .content{
+                position: relative;
+                top: 0;
                 margin: 15px;
             }
         </style>
@@ -58,7 +59,7 @@
         <critter-header></critter-header>
         <!--TODO: LANDING PAGE-->
         <div class="content">
-            <div class="text">
+            <div class="container text">
                 <h1>Help the Critters to find the Mutants</h1>
                 <p>The Critters are a peaceable, yet unknown colony living in the forest next to the Smurfs.
                     They have build small houses where they live in peace and harmony.</p>

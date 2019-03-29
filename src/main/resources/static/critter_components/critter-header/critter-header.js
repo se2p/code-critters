@@ -1,5 +1,5 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-
+import {critterStyle} from '/style/critter-botstrap.js'
 
 /*
 # critter-insert
@@ -18,55 +18,52 @@ class CritterHeader extends PolymerElement {
     static get template() {
         return html`
             <style>
-                header{
+                :host {
                     width: 100%;
-                    height: 40px;
-                    background-color: #014d6d;
-                    margin-bottom: 8px;
+                    height: 0;
                 }
                 
-                #image{
-                    width: 100%;
-                    text-align: center;
-                }
-                
-                ul{
-                    list-style: none;
-                    height: 100%;
-                    width: 60%;
-                    margin: 0;
-                }
-                li {
+                #image a{
                     float: left;
-                    height: 100%;
-                    width: 33%;
                 }
-                li a{
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    width: 100%;
-                    text-align: center;
+                
+                #image span{
+                    color: #464c53;
+                    text-decoration: none;
+                    font-size: 3em;
                     height: 100%;
-                    color: #F3F4F6;
-                    font-size: 1.3em;
+                    display: table-cell;
+                    vertical-align: middle;
+                    float: left;
+                    margin: 0 8px;
                 }
+                #image img {
+                    margin-bottom: 3px;
+                }
+                header{
+                    clear: both;
+                }
+                
             </style>
-            <div id="image">
+            
+            ${critterStyle}
+       
+            <div id="image" class="container mx-auto" style="width: fit-content;">
                 <a href="/">
                     <img src="[[importPath]]images/logo.png">
                 </a>
+                <span>Code Critters</span>
             </div>
-             <header id="input">
-             <ul>
-                 <li>
-                    <a href="/">Home</a>
+             <header class="navbar navbar-dark navbar-expand-sm bg-dark">
+             <ul class="navbar-nav">
+                 <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
                  </li>
-                 <li>
-                    <a href="/levels">Levels</a>
+                 <li class="nav-item">
+                    <a class="nav-link" href="/levels">Levels</a>
                  </li>
-                 <li>
-                    <!--<a href="/profile">Profile</a>-->
+                 <li class="nav-item">
+                    <!--<a class="nav-link" href="/profile">Profile</a>-->
                  </li>
              </ul>
              </header>
