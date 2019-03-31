@@ -1,5 +1,8 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {critterStyle} from '/style/critter-botstrap.js'
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+
+import '../critter-i18n/critter-i18n.js';
 
 /*
 # critter-insert
@@ -14,7 +17,7 @@ A Simple Button
 @demo
 */
 
-class CritterHeader extends PolymerElement {
+class CritterHeader extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
@@ -47,6 +50,8 @@ class CritterHeader extends PolymerElement {
             </style>
             
             ${critterStyle}
+            
+            <critter-i18n></critter-i18n>
        
             <div id="image" class="container mx-auto" style="width: fit-content;">
                 <a href="/">
@@ -57,10 +62,10 @@ class CritterHeader extends PolymerElement {
              <header class="navbar navbar-dark navbar-expand-sm bg-dark">
              <ul class="navbar-nav">
                  <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="/">[[__('home')]]</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="/levels">Levels</a>
+                    <a class="nav-link" href="/levels">[[__('levels')]]</a>
                  </li>
                  <li class="nav-item">
                     <!--<a class="nav-link" href="/profile">Profile</a>-->

@@ -26,6 +26,7 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/critter_components/**").addResourceLocations("classpath:/static/critter_components/");
         registry.addResourceHandler("/style/**").addResourceLocations("classpath:/static/style/");
         registry.addResourceHandler("/images/**").addResourceLocations("file:./images/");
+        registry.addResourceHandler("/translation/**").addResourceLocations("classpath:/static/translation/");
         //registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/critter_components/critter-blockly/iFrame/images/");
 
    }
