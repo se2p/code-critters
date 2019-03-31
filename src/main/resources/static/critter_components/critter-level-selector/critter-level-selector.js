@@ -76,7 +76,6 @@ class CritterLevelSelector extends Level(PolymerElement) {
         req.contentType = 'application/json';
         req.bubbles = true;
         req.rejectWithRequest = true;
-        req.params = {cookie: this._globalData.cookie};
 
         req.addEventListener('response', e => {
             this.$.preview_container.innerHtml = "";

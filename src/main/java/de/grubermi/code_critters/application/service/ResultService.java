@@ -20,14 +20,14 @@ public class ResultService {
         this.levelRepository = levelRepository;
     }
 
-    public void createResult(ResultDTO resultDTO) {
+    public void createResult(ResultDTO resultDTO, String cookie) {
         Level level = levelRepository.findByName(resultDTO.getLevel());
-        Result result = resultRepository.getResultByLevelAndCookie(level, resultDTO.getCookie());
+        Result result = resultRepository.getResultByLevelAndCookie(level, cookie);
         if(result != null){
             result.setScore(resultDTO.getScore());
             result.setStars(resultDTO.getStars());
         } else {
-            result = new Result(resultDTO.getScore(), resultDTO.getCookie(), level, resultDTO.getStars());
+            result = new Result(resultDTO.getScore(), cookie, level, resultDTO.getStars());
         }
         resultRepository.save(result);
     }

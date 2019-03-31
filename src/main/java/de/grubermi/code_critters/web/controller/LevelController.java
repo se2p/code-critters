@@ -78,7 +78,7 @@ public class LevelController {
     }
 
     @GetMapping(path = "/levels")
-    public List getLevels(@RequestParam String cookie) {
+    public List getLevels(@CookieValue("id") String cookie) {
         return levelService.getLevelsGrouped(cookie);
     }
 

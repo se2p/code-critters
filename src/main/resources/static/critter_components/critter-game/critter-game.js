@@ -594,8 +594,7 @@ class CritterGame extends Level(PolymerElement) {
         req.body = {
             level: this._globalData.levelName,
             score: this.score,
-            stars: stars,
-            cookie: this._globalData.cookie
+            stars: stars
         };
 
         let genRequest = req.generateRequest();
