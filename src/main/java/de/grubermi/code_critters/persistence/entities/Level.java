@@ -28,6 +28,8 @@ public class Level {
     @Column(columnDefinition = "text")
     private String init;
     @Column(columnDefinition = "text")
+    private String xml;
+    @Column(columnDefinition = "text")
     private String test;
     @NotEmpty
     @Type(type = "de.grubermi.code_critters.persistence.customDataTypes.LevelDataType")
@@ -38,9 +40,13 @@ public class Level {
     @NotEmpty
     @Type(type = "de.grubermi.code_critters.persistence.customDataTypes.CoordinateDataType")
     private HashMap<String, Integer> spawn;
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "row.id")
+    private Row row;
 
 
-    public Level(String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String init, String[][] level) {
+    public Level(Row row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
+        this.row = row;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
         this.numberOfHumans = numberOfHumans;
@@ -48,6 +54,7 @@ public class Level {
         this.test = test;
         this.level = level;
         this.init = init;
+        this.xml = xml;
     }
 
     public Level() {
@@ -135,5 +142,21 @@ public class Level {
 
     public void setInit(String init) {
         this.init = init;
+    }
+
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
+    }
+
+    public Row getRow() {
+        return row;
+    }
+
+    public void setRow(Row row) {
+        this.row = row;
     }
 }

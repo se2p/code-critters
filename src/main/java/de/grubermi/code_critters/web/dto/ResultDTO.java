@@ -2,27 +2,17 @@ package de.grubermi.code_critters.web.dto;
 
 public class ResultDTO {
 
-    private MineDTO[] mines;
     private int score;
-    private String cookie;
+    private int stars;
     private String level;
 
     public ResultDTO() {
     }
 
-    public ResultDTO(MineDTO[] mines, int score, String cookie, String level) {
-        this.mines = mines;
+    public ResultDTO(int score, String level, int stars) {
         this.score = score;
-        this.cookie = cookie;
         this.level = level;
-    }
-
-    public MineDTO[] getMines() {
-        return mines;
-    }
-
-    public void setMines(MineDTO[] mines) {
-        this.mines = mines;
+        this.stars = stars;
     }
 
     public int getScore() {
@@ -33,19 +23,19 @@ public class ResultDTO {
         this.score = score;
     }
 
-    public String getCookie() {
-        return cookie;
-    }
-
-    public void setCookie(String cookie) {
-        this.cookie = cookie;
-    }
-
     public String getLevel() {
         return level;
     }
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public int getStars() {
+        return this.stars;
+    }
+
+    public void setStars(int stars) {
+        this.stars = stars;
     }
 }

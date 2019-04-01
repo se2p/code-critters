@@ -25,7 +25,7 @@ public class ResultController {
     }
 
     @PostMapping(path = "/result")
-    public void storeResult(@RequestBody ResultDTO dto, HttpServletResponse response) {
-        resultService.createResult(dto);
+    public void storeResult(@RequestBody ResultDTO dto, @CookieValue("id") String cookie) {
+        resultService.createResult(dto, cookie);
     }
 }
