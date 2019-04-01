@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="/bower_components/google-blockly/blockly_compressed.js"></script>
-  <script src="/bower_components/google-blockly/blocks_compressed.js"></script>
-  <script src="/bower_components/google-blockly/javascript_compressed.js"></script>
-  <script src="/bower_components/google-blockly/msg/js/en.js"></script>
+  <script src="/static/blockly/blockly_compressed.js"></script>
+  <script src="/static/blockly/blocks_compressed.js"></script>
+  <script src="/static/blockly/javascript_compressed.js"></script>
+  <script src="/static/blockly/msg/js/en.js"></script>
   <script src="/customBlocks.js"></script>
 
 
@@ -74,11 +74,7 @@
     if(blocklyCode) {
       var xml = Blockly.Xml.textToDom(blocklyCode);
       Blockly.Xml.domToWorkspace(xml, this.workspace);
-      var element = this.workspace.getAllBlocks()[0];
-      if(element && element.id)
-      {
-            this.workspace.centerOnBlock(element.id);
-      }
+      this.workspace.scrollCenter();
     }
   };
 
@@ -94,6 +90,7 @@
     }
     renderBlockly();
   };
+
 
   var setControls = function(controls){
     showControls = controls;
@@ -124,6 +121,10 @@
     var xml = Blockly.Xml.workspaceToDom(workspace);
     var xml_text = Blockly.Xml.domToText(xml);
     return xml_text;
+  }
+
+  var getBlockById = function(id) {
+      return  workspace.getBlockById(id);
   }
 
 </script>

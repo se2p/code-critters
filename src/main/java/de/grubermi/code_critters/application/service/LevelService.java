@@ -3,15 +3,21 @@ package de.grubermi.code_critters.application.service;
 import de.grubermi.code_critters.application.exception.AlreadyExistsException;
 import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.persistence.entities.Level;
-import de.grubermi.code_critters.persistence.entities.Mutant;
+import de.grubermi.code_critters.persistence.entities.Row;
 import de.grubermi.code_critters.persistence.repository.LevelRepository;
 import de.grubermi.code_critters.persistence.repository.MutantRepository;
+import de.grubermi.code_critters.persistence.repository.RowRepository;
 import de.grubermi.code_critters.web.dto.LevelDTO;
 import de.grubermi.code_critters.web.dto.MutantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintViolationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,11 +26,13 @@ public class LevelService {
 
     private final LevelRepository levelRepository;
     private final MutantRepository mutantRepository;
+    private final RowRepository rowRepository;
 
     @Autowired
-    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository){
+    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository){
         this.levelRepository = levelRepository;
         this.mutantRepository = mutantRepository;
+        this.rowRepository = rowRepository;
     }
 
     public void createLevel (LevelDTO dto) {
@@ -72,6 +80,7 @@ public class LevelService {
         dto.setTest(level.getTest());
         dto.setSpawn(level.getSpawn());
         dto.setInit(level.getInit());
+        dto.setXml(level.getXml());
         dto.setTower(level.getTower());
         dto.setNumberOfCritters(level.getNumberOfCritters());
         dto.setNumberOfHumans(level.getNumberOfHumans());
@@ -95,6 +104,9 @@ public class LevelService {
         }
         if (dto.getInit() != null) {
             level.setInit(dto.getInit());
+        }
+        if (dto.getXml() != null) {
+            level.setXml(dto.getXml());
         }
         if (dto.getTest() != null) {
             level.setTest(dto.getTest());
@@ -141,5 +153,31 @@ public class LevelService {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return init;
+    }
+
+    public List getLevelsGrouped(String cookie) {
+        List groupedLevels = new LinkedList();
+
+        Collection<Row> rows= rowRepository.getRows();
+        for (Row row : rows) {
+            HashMap map = new HashMap<String,Object>();
+            map.put("name", row.getName());
+            map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
+            groupedLevels.add(map);
+
+        }
+        return groupedLevels;
+    }
+
+    public void storeImage(MultipartFile image) {
+        String name = image.getOriginalFilename();
+        File file = new File("./images/" + name);
+        try {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+            image.transferTo(file.getAbsoluteFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
