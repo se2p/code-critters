@@ -27,6 +27,11 @@ export const I18n = dedupingMixin(function(superClass) {
                 dictionary: {
                     type: Object,
                     value: {}
+                },
+
+                language: {
+                    type: String,
+                    value: "en-US"
                 }
 
             };
@@ -38,8 +43,9 @@ export const I18n = dedupingMixin(function(superClass) {
 
             afterNextRender(this, function () {
                 this.dictionary = window.Core.dictionary;
+                this.language = localStorage.getItem("language");
                 this.__ = this.translate;
-                window.addEventListener("_languageChanged", this._updateDictionary.bind(this));
+                window.addEventListener("_languageChanged", (event) => this._updateDictionary(event));
 
             });
         }
@@ -53,7 +59,8 @@ export const I18n = dedupingMixin(function(superClass) {
             return key;
         }
 
-        _updateDictionary(){
+        _updateDictionary(event){
+            this.language = event.detail.lang;
             this.dictionary = window.Core.dictionary;
             this.__ = (key) => {
                 return this.translate(key);

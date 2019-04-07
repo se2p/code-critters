@@ -87,7 +87,7 @@ class CritterI18n extends PolymerElement {
 
         req.addEventListener('response', e => {
             window.Core.dictionary = e.detail.__data.response;
-            window.dispatchEvent(new CustomEvent('_languageChanged', {bubbles: true, composed: true}));
+            window.dispatchEvent(new CustomEvent('_languageChanged', {detail: {lang: lang}, bubbles: true, composed: true}));
         });
 
         let genRequest = req.generateRequest();

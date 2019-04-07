@@ -1,5 +1,6 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import './critter-score-line.js';
 
@@ -17,7 +18,7 @@ A Simple Button
 
 @demo
 */
-class CritterScore extends PolymerElement {
+class CritterScore extends I18n(PolymerElement) {
 
     static get template() {
         return html`
@@ -45,10 +46,10 @@ class CritterScore extends PolymerElement {
     
     
         <div id="score_table">
-            <critter-score-line id="finished_humans_line">Finished Humans</critter-score-line>
-            <critter-score-line id="killed_critters_line">Killed Critters</critter-score-line>
-            <critter-score-line id="mines_line">Needed Mines</critter-score-line>
-            <critter-score-line id="time_line">Time Bonus</critter-score-line>
+            <critter-score-line id="finished_humans_line">[[__('finished_humans')]]</critter-score-line>
+            <critter-score-line id="killed_critters_line">[[__('killed_mutants')]]</critter-score-line>
+            <critter-score-line id="mines_line">[[__('needed_mines')]]</critter-score-line>
+            <critter-score-line id="time_line">[[__('time_bonus')]]</critter-score-line>
             <div class="score_row" id="final_score_line">
                   <div class="score_cell"></div>
                   <div class="score_cell"></div>

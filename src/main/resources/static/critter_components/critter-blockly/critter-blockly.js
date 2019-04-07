@@ -1,6 +1,8 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+
 
 
 /*
@@ -16,7 +18,7 @@ Displays the Efficiencylable for tires of the class c1 (car) according to the EU
 @demo
 */
 
-class CritterBlockly extends Level(PolymerElement) {
+class CritterBlockly extends I18n(Level(PolymerElement)) {
 
     static get template() {
         return html`
@@ -97,6 +99,12 @@ class CritterBlockly extends Level(PolymerElement) {
         };
     }
 
+    static get observers() {
+        return [
+            '_onLanguageChanged(language)'
+        ]
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -129,6 +137,7 @@ class CritterBlockly extends Level(PolymerElement) {
         this._trashcanChanged();
         this._codeChanged();
         this._readOnlyChanged();
+        this._onLanguageChanged();
     }
 
     /** updates the toolbox of the IFrame **/
@@ -241,6 +250,14 @@ class CritterBlockly extends Level(PolymerElement) {
                 this._globalData.toolbox = e.detail.__data.response;
             });
             req.generateRequest();
+        }
+    }
+
+    async _onLanguageChanged() {
+        let langTag = this.language.substr(0, 2);
+        if (this.$.blockly_frame.contentWindow.changeLanguage) {
+            await this.$.blockly_frame.contentWindow.changeLanguage(langTag);
+            this._codeChanged();
         }
     }
 }

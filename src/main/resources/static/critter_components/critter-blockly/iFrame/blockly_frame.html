@@ -1,11 +1,14 @@
 
 <!DOCTYPE html>
 <html>
+<meta http-equiv="content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
 <head>
   <script src="/static/blockly/blockly_compressed.js"></script>
   <script src="/static/blockly/blocks_compressed.js"></script>
   <script src="/static/blockly/javascript_compressed.js"></script>
-  <script src="/static/blockly/msg/js/en.js"></script>
+  <script src="/static/blockly/msg/js/en.js" id="lang_script"></script>
+  <script src="/translation/customBlocks/customBlocks_en.js" id="custom_blocks"></script>
   <script src="/customBlocks.js"></script>
 
 
@@ -115,17 +118,51 @@
   var getCode = function() {
     var jsCode = Blockly.JavaScript.workspaceToCode(workspace);
     return jsCode;
-  }
+  };
 
   var getXML = function() {
     var xml = Blockly.Xml.workspaceToDom(workspace);
     var xml_text = Blockly.Xml.domToText(xml);
     return xml_text;
-  }
+  };
 
   var getBlockById = function(id) {
       return  workspace.getBlockById(id);
-  }
+  };
+
+  var changeLanguage = async function(langTag) {
+    document.getElementById("lang_script").remove();
+    //document.getElementById("customBlocks").remove();
+    var scriptLang = document.createElement("script");
+    var scriptCustom = document.createElement("script");
+    var xml = getXML();
+    scriptLang.id = "lang_script";
+    scriptLang.src = "/static/blockly/msg/js/" + langTag + ".js";
+    scriptCustom.id = "custom_blocks";
+    scriptCustom.src = "/translation/customBlocks/customBlocks_" + langTag + ".js";
+
+    var promises = [];
+    promises.push(new Promise(resolve => {
+              scriptLang.addEventListener('load', function () {
+                resolve();
+              });
+            })
+    );
+
+    promises.push(new Promise(resolve => {
+      scriptCustom.addEventListener('load', function () {
+        resolve();
+              });
+          })
+    );
+
+    document.getElementsByTagName('head')[0].appendChild(scriptLang);
+    document.getElementsByTagName('head')[0].appendChild(scriptCustom);
+
+    await Promise.all(promises);
+    workspace.dispose();
+
+  };
 
 </script>
 

@@ -1,5 +1,6 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-button/critter-button.js';
 import '../critter-selector/critter-selector.js';
 
@@ -18,7 +19,7 @@ A Simple Button
 @demo
 */
 
-class CritterLevelSelectorSimple extends PolymerElement {
+class CritterLevelSelectorSimple extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
@@ -33,7 +34,7 @@ class CritterLevelSelectorSimple extends PolymerElement {
             </style>
             <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>
             <br>
-            <critter-button id="load_button">Load Level</critter-button>
+            <critter-button id="load_button">[[__('load_level')]]</critter-button>
     `;
     }
 

@@ -1,32 +1,6 @@
 goog.addDependency("../" + "/hair_field_colour.js", ['Blockly.HairFieldColour'], ['Blockly.Field', 'Blockly.utils', 'goog.dom', 'goog.events', 'goog.style', 'goog.ui.ColorPicker']);
 goog.require('Blockly.HairFieldColour');
 
-Blockly.Blocks['properties'] = {
-    init: function() {
-        this.appendDummyInput()
-            .appendField("critter")
-            .appendField(new Blockly.FieldDropdown([["terrain","TERRAIN"], ["size","SIZE"], ["shirtColor","BODYCOLOR"], ["x-coord","XCOORD"], ["y-coord","YCOORD"], ["canWalkOnWater","CANWALKONWATER"], ["haircolor","HATCOLOR"]]), "properties");
-        this.setInputsInline(false);
-        this.setOutput(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
-
-Blockly.Blocks['properties_user'] = {
-    init: function() {
-        this.appendDummyInput()
-            .appendField("critter")
-            .appendField(new Blockly.FieldDropdown([["size","SIZE"], ["shirtColor","BODYCOLOR"], ["haircolor","HATCOLOR"]]), "properties");
-        this.setInputsInline(false);
-        this.setOutput(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
-
 Blockly.JavaScript['properties'] = function(block) {
     var dropdown_properties = block.getFieldValue('properties');
     var code;
@@ -77,130 +51,11 @@ Blockly.JavaScript['properties_user'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.Blocks['set'] = {
-    init: function() {
-        this.appendValueInput("value1")
-            .setCheck(null)
-            .appendField("set");
-        this.appendValueInput("value2")
-            .setCheck(null)
-            .appendField("to");
-        this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(75);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
-
 Blockly.JavaScript['set'] = function(block) {
     var value_name1 = Blockly.JavaScript.valueToCode(block, 'value1', Blockly.JavaScript.ORDER_ATOMIC);
     var value_name2 = Blockly.JavaScript.valueToCode(block, 'value2', Blockly.JavaScript.ORDER_ATOMIC);
     var code = value_name1 + " = " + value_name2 + ";\n";
     return code;
-};
-
-Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
-    // Block for colour picker.
-    {
-        "type": "custom_colour_picker",
-        "message0": "%1",
-        "args0": [
-            {
-                "type": "field_colour",
-                "name": "COLOUR",
-                "colour": "#f0e527"
-            }
-        ],
-        "output": "Colour",
-        "colour": "%{BKY_COLOUR_HUE}",
-        "helpUrl": "%{BKY_COLOUR_PICKER_HELPURL}",
-        "tooltip": "%{BKY_COLOUR_PICKER_TOOLTIP}",
-        "extensions": ["parent_tooltip_when_inline", "hair_colour_extension"]
-    }
-]);
-
-Blockly.FieldColour.COLOURS = ['#FF0000','#0000FF','#00FFFF','#009900','#FFA500','#FFFF00','#FFFFFF','#000000','#FF00FF'];
-Blockly.FieldColour.COLUMNS = 3;
-
-Blockly.JavaScript['custom_colour_picker'] = function(block) {
-    var colour_name = block.getFieldValue('COLOUR');
-    var code;
-    switch (colour_name.toLowerCase()) {
-        case '#f0e527' :
-            code = '"blond"';
-            break;
-        case '#1e1a22':
-            code = '"black"';
-            break;
-        case '#552e0b':
-            code = '"brown"';
-            break;
-        case '#7b7b7b':
-            code = '"gray"';
-            break;
-        case '#b51d00':
-            code = '"red"';
-            break;
-        default:
-            code = "console.log('Cannot translate blockly to javaScript! Value: " + colour_name + ")";
-    }
-    return [code, Blockly.JavaScript.ORDER_NONE];
-};
-
-Blockly.JavaScript['colour_picker'] = function(block) {
-    var colour_name = block.getFieldValue('COLOUR');
-    var code;
-    switch (colour_name.toLowerCase()) {
-        case '#ff0000' :
-            code = '"red"';
-            break;
-        case '#0000ff':
-            code = '"blue"';
-            break;
-        case '#00ffff':
-            code = '"cyan"';
-            break;
-        case '#009900':
-            code = '"green"';
-            break;
-        case '#ffa500':
-            code = '"orange"';
-            break;
-        case '#ffff00':
-            code = '"yellow"';
-            break;
-        case '#ffffff':
-            code = '"white"';
-            break;
-        case '#000000':
-            code = '"black"';
-            break;
-        case '#ff00ff':
-            code = '"pink"';
-            break;
-        default:
-            code = "console.log('Cannot translate blockly to javaScript! Value: " + colour_name + ")";
-    }
-    return [code, Blockly.JavaScript.ORDER_NONE];
-};
-
-Blockly.Blocks['assert'] = {
-    init: function() {
-        this.appendValueInput("target")
-            .setCheck(null)
-            .appendField("assert");
-        this.appendValueInput("value")
-            .setCheck(null)
-            .appendField("equals");
-        this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(120);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
 };
 
 Blockly.JavaScript['assert'] = function(block) {
@@ -211,18 +66,6 @@ Blockly.JavaScript['assert'] = function(block) {
         '\tthis._killCritter(x, y); \n' +
         '}\n';
     return code;
-};
-
-Blockly.Blocks['variable'] = {
-    init: function() {
-        this.appendDummyInput()
-            .appendField("variable")
-            .appendField(new Blockly.FieldTextInput("name"), "NAME");
-        this.setOutput(true, null);
-        this.setColour(270);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
 };
 
 Blockly.JavaScript['variable'] = function(block) {
@@ -362,48 +205,6 @@ Blockly.Constants.Terrain.QUOTE_IMAGE_MIXIN = {
 Blockly.Extensions.register('custom_text_quotes',
     Blockly.Constants.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION);
 
-Blockly.HairFieldColour = {};
-
-Blockly.HairFieldColour.COLOURS = ['#f0e527','#1e1a22','#552e0b', '#7b7b7b','#b51d00'];
-Blockly.HairFieldColour.COLUMNS = 3;
-
-Blockly.HairFieldColour.HAIR_COLOUR_MIXIN = {
-    changeColor_: function () {
-        this.inputList[0].fieldRow[0] = cloneObject(this.inputList[0].fieldRow[0]);
-        this.inputList[0].fieldRow[0].setColours(Blockly.HairFieldColour.COLOURS);
-        this.inputList[0].fieldRow[0].setColumns(Blockly.HairFieldColour.COLUMNS);
-    }
-};
-Blockly.HairFieldColour.HAIR_COLOUR_EXTENSION = function() {
-    this.mixin(Blockly.HairFieldColour.HAIR_COLOUR_MIXIN);
-    this.changeColor_();
-};
-
-Blockly.Extensions.register('hair_colour_extension',
-    Blockly.HairFieldColour.HAIR_COLOUR_EXTENSION);
-
-function cloneObject(obj) {
-
-
-    var clone = {};
-    for(var i in obj) {
-        clone[i] = obj[i];
-    }
-    return clone;
-}
-
-Blockly.Blocks['cut_head'] = {
-    init: function() {
-        this.appendDummyInput()
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("Code under Test");
-        this.appendStatementInput("Content")
-            .setCheck(null);
-        this.setColour(120);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
 
 Blockly.JavaScript['cut_head'] = function(block) {
     let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
@@ -411,63 +212,11 @@ Blockly.JavaScript['cut_head'] = function(block) {
     return code;
 };
 
-Blockly.Blocks['init_head'] = {
-    init: function() {
-        this.appendDummyInput()
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("Initialization");
-        this.appendStatementInput("Content")
-            .setCheck(null);
-        this.setColour(300);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
-
-Blockly.Blocks['shirt_picker'] = {
-    init: function() {
-        let options = [
-            [{'src': 'images/cloth_red.png', 'width': 25, 'height': 25, 'alt': 'red'}, 'red'],
-            [{'src': 'images/cloth_blue.png', 'width': 25, 'height': 25, 'alt': 'blue'}, 'blue'],
-            [{'src': 'images/cloth_cyan.png', 'width': 25, 'height': 25, 'alt': 'cyan'}, 'cyan'],
-            [{'src': 'images/cloth_green.png', 'width': 25, 'height': 25, 'alt': 'green'}, 'green'],
-            [{'src': 'images/cloth_orange.png', 'width': 25, 'height': 25, 'alt': 'orange'}, 'orange'],
-            [{'src': 'images/cloth_yellow.png', 'width': 25, 'height': 25, 'alt': 'yellow'}, 'yellow'],
-            [{'src': 'images/cloth_white.png', 'width': 25, 'height': 25, 'alt': 'white'}, 'white'],
-            [{'src': 'images/cloth_black.png', 'width': 25, 'height': 25, 'alt': 'black'}, 'black'],
-            [{'src': 'images/cloth_pink.png', 'width': 25, 'height': 25, 'alt': 'pink'}, 'pink']
-        ];
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(options), "color");
-        this.setOutput(true, null);
-        this.setColour(30);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
-};
 
 Blockly.JavaScript['shirt_picker'] = function(block) {
     let dropdown_color = block.getFieldValue('color');
     let code = '"' + dropdown_color + '"';
     return [code, Blockly.JavaScript.ORDER_NONE];
-};
-
-Blockly.Blocks['hair_picker'] = {
-    init: function() {
-        let options = [
-            [{'src': 'images/hair_blond.png', 'width': 25, 'height': 25, 'alt': 'blond'}, 'blond'],
-            [{'src': 'images/hair_black.png', 'width': 25, 'height': 25, 'alt': 'black'}, 'black'],
-            [{'src': 'images/hair_brown.png', 'width': 25, 'height': 25, 'alt': 'brown'}, 'brown'],
-            [{'src': 'images/hair_gray.png', 'width': 25, 'height': 25, 'alt': 'gray'}, 'gray'],
-            [{'src': 'images/hair_red.png', 'width': 25, 'height': 25, 'alt': 'red'}, 'red']
-        ];
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(options), "color");
-        this.setOutput(true, null);
-        this.setColour(30);
-        this.setTooltip("");
-        this.setHelpUrl("");
-    }
 };
 
 Blockly.JavaScript['hair_picker'] = function(block) {

@@ -1,6 +1,7 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-level-selector/critter-level-selector-simple.js';
 import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
@@ -37,7 +38,7 @@ Displays the game elements
 window.Core = window.Core || {};
 window.Core.GameRoot = window.Core.GameRoot || [];
 
-class CritterGame extends Level(PolymerElement) {
+class CritterGame extends I18n(Level(PolymerElement)) {
     static get template() {
         return html`
         ${critterStyle}
@@ -153,7 +154,7 @@ class CritterGame extends Level(PolymerElement) {
                 text-align: center;
             }
 
-            #selector_container critter-level-selector{
+            #selector_container critter-level-selector-simple{
                 --margin-selector-button: auto;
             }
             
@@ -188,7 +189,7 @@ class CritterGame extends Level(PolymerElement) {
                 <critter-score id="dialog_score"></critter-score>
             </div>
             <div id="selector_container">
-                <h3>Select the next level:</h3>
+                <h3>[[__('select_next')]]</h3>
                 <critter-level-selector-simple></critter-level-selector-simple>
             </div>
         </critter-dialog>
@@ -215,9 +216,9 @@ class CritterGame extends Level(PolymerElement) {
         <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
         <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
         <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
-        <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-        <div id="finished_container">{{_finishedHumans}} of&nbsp;<span id="humansNumber"></span>&nbsp;humans have finished</div>
-        <div id="killed_container">{{_killedCritters}} of&nbsp;<span id="critterNumber"></span> &nbsp;critters have been detected</div>
+        <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+        <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
+        <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
         `;
     }
 
