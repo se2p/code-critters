@@ -17,7 +17,6 @@ public class PolymerResourceCacheFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -59,12 +58,12 @@ public class PolymerResourceCacheFilter implements Filter {
      * Caches the files addressed by /lib/* and changes their content so that the
      * browser can resolve the paths
      *
-     * @param request   Request coming from the browser
-     * @param response  Response to send back to the browser
-     * @param chain     Filterchain doing some more filters and executes the reques
-     * @param f         The file to write the data in
-     * @return          the responses string content
-     * @throws IOException  if an error occurs during writing the file
+     * @param request  Request coming from the browser
+     * @param response Response to send back to the browser
+     * @param chain    Filterchain doing some more filters and executes the reques
+     * @param f        The file to write the data in
+     * @return the responses string content
+     * @throws IOException      if an error occurs during writing the file
      * @throws ServletException comes from the filter chain
      */
     private String cacheFile(ServletRequest request, ServletResponse response, FilterChain chain, File f) throws IOException, ServletException {

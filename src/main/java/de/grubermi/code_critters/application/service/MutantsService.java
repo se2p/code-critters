@@ -21,9 +21,9 @@ public class MutantsService {
         this.mutantRepository = mutantRepository;
     }
 
-    public void createMutants(MutantsDTO dto){
+    public void createMutants(MutantsDTO dto) {
         Level level = levelRepository.findByName(dto.getName());
-        for (MutantDTO critter: dto.getMutants()) {
+        for (MutantDTO critter : dto.getMutants()) {
             Mutant mutant = new Mutant(level, critter.getCode(), critter.getInit());
             mutantRepository.save(mutant);
         }

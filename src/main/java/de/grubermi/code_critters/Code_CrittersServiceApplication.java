@@ -17,7 +17,7 @@ public class Code_CrittersServiceApplication {
     /**
      * Startet die Application
      *
-     * @param args  Benoetigte Argumente
+     * @param args Benoetigte Argumente
      */
     public static void main(String[] args) {
         SpringApplication.run(Code_CrittersServiceApplication.class, args);

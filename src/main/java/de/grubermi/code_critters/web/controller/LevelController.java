@@ -1,9 +1,7 @@
 package de.grubermi.code_critters.web.controller;
 
-import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.application.service.LevelService;
 import de.grubermi.code_critters.web.dto.LevelDTO;
-import de.grubermi.code_critters.web.dto.ResultDTO;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,11 +32,12 @@ public class LevelController {
     public LevelController(LevelService levelService) {
         this.levelService = levelService;
     }
-        /**
+
+    /**
      * Returns the entire level data
      */
     @GetMapping(path = "/get")
-    public HashMap getLevelData(@RequestParam String level, HttpServletResponse response) {
+    public HashMap getLevelData(@RequestParam String level) {
         LevelDTO dto = levelService.getLevel(level);
         String toolbox;
         try {

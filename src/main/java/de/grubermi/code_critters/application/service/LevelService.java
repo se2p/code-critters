@@ -29,45 +29,45 @@ public class LevelService {
     private final RowRepository rowRepository;
 
     @Autowired
-    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository){
+    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository) {
         this.levelRepository = levelRepository;
         this.mutantRepository = mutantRepository;
         this.rowRepository = rowRepository;
     }
 
-    public void createLevel (LevelDTO dto) {
+    public void createLevel(LevelDTO dto) {
         try {
             levelRepository.save(createLevelDAO(dto));
-        } catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             throw new AlreadyExistsException("Tried to insert a level name that already exists", e);
         }
     }
 
-    public LevelDTO getLevel(String name){
+    public LevelDTO getLevel(String name) {
         Level level = levelRepository.findByName(name);
-        if(level == null) {
+        if (level == null) {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return createDto(level);
     }
 
-    public String getTest(String name){
+    public String getTest(String name) {
         String test = levelRepository.getTestByName(name);
-        if(test == null) {
+        if (test == null) {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return test;
     }
 
-    public String getCUT(String name){
+    public String getCUT(String name) {
         String cut = levelRepository.getCUTByName(name);
-        if(cut == null) {
+        if (cut == null) {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return cut;
     }
 
-    public boolean existsLevel(String name){
+    public boolean existsLevel(String name) {
         return levelRepository.findByName(name) != null;
     }
 
@@ -130,17 +130,17 @@ public class LevelService {
 
     public List<MutantDTO> getMutants(String name) {
         String id = levelRepository.getIdByName(name);
-        if(id == null) {
+        if (id == null) {
             throw new NotFoundException("No such level");
         }
         Level level = new Level(id);
 
         List<String[]> mutants = mutantRepository.getCodeByLevel(level);
-        if(mutants == null || mutants.size() == 0) {
+        if (mutants == null || mutants.size() == 0) {
             throw new NotFoundException("No mutants could be found");
         }
         List<MutantDTO> mutantsDto = new LinkedList<MutantDTO>();
-        for (Object[] mutant: mutants) {
+        for (Object[] mutant : mutants) {
             MutantDTO dto = new MutantDTO((String) mutant[0], (String) mutant[1]);
             mutantsDto.add(dto);
         }
@@ -149,7 +149,7 @@ public class LevelService {
 
     public String getInit(String name) {
         String init = levelRepository.getInitByName(name);
-        if(init == null) {
+        if (init == null) {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return init;
@@ -158,9 +158,9 @@ public class LevelService {
     public List getLevelsGrouped(String cookie) {
         List groupedLevels = new LinkedList();
 
-        Collection<Row> rows= rowRepository.getRows();
+        Collection<Row> rows = rowRepository.getRows();
         for (Row row : rows) {
-            HashMap map = new HashMap<String,Object>();
+            HashMap map = new HashMap<String, Object>();
             map.put("name", row.getName());
             map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
             groupedLevels.add(map);

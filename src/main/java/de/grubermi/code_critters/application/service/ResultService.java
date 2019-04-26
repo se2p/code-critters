@@ -21,9 +21,10 @@ public class ResultService {
     }
 
     public void createResult(ResultDTO resultDTO, String cookie) {
+        //TODO link user
         Level level = levelRepository.findByName(resultDTO.getLevel());
         Result result = resultRepository.getResultByLevelAndCookie(level, cookie);
-        if(result != null){
+        if (result != null) {
             result.setScore(resultDTO.getScore());
             result.setStars(resultDTO.getStars());
         } else {

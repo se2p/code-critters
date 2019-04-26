@@ -12,13 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -63,18 +59,18 @@ public class GeneratorController {
      * Creates a new level
      */
     @PostMapping(path = "/level/image")
-    public void createLevel (@RequestParam("file") MultipartFile image) {
-       levelService.storeImage(image);
+    public void createLevel(@RequestParam("file") MultipartFile image) {
+        levelService.storeImage(image);
     }
 
     /**
      * Creates a new image
      */
     @PostMapping(path = "/level/create")
-    public void createLevel (@RequestBody LevelDTO dto, HttpServletResponse response) {
+    public void createLevel(@RequestBody LevelDTO dto, HttpServletResponse response) {
         try {
             levelService.createLevel(dto);
-        } catch (AlreadyExistsException e){
+        } catch (AlreadyExistsException e) {
             response.setStatus(460);
         }
     }
@@ -83,7 +79,7 @@ public class GeneratorController {
      * Creates new mutants
      */
     @PostMapping(path = "/mutants/create")
-    public void createMutants (@RequestBody MutantsDTO dto) {
+    public void createMutants(@RequestBody MutantsDTO dto) {
         mutantsService.createMutants(dto);
     }
 
