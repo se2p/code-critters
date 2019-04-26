@@ -18,6 +18,10 @@ public class Result {
     private String cookie;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user.id")
+    private User user;
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "level.id")
     private Level level;
 
@@ -26,12 +30,13 @@ public class Result {
     public Result() {
     }
 
-    public Result(int score, int stars, String cookie, Level level, Date updated) {
+    public Result(int score, int stars, String cookie, Level level, Date updated, User user) {
         this.score = score;
         this.stars = stars;
         this.cookie = cookie;
         this.level = level;
         this.updated = updated;
+        this.user = user;
     }
 
     public Result(int score, String cookie, Level level, int stars) {
@@ -87,6 +92,14 @@ public class Result {
 
     public void setUpdated(Date updated) {
         this.updated = updated;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @PrePersist
