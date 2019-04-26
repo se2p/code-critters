@@ -7,10 +7,8 @@ import de.grubermi.code_critters.persistence.entities.User;
 import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,12 +17,14 @@ public class UserService {
 
     private final UserRepositiory userRepositiory;
     private final MailService mailService;
+    private final PasswordService passwordService;
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw0123456789";
 
     @Autowired
-    public UserService(UserRepositiory userRepositiory, MailService mailService) {
+    public UserService(UserRepositiory userRepositiory, MailService mailService, PasswordService passwordService) {
         this.userRepositiory = userRepositiory;
         this.mailService = mailService;
+        this.passwordService = passwordService;
     }
 
     public void registerUser(UserDTO dto, String cookie, String url) {
@@ -48,7 +48,7 @@ public class UserService {
             throw new IncompleteDataException("Password missing");
         }
 
-        user = this.hashPassword(dto.getPassword(), user);
+        user = passwordService.hashPassword(dto.getPassword(), user);
         user.setCookie(cookie);
         user.setActive(false);
         user.setSecret(generateSecret());
@@ -72,19 +72,19 @@ public class UserService {
         User user = userRepositiory.findByUsernameOrEmail(dto.getUsername(), dto.getEmail());
 
         if (user != null) {
-            Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder(user.getSalt());
-            if (pbkdf2PasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
+
+            if (passwordService.verifyPassword(dto.getPassword(), user.getPassword(), user.getSalt())) {
                 user.setCookie(cookie);
                 userRepositiory.save(user);
                 return userToDTO(user);
             } else {
-                throw new NotFoundException("Username or Password incorrect",  "invalid_username_or_password");
+                throw new NotFoundException("Username or Password incorrect", "invalid_username_or_password");
             }
         }
-        throw new NotFoundException("Username or Password incorrect",  "invalid_username_or_password");
+        throw new NotFoundException("Username or Password incorrect", "invalid_username_or_password");
     }
 
-    public void forgotPassword(UserDTO dto,  String url) {
+    public void forgotPassword(UserDTO dto, String url) {
         User user = userRepositiory.findByUsernameAndEmail(dto.getUsername(), dto.getEmail());
         if (user != null) {
             user.setSecret(generateSecret());
@@ -108,12 +108,12 @@ public class UserService {
     }
 
     public void resetPassword(String secret, UserDTO dto) {
-        User user  = userRepositiory.findBySecret(secret);
+        User user = userRepositiory.findBySecret(secret);
         if (user != null) {
             user.setSecret(null);
             user.setResetPassword(false);
 
-            user = this.hashPassword(dto.getPassword(), user);
+            user = passwordService.hashPassword(dto.getPassword(), user);
             userRepositiory.save(user);
         } else {
             throw new NotFoundException("Incorrect Secret", "incorrect_secret");
@@ -150,24 +150,11 @@ public class UserService {
         return builder.toString();
     }
 
-    private User hashPassword(String password, User user) {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-
-        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder(salt.toString());
-        password = pbkdf2PasswordEncoder.encode(password);
-
-        user.setPassword(password);
-        user.setSalt(salt.toString());
-        user.setSecret(generateSecret());
-        return user;
-    }
 
     public UserDTO getUserByCookie(String cookie) {
         User user = userRepositiory.findByCookie(cookie);
-        if(user == null) {
-            throw new NotFoundException("No user with this cookie",  "invalid_cookie");
+        if (user == null) {
+            throw new NotFoundException("No user with this cookie", "invalid_cookie");
         }
         return this.userToDTO(user);
     }
