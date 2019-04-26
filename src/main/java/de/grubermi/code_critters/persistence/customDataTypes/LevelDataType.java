@@ -1,21 +1,24 @@
 package de.grubermi.code_critters.persistence.customDataTypes;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 
 public class LevelDataType implements UserType {
 
-    protected static final int[] SQL_TYPES = { Types.CLOB };
+    protected static final int[] SQL_TYPES = {Types.CLOB};
 
     @Override
     public int[] sqlTypes() {
-        return new int[] { Types.CLOB};
+        return new int[]{Types.CLOB};
     }
 
     @Override
@@ -25,12 +28,12 @@ public class LevelDataType implements UserType {
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
-        if(x == null) {
+        if (x == null) {
             return y == null;
         }
-        if(x instanceof String[][] && y instanceof String [][]) {
-            String[][] tempX = (String [][]) x;
-            String[][] tempY = (String [][]) y;
+        if (x instanceof String[][] && y instanceof String[][]) {
+            String[][] tempX = (String[][]) x;
+            String[][] tempY = (String[][]) y;
             return Arrays.deepEquals(tempX, tempY);
         }
         return false;
@@ -42,11 +45,11 @@ public class LevelDataType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
         if (rs.wasNull()) {
             return null;
         }
-        if(rs.getString(names[0]) == null){
+        if (rs.getString(names[0]) == null) {
             return new Integer[0];
         }
 
@@ -54,7 +57,7 @@ public class LevelDataType implements UserType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);
         } else {
@@ -88,7 +91,7 @@ public class LevelDataType implements UserType {
         return original;
     }
 
-    private String parseArrayToString(String[][] level){
+    private String parseArrayToString(String[][] level) {
         StringBuilder res = new StringBuilder();
         for (String[] row : level) {
             res.append("{");
@@ -100,7 +103,7 @@ public class LevelDataType implements UserType {
         return res.toString();
     }
 
-    private String[][] parseStringToArray(String level){
+    private String[][] parseStringToArray(String level) {
         String[][] array = new String[StringUtils.countOccurrencesOf(level, "{")][];
         level = level.replace("{", "");
         String[] temp = level.split("}");

@@ -1,27 +1,24 @@
 package de.grubermi.code_critters.persistence.customDataTypes;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CoordinateDataType implements UserType {
 
-    protected static final int[] SQL_TYPES = { Types.VARCHAR };
+    protected static final int[] SQL_TYPES = {Types.VARCHAR};
 
     @Override
     public int[] sqlTypes() {
-        return new int[] { Types.VARCHAR};
+        return new int[]{Types.VARCHAR};
     }
 
     @Override
@@ -31,10 +28,10 @@ public class CoordinateDataType implements UserType {
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
-        if(x == null) {
+        if (x == null) {
             return y == null;
         }
-        if(x instanceof HashMap && y instanceof HashMap) {
+        if (x instanceof HashMap && y instanceof HashMap) {
             HashMap<String, Integer> tempX = (HashMap<String, Integer>) x;
             HashMap<String, Integer> tempY = (HashMap<String, Integer>) y;
             return tempX.equals(tempY);
@@ -48,11 +45,11 @@ public class CoordinateDataType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
         if (rs.wasNull()) {
             return null;
         }
-        if(rs.getString(names[0]) == null){
+        if (rs.getString(names[0]) == null) {
             return new Integer[0];
         }
 
@@ -60,7 +57,7 @@ public class CoordinateDataType implements UserType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, SQL_TYPES[0]);
         } else {
@@ -94,7 +91,7 @@ public class CoordinateDataType implements UserType {
         return original;
     }
 
-    private String parseHashMapToString(HashMap<String, Integer> level){
+    private String parseHashMapToString(HashMap<String, Integer> level) {
         StringBuilder res = new StringBuilder();
         for (Map.Entry<String, Integer> entry : level.entrySet()) {
             res.append("{");
@@ -105,7 +102,7 @@ public class CoordinateDataType implements UserType {
         return res.toString();
     }
 
-    private HashMap<String, Integer> parseStringToHashMap(String level){
+    private HashMap<String, Integer> parseStringToHashMap(String level) {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         level = level.replace("{", "");
         String[] temp = level.split("}");
