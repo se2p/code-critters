@@ -1061,7 +1061,7 @@ class CritterGameboard extends Level(PolymerElement) {
         for(let i = 0; i < this._globalData.numberOfHumans +
                             this._globalData.numberOfCritters; ++i) {
             let audio = document.createElement("audio");
-            audio.src = this.importPath + "/sounds/magic.mp3";
+            audio.src = this.importPath + "sounds/magic.mp3";
             audio.play();
             audio.pause();
             this._audioList.push(audio);

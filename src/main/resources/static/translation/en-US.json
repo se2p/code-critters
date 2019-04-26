@@ -11,5 +11,7 @@
   "needed_mines": "Needed Mines",
   "time_bonus": "Time Bonus",
   "select_next": "Select the next level:",
-  "load_level": "Load level"
+  "load_level": "Load level",
+  "activation_error": "Profile could not be activated",
+  "activation_success": "Your profile is now active"
 }

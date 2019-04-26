@@ -3,6 +3,7 @@ import {critterStyle} from '/style/critter-botstrap.js'
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import '../critter-i18n/critter-i18n.js';
+import '../critter-parameter-handler/critter-parameter-handler.js';
 
 /*
 # critter-insert
@@ -52,6 +53,7 @@ class CritterHeader extends I18n(PolymerElement) {
             ${critterStyle}
             
             <critter-i18n></critter-i18n>
+            <critter-parameter-handler></critter-parameter-handler>
        
             <div id="image" class="container mx-auto" style="width: fit-content;">
                 <a href="/">

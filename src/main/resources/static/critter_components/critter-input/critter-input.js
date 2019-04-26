@@ -1,4 +1,5 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 
 /*
@@ -14,46 +15,52 @@ A Simple Button
 @demo
 */
 
-class CritterInput extends PolymerElement {
+class CritterInput extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
-                #input *{
+                               
+                *{
                     height: 30px;
                 }
+                
+                :host {
+                    display: table-row;
+                }
         
-                #input span{
+                span{
                     cursor: default;
                     text-align: center;
                     justify-content: center;
                     align-items: center;
+                    display: table-cell;
                 }
         
-                #input input{
+                input{
                     margin-left: 10px;
                     padding: 0 5px;
                     font-size: 1em;
                     background-color: transparent;
                     border: none;
                     border-bottom: 2px solid #039BE5;
+                    display: table-cell;
                 }
         
-                #input input:focus{
+                input:focus{
                     border: none;
                     border-bottom: 2px solid #039BE5;
                     outline: none;
                 }
         
-                #input input:invalid{
+                input:invalid{
                     border: none;
                     border-bottom: 2px solid #e5424a;
                     outline: none;
                 }
             </style>
-             <div id="input">
-                 <span>[[label]]</span>
-                 <input id="field" type="text" value="{{value::input}}" placeholder$="{{placeholder}}">
-             </div>
+            
+            <span>[[__(label)]]</span>
+            <input id="field" type="text" value="{{value::input}}" name="[[name]]" placeholder$="{{placeholder}}">
         `;
     }
 
@@ -69,6 +76,11 @@ class CritterInput extends PolymerElement {
                 notify: true
             },
 
+            name: {
+                type: String,
+                value: ""
+            },
+
             placeholder: {
                 type: String
             },
@@ -81,7 +93,16 @@ class CritterInput extends PolymerElement {
                 type: Boolean,
                 value: true,
                 observer: "_onValidChange"
-            }
+            },
+
+            noSerialize: {
+                type: Boolean
+            },
+
+            match: {
+                type: String,
+                value: ""
+            },
         }
     }
 
@@ -95,6 +116,14 @@ class CritterInput extends PolymerElement {
 
     _onValidChange() {
         this.$.field.setCustomValidity(this.valid ? "" : "name already exists");
+    }
+
+    serialize() {
+        if(!this.noSerialize) {
+            let data = {};
+            data[this.name] = this.value;
+            return data;
+        }
     }
 }
 

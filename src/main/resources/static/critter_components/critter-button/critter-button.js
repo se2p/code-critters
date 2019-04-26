@@ -1,4 +1,6 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+
 
 /*
 # critter-button
@@ -76,8 +78,40 @@ class CritterButton extends PolymerElement {
 
             _disabledString: {
                 computed: "_isDisabled(disabled)"
+            },
+
+            submit: {
+                type: Boolean
+            },
+
+            dismiss: {
+                type: Boolean
             }
 
+        }
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        afterNextRender(this, function () {
+            this.$.button.addEventListener("click", this._handleClick.bind(this));
+        });
+    }
+
+    _handleClick() {
+        if(this.submit){
+            this.dispatchEvent(new CustomEvent('_submit', {
+                detail: {},
+                bubbles: true,
+                composed: true
+            }));
+        } else if(this.dismiss){
+            this.dispatchEvent(new CustomEvent('_dismiss', {
+                detail: {},
+                bubbles: true,
+                composed: true
+            }));
         }
     }
 

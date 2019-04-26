@@ -1,4 +1,6 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 /*
@@ -16,7 +18,7 @@ A Simple Button
 window.Core = window.Core || {};
 window.Core.toasts = window.Core.toasts || [];
 
-class CritterToaster extends PolymerElement {
+class CritterToaster extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
@@ -78,7 +80,7 @@ class CritterToaster extends PolymerElement {
                     <iron-icon id="info" icon="icons:error"></iron-icon>
                     <iron-icon id="success" icon="icons:check-circle"></iron-icon>
                 </div>
-                <div id="msg">[[msg]]</div>
+                <div id="msg">[[__(msg)]]</div>
             </div>
         `;
     }
@@ -135,8 +137,9 @@ class CritterToaster extends PolymerElement {
             if (index > -1) {
                 window.Core.toasts.splice(index, 1);
             }
-            this.$.toaster.style.display = "none";
+            this.$.toaster.style.opacity = "0";
             setTimeout(() => {
+                this.$.toaster.style.display = "none";
                 this.getRootNode().removeChild(this);
             }, 1000);
         }, timeout);
