@@ -1,12 +1,10 @@
 package de.grubermi.code_critters.persistence.entities;
 
+import de.grubermi.code_critters.web.enums.Language;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class User {
@@ -25,10 +23,12 @@ public class User {
     private String cookie;
     private String secret;
     private String salt;
-    private Boolean resetPassword;
-    private Boolean active;
+    private boolean resetPassword;
+    private boolean active;
+    @Enumerated(EnumType.STRING)
+    private Language language;
 
-    public User(String username, String email, String password, String cookie, String secret, String salt, Boolean resetPassword, Boolean active) {
+    public User(String username, String email, String password, String cookie, String secret, String salt, boolean resetPassword, boolean active, Language language) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -37,6 +37,7 @@ public class User {
         this.salt = salt;
         this.resetPassword = resetPassword;
         this.active = active;
+        this.language = language;
     }
 
     public User() {
@@ -98,19 +99,27 @@ public class User {
         this.salt = salt;
     }
 
-    public Boolean getResetPassword() {
+    public boolean getResetPassword() {
         return resetPassword;
     }
 
-    public void setResetPassword(Boolean resetPassword) {
+    public void setResetPassword(boolean resetPassword) {
         this.resetPassword = resetPassword;
     }
 
-    public Boolean getActive() {
+    public boolean getActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

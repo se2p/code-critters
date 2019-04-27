@@ -3,6 +3,7 @@ package de.grubermi.code_critters.application.init;
 import de.grubermi.code_critters.application.service.PasswordService;
 import de.grubermi.code_critters.persistence.entities.User;
 import de.grubermi.code_critters.persistence.repository.UserRepositiory;
+import de.grubermi.code_critters.web.enums.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class UserInitialization {
             user.setActive(true);
             user.setEmail("admin@admin.de");
             user.setUsername("admin");
+            user.setLanguage(Language.en);
             user = passwordService.hashPassword("admin", user);
             userRepositiory.save(user);
             logger.info("User admin:admin was added to the database");

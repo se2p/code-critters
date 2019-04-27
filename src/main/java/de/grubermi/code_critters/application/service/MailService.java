@@ -1,5 +1,6 @@
 package de.grubermi.code_critters.application.service;
 
+import de.grubermi.code_critters.web.enums.Language;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +38,7 @@ public class MailService {
     }
 
 
-    public void sendMessage(MimeMessage message) {
+    private void sendMessage(MimeMessage message) {
         try {
             emailSender.send(message);
         } catch (MailException e) {
@@ -46,17 +47,17 @@ public class MailService {
         }
     }
 
-    public void sendMessageFromTemplate(String templateName, Map<String, String> data) {
+    public void sendMessageFromTemplate(String templateName, Map<String, String> data, Language language) {
         MimeMessage message = emailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(message);
         try {
             helper.setTo(data.get("reciver"));
-            helper.setSubject(data.get("subject"));
+            helper.setSubject(TranslationsService.translate(language, data.get("subject")));
             helper.setFrom(email, personal);
 
 
-            String template = this.loadTemplate(templateName);
+            String template = this.loadTemplate(templateName, language);
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 template = template.replaceAll("\\{\\{" + entry.getKey() + "\\}\\}", entry.getValue());
             }
@@ -72,11 +73,8 @@ public class MailService {
 
     }
 
-    public String loadTemplate(String templateName) throws IOException {
-        File file = new File(MAILDIR + templateName + ".html");
-        if (file != null) {
-            return FileUtils.readFileToString(file, "utf-8");
-        }
-        throw new FileNotFoundException();
+    private String loadTemplate(String templateName, Language language) throws IOException {
+        File file = new File(MAILDIR + language.toString() + "/" + templateName + ".html");
+        return FileUtils.readFileToString(file, "utf-8");
     }
 }

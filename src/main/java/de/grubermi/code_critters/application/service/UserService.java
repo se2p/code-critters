@@ -33,7 +33,7 @@ public class UserService {
         }
 
         User user = new User();
-        if (dto.getEmail() != null) {
+        if (dto.getEmail() == null) {
             throw new IncompleteDataException("Email missing");
         }
         user.setEmail(dto.getEmail());
@@ -43,6 +43,10 @@ public class UserService {
         }
         user.setUsername(dto.getUsername());
 
+        if (dto.getLanguage() == null) {
+            throw new IncompleteDataException("Language missing");
+        }
+        user.setLanguage(dto.getLanguage());
 
         if (dto.getPassword() == null) {
             throw new IncompleteDataException("Password missing");
@@ -58,12 +62,12 @@ public class UserService {
         String link = url + "/users/activate/" + user.getSecret();
 
         mailTemplateData.put("reciver", user.getEmail());
-        mailTemplateData.put("subject", "Welcome");
+        mailTemplateData.put("subject", "welcome");
         mailTemplateData.put("user", user.getUsername());
         mailTemplateData.put("secret", link);
         mailTemplateData.put("baseURL", url);
-
-        mailService.sendMessageFromTemplate("register", mailTemplateData);
+        //TODO change language dynamically
+        mailService.sendMessageFromTemplate("register", mailTemplateData, user.getLanguage());
 
         userRepositiory.save(user);
     }
@@ -96,12 +100,12 @@ public class UserService {
             String link = url + "/resetPassword?secret=" + user.getSecret();
 
             mailTemplateData.put("reciver", user.getEmail());
-            mailTemplateData.put("subject", "Reset Password");
+            mailTemplateData.put("subject", "reset_pw");
             mailTemplateData.put("user", user.getUsername());
             mailTemplateData.put("secret", link);
             mailTemplateData.put("baseURL", url);
-
-            mailService.sendMessageFromTemplate("forgotPassword", mailTemplateData);
+            //TODO change language dynamically
+            mailService.sendMessageFromTemplate("forgotPassword", mailTemplateData,user.getLanguage());
         } else {
             throw new NotFoundException("Username or Password incorrect", "invalid_username_or_password");
         }
@@ -120,7 +124,7 @@ public class UserService {
         }
     }
 
-    public Boolean activateUser(String secret) {
+    public boolean activateUser(String secret) {
         User user = userRepositiory.findBySecret(secret);
         if (user != null) {
             user.setSecret(null);
@@ -136,6 +140,7 @@ public class UserService {
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setActive(user.getActive());
+        dto.setLanguage(user.getLanguage());
 
         return dto;
     }
@@ -149,7 +154,6 @@ public class UserService {
         }
         return builder.toString();
     }
-
 
     public UserDTO getUserByCookie(String cookie) {
         User user = userRepositiory.findByCookie(cookie);

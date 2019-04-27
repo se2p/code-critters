@@ -61,6 +61,8 @@ public class UserController {
             data.put("username", user.getUsername());
             data.put("email", user.getEmail());
             data.put("role", "user");
+            data.put("language", user.getLanguage().toString());
+
         }
 
         return data;
@@ -108,6 +110,7 @@ public class UserController {
         data.put("username", user.getUsername());
         data.put("email", user.getEmail());
         data.put("role", "user");
+        data.put("language", user.getLanguage().toString());
 
         return data;
     }

@@ -1,6 +1,6 @@
 package de.grubermi.code_critters.web.dto;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import de.grubermi.code_critters.web.enums.Language;
 
 public class UserDTO {
 
@@ -8,29 +8,26 @@ public class UserDTO {
     private String email;
     private String password;
     private String cookie;
-    private Boolean active;
+    private boolean active;
+    private Language language;
 
-    public UserDTO(String username, String email, String password, String cookie, Boolean active) {
+
+    //needed for registration
+    public UserDTO(String username, String email, String password, Language language) {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.cookie = cookie;
-        this.active = active;
+        this.language = language;
     }
 
-    public UserDTO(String username, String email, String password, String cookie) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.cookie = cookie;
-    }
-
+    //needed for login
     public UserDTO(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
     }
 
+    //needed for password reset
     public UserDTO(String password) {
         this.password = password;
     }
@@ -70,11 +67,19 @@ public class UserDTO {
         this.email = email;
     }
 
-    public Boolean getActive() {
+    public boolean getActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

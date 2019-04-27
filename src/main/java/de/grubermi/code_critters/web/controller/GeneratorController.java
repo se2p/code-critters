@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping(value = "/generator")
 public class GeneratorController {
 
-    private final Logger logger = LogManager.getLogger(LevelController.class);
+    private final Logger logger = LogManager.getLogger(GeneratorController.class);
 
     private final LevelService levelService;
     private final MutantsService mutantsService;
