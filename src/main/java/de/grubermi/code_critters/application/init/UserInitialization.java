@@ -4,6 +4,7 @@ import de.grubermi.code_critters.application.service.PasswordService;
 import de.grubermi.code_critters.persistence.entities.User;
 import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.enums.Language;
+import de.grubermi.code_critters.web.enums.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ public class UserInitialization {
 
     @PostConstruct
     public void init() {
-        //TODO find by role (admin)
-        Iterable<User> users = userRepositiory.findAll();
+        Iterable<User> users = userRepositiory.findAllByRole(Role.admin);
         if (users == null || !users.iterator().hasNext()) {
             User user = new User();
             user.setActive(true);
             user.setEmail("admin@admin.de");
             user.setUsername("admin");
+            user.setRole(Role.admin);
             user.setLanguage(Language.en);
             user = passwordService.hashPassword("admin", user);
             userRepositiory.save(user);

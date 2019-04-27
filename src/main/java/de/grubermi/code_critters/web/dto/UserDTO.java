@@ -1,6 +1,7 @@
 package de.grubermi.code_critters.web.dto;
 
 import de.grubermi.code_critters.web.enums.Language;
+import de.grubermi.code_critters.web.enums.Role;
 
 public class UserDTO {
 
@@ -10,6 +11,7 @@ public class UserDTO {
     private String cookie;
     private boolean active;
     private Language language;
+    private Role role;
 
 
     //needed for registration
@@ -81,5 +83,13 @@ public class UserDTO {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

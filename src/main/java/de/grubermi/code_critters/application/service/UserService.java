@@ -6,6 +6,7 @@ import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.persistence.entities.User;
 import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.dto.UserDTO;
+import de.grubermi.code_critters.web.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +55,7 @@ public class UserService {
 
         user = passwordService.hashPassword(dto.getPassword(), user);
         user.setCookie(cookie);
+        user.setRole(Role.user);
         user.setActive(false);
         user.setSecret(generateSecret());
 
@@ -66,7 +68,6 @@ public class UserService {
         mailTemplateData.put("user", user.getUsername());
         mailTemplateData.put("secret", link);
         mailTemplateData.put("baseURL", url);
-        //TODO change language dynamically
         mailService.sendMessageFromTemplate("register", mailTemplateData, user.getLanguage());
 
         userRepositiory.save(user);
@@ -104,7 +105,6 @@ public class UserService {
             mailTemplateData.put("user", user.getUsername());
             mailTemplateData.put("secret", link);
             mailTemplateData.put("baseURL", url);
-            //TODO change language dynamically
             mailService.sendMessageFromTemplate("forgotPassword", mailTemplateData,user.getLanguage());
         } else {
             throw new NotFoundException("Username or Password incorrect", "invalid_username_or_password");
@@ -141,6 +141,7 @@ public class UserService {
         dto.setEmail(user.getEmail());
         dto.setActive(user.getActive());
         dto.setLanguage(user.getLanguage());
+        dto.setRole(user.getRole());
 
         return dto;
     }

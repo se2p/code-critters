@@ -1,6 +1,7 @@
 package de.grubermi.code_critters.persistence.entities;
 
 import de.grubermi.code_critters.web.enums.Language;
+import de.grubermi.code_critters.web.enums.Role;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -27,8 +28,10 @@ public class User {
     private boolean active;
     @Enumerated(EnumType.STRING)
     private Language language;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    public User(String username, String email, String password, String cookie, String secret, String salt, boolean resetPassword, boolean active, Language language) {
+    public User(String username, String email, String password, String cookie, String secret, String salt, boolean resetPassword, boolean active, Language language, Role role) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -38,6 +41,7 @@ public class User {
         this.resetPassword = resetPassword;
         this.active = active;
         this.language = language;
+        this.role = role;
     }
 
     public User() {
@@ -121,5 +125,13 @@ public class User {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

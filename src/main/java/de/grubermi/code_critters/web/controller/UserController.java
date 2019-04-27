@@ -60,7 +60,7 @@ public class UserController {
         } else {
             data.put("username", user.getUsername());
             data.put("email", user.getEmail());
-            data.put("role", "user");
+            data.put("role", user.getRole().toString());
             data.put("language", user.getLanguage().toString());
 
         }
@@ -109,7 +109,7 @@ public class UserController {
         Map<String, String> data = new HashMap<>();
         data.put("username", user.getUsername());
         data.put("email", user.getEmail());
-        data.put("role", "user");
+        data.put("role", user.getRole().toString());
         data.put("language", user.getLanguage().toString());
 
         return data;
