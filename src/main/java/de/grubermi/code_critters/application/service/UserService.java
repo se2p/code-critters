@@ -105,7 +105,7 @@ public class UserService {
             mailTemplateData.put("user", user.getUsername());
             mailTemplateData.put("secret", link);
             mailTemplateData.put("baseURL", url);
-            mailService.sendMessageFromTemplate("forgotPassword", mailTemplateData,user.getLanguage());
+            mailService.sendMessageFromTemplate("forgotPassword", mailTemplateData, user.getLanguage());
         } else {
             throw new NotFoundException("Username or Password incorrect", "invalid_username_or_password");
         }
@@ -163,4 +163,13 @@ public class UserService {
         }
         return this.userToDTO(user);
     }
+
+    public void logoutUser(String cookie) {
+        User user = userRepositiory.findByCookie(cookie);
+        if (user != null) {
+            user.setCookie(null);
+            userRepositiory.save(user);
+        }
+    }
+
 }

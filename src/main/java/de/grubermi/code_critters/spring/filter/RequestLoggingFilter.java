@@ -1,4 +1,4 @@
-package de.grubermi.code_critters.spring;
+package de.grubermi.code_critters.spring.filter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

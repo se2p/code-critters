@@ -3,8 +3,10 @@ package de.grubermi.code_critters.web.controller;
 import de.grubermi.code_critters.application.service.UserService;
 import de.grubermi.code_critters.web.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.MalformedURLException;
@@ -68,6 +70,11 @@ public class UserController {
         return data;
     }
 
+    @PostMapping(path = "/logout")
+    public void logoutUser(@CookieValue("id") String cookie) {
+        userService.logoutUser(cookie);
+    }
+
     @PostMapping(path = "/forgot")
     public void forgotPassword(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
         userService.forgotPassword(dto, this.getBaseURL(request));
@@ -103,6 +110,7 @@ public class UserController {
      * @return Map containing the users Data
      */
     @GetMapping(path = "/me")
+    @Secured("ROLE_USER")
     public Map<String, String> getMe(@CookieValue("id") String cookie) {
         UserDTO user = userService.getUserByCookie(cookie);
 
