@@ -27,11 +27,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         assert authentication instanceof CustomAuthentication : "Illegal Authentication type";
+        //timeout check implied in getUserByCookie
         UserDTO dto = userService.getUserByCookie(((CustomAuthentication) authentication).getCookie());
         if (dto != null && dto.getRole() != null && dto.getActive()) {
             authentication.setAuthenticated(true);
-            Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-            //TODO check for timeout
+            Set<GrantedAuthority> authorities = new HashSet<>();
             if (dto.getRole() == Role.user || dto.getRole() == Role.admin) {
                 GrantedAuthority grantedAuthorityUser = new SimpleGrantedAuthority("ROLE_USER");
                 authorities.add(grantedAuthorityUser);

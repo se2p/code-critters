@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class User {
@@ -31,8 +32,9 @@ public class User {
     private Language language;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private Date lastUsed;
 
-    public User(String username, String email, String password, String cookie, String secret, String salt, boolean resetPassword, boolean active, Language language, Role role) {
+    public User(String username, String email, String password, String cookie, String secret, String salt, boolean resetPassword, boolean active, Language language, Role role, Date lastUsed) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -43,6 +45,7 @@ public class User {
         this.active = active;
         this.language = language;
         this.role = role;
+        this.lastUsed = lastUsed;
     }
 
     public User() {
@@ -132,7 +135,25 @@ public class User {
         return role;
     }
 
+    public Date getLastUsed() {
+        return lastUsed;
+    }
+
+    public void setLastUsed(Date lastUsed) {
+        this.lastUsed = lastUsed;
+    }
+
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        lastUsed = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastUsed = new Date();
     }
 }

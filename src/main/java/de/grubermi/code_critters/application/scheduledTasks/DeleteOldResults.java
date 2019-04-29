@@ -28,6 +28,6 @@ public class DeleteOldResults {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
         Date date = cal.getTime();
-        resultRepository.deleteAll(resultRepository.getAllByUpdatedBefore(date));
+        resultRepository.deleteAll(resultRepository.getAllByUpdatedBeforeAndUserIsNull(date));
     }
 }

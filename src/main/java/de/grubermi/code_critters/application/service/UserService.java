@@ -8,8 +8,11 @@ import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.dto.UserDTO;
 import de.grubermi.code_critters.web.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +22,11 @@ public class UserService {
     private final UserRepositiory userRepositiory;
     private final MailService mailService;
     private final PasswordService passwordService;
+
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw0123456789";
+
+    @Value("${spring.session.timeout}")
+    private int timeout;
 
     @Autowired
     public UserService(UserRepositiory userRepositiory, MailService mailService, PasswordService passwordService) {
@@ -28,7 +35,7 @@ public class UserService {
         this.passwordService = passwordService;
     }
 
-    public void registerUser(UserDTO dto, String cookie, String url) {
+    public void registerUser(UserDTO dto, String url) {
         if (userRepositiory.existsByUsernameOrEmail(dto.getUsername(), dto.getEmail())) {
             throw new AlreadyExistsException("User with this username or email already exists!");
         }
@@ -54,7 +61,6 @@ public class UserService {
         }
 
         user = passwordService.hashPassword(dto.getPassword(), user);
-        user.setCookie(cookie);
         user.setRole(Role.user);
         user.setActive(false);
         user.setSecret(generateSecret());
@@ -157,10 +163,18 @@ public class UserService {
     }
 
     public UserDTO getUserByCookie(String cookie) {
-        User user = userRepositiory.findByCookie(cookie);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -timeout);
+        Date date = cal.getTime();
+        return getUserByCookieAndDate(cookie, date);
+    }
+
+    public UserDTO getUserByCookieAndDate(String cookie, Date date) {
+        User user = userRepositiory.findByCookieAndLastUsedAfter(cookie, date);
         if (user == null) {
             throw new NotFoundException("No user with this cookie", "invalid_cookie");
         }
+        userRepositiory.save(user);
         return this.userToDTO(user);
     }
 

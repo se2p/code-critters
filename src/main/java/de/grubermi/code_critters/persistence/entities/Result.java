@@ -39,11 +39,12 @@ public class Result {
         this.user = user;
     }
 
-    public Result(int score, String cookie, Level level, int stars) {
+    public Result(int score, String cookie, Level level, int stars, User user) {
         this.score = score;
         this.cookie = cookie;
         this.level = level;
         this.stars = stars;
+        this.user = user;
     }
 
     public String getId() {

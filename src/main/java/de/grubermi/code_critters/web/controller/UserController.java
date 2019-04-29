@@ -30,13 +30,12 @@ public class UserController {
      * Registers a new user
      *
      * @param dto     Contains the users data
-     * @param cookie  contains the currently used cookie data
      * @param request Request containing the data for computing base URL
      * @throws MalformedURLException If the request URL is not well formatted
      */
     @PostMapping(path = "/register")
-    public void registerUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest request) throws MalformedURLException {
-        userService.registerUser(dto, cookie, this.getBaseURL(request));
+    public void registerUser(@RequestBody UserDTO dto,HttpServletRequest request) throws MalformedURLException {
+        userService.registerUser(dto, this.getBaseURL(request));
     }
 
     /**
@@ -71,6 +70,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/logout")
+    @Secured("ROLE_USER")
     public void logoutUser(@CookieValue("id") String cookie) {
         userService.logoutUser(cookie);
     }

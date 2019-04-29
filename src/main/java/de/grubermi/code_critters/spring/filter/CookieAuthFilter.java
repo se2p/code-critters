@@ -10,7 +10,6 @@ import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Objects;
 
 @Component
 public class CookieAuthFilter implements Filter {

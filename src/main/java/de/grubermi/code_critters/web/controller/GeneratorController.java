@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class GeneratorController {
      * Returns the toolbox
      */
     @GetMapping(path = "/toolbox")
+    @Secured("ROLE_ADMIN")
     public void getToolbox(HttpServletResponse response) {
         try {
             // get your file as InputStream
@@ -59,7 +61,8 @@ public class GeneratorController {
      * Creates a new level
      */
     @PostMapping(path = "/level/image")
-    public void createLevel(@RequestParam("file") MultipartFile image) {
+    @Secured("ROLE_ADMIN")
+    public void createLevelImage(@RequestParam("file") MultipartFile image) {
         levelService.storeImage(image);
     }
 
@@ -67,6 +70,7 @@ public class GeneratorController {
      * Creates a new image
      */
     @PostMapping(path = "/level/create")
+    @Secured("ROLE_ADMIN")
     public void createLevel(@RequestBody LevelDTO dto, HttpServletResponse response) {
         try {
             levelService.createLevel(dto);
@@ -79,11 +83,13 @@ public class GeneratorController {
      * Creates new mutants
      */
     @PostMapping(path = "/mutants/create")
+    @Secured("ROLE_ADMIN")
     public void createMutants(@RequestBody MutantsDTO dto) {
         mutantsService.createMutants(dto);
     }
 
     @GetMapping(path = "/names")
+    @Secured("ROLE_ADMIN")
     public List<String> getLevelNames() {
         return levelService.getLevelNames();
     }
