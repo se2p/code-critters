@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Objects;
@@ -22,7 +23,8 @@ public class CookieAuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (this.isAuthenticationRequired()) {
             CustomAuthentication auth = new CustomAuthentication();
-            auth.setCookie(Objects.requireNonNull(WebUtils.getCookie((HttpServletRequest) request, "id")).getValue());
+            Cookie cookie = WebUtils.getCookie((HttpServletRequest) request, "id");
+            auth.setCookie(cookie != null ? cookie.getValue() : null);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         chain.doFilter(request, response);
