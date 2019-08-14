@@ -25,7 +25,8 @@ class CritterInput extends I18n(PolymerElement) {
                 }
                 
                 :host {
-                    display: table-row;
+                     --display-field: table-row;
+                     display: var(--display-field);
                 }
         
                 span{
@@ -60,7 +61,7 @@ class CritterInput extends I18n(PolymerElement) {
             </style>
             
             <span>[[__(label)]]</span>
-            <input id="field" type="text" value="{{value::input}}" name="[[name]]" placeholder$="{{placeholder}}">
+            <input id="field" type="[[type]]" value="{{value::input}}" name="[[name]]" placeholder$="{{placeholder}}">
         `;
     }
 
@@ -79,6 +80,12 @@ class CritterInput extends I18n(PolymerElement) {
             name: {
                 type: String,
                 value: ""
+            },
+
+            type: {
+                type: String,
+                value: "text",
+                observer: "_onTypeChange"
             },
 
             placeholder: {
@@ -116,6 +123,18 @@ class CritterInput extends I18n(PolymerElement) {
 
     _onValidChange() {
         this.$.field.setCustomValidity(this.valid ? "" : "name already exists");
+    }
+
+    _onTypeChange(){
+        if(this.type === "hidden") {
+            this.updateStyles({
+                '--display-field': 'none'
+            });
+        } else {
+            this.updateStyles({
+                '--display-field': 'table-row'
+            });
+        }
     }
 
     serialize() {

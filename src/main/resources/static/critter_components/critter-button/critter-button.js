@@ -43,6 +43,7 @@ class CritterButton extends PolymerElement {
         display: flex;
         background-color: var(--critter-button-color);
         cursor: pointer;
+        padding: 0 10px;
       }
       
       #button:hover{

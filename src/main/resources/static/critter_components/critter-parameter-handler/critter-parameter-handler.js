@@ -1,7 +1,6 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
-
-import '../critter-toaster/critter-toaster.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
 
 
 
@@ -18,21 +17,10 @@ A Simple Button
 @demo
 */
 
-class CritterParameterHandler extends PolymerElement {
-    static get template() {
-        return html``;
-    }
+class CritterParameterHandler extends Toaster(PolymerElement) {
+
     static get is() {
         return 'critter-parameter-handler';
-    }
-
-    static get properties() {
-        return {
-            _toasterTime: {
-                type: Number,
-                value: 5000
-            }
-        }
     }
 
     connectedCallback() {
@@ -46,16 +34,11 @@ class CritterParameterHandler extends PolymerElement {
     }
 
     _showActivatedToast(activated) {
-        let toaster = document.createElement("critter-toaster");
         if(activated !== "true"){
-            toaster.type = "error";
-            toaster.msg = "activation_error";
+            this.showErrorToast("activation_error");
         } else {
-            toaster.type = "success";
-            toaster.msg = "activation_success";
+            this.showSuccessToast("activation_success");
         }
-        this.shadowRoot.append(toaster);
-        toaster.show(this._toasterTime);
     }
 }
 

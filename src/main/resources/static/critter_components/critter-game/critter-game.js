@@ -3,7 +3,6 @@ import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.j
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-level-selector/critter-level-selector-simple.js';
-import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
 import '../critter-button/critter-button.js';
@@ -169,7 +168,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
         </style>
 
-        <critter-data-store></critter-data-store>
+        
         <critter-timeout-manager></critter-timeout-manager>
 
 

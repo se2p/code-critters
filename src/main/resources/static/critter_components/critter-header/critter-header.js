@@ -1,8 +1,10 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {critterStyle} from '/style/critter-botstrap.js'
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import '../critter-i18n/critter-i18n.js';
+import '../critter-login/critter-login.js';
 import '../critter-parameter-handler/critter-parameter-handler.js';
 
 /*
@@ -48,6 +50,12 @@ class CritterHeader extends I18n(PolymerElement) {
                     clear: both;
                 }
                 
+                critter-login {
+                    position: absolute;
+                    right: 30px;
+                    color: rgba(255,255,255,.5);
+                }
+                
             </style>
             
             ${critterStyle}
@@ -70,9 +78,10 @@ class CritterHeader extends I18n(PolymerElement) {
                     <a class="nav-link" href="/levels">[[__('levels')]]</a>
                  </li>
                  <li class="nav-item">
-                    <!--<a class="nav-link" href="/profile">Profile</a>-->
+                    <a class="nav-link" href="/highscore">[[__('highscore')]]</a>
                  </li>
              </ul>
+             <critter-login></critter-login>
              </header>
         `;
     }
@@ -82,6 +91,7 @@ class CritterHeader extends I18n(PolymerElement) {
     static get is() {
         return 'critter-header';
     }
+
 }
 
 window.customElements.define(CritterHeader.is, CritterHeader);
