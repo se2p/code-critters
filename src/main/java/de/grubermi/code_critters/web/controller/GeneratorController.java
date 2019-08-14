@@ -5,6 +5,7 @@ import de.grubermi.code_critters.application.service.LevelService;
 import de.grubermi.code_critters.application.service.MutantsService;
 import de.grubermi.code_critters.web.dto.LevelDTO;
 import de.grubermi.code_critters.web.dto.MutantsDTO;
+import de.grubermi.code_critters.web.dto.RowDTO;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -92,5 +93,11 @@ public class GeneratorController {
     @Secured("ROLE_ADMIN")
     public List<String> getLevelNames() {
         return levelService.getLevelNames();
+    }
+
+    @GetMapping(path = "/rows")
+    @Secured("ROLE_ADMIN")
+    public List<RowDTO> getRows() {
+        return levelService.getRows();
     }
 }

@@ -24,33 +24,38 @@ class CritterDialog extends PolymerElement {
                 --display-dialog: none;
             }
     
-          #dialog_container{
-              position: absolute;
-              width: 100vw;
-              height: 100vh;
-              background-color: transparent;
-              display: var(--display-dialog);
-              z-index: 999;
-          }
+            #dialog_container {
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                background-color: transparent;
+                display: var(--display-dialog);
+                z-index: 999;
+                top: 0;
+                left: 0;
+            }
     
             #dialog{
                 width: 300px;
-                height: 500px;
+                height: fit-content;
                 padding: 10px;
                 background-color: white;
                 border: 1px solid darkgray;
                 border-radius: 20px;
-                margin-top: calc((100vh - 500px) * 0.5);
-                margin-left: calc((100vw - 300px) * 0.5);
+                margin: auto;
                 z-index: 1000;
-                position: fixed;
+                position: relative;
+            }
+            
+            slot{
+                display: block;
             }
         </style>
     
     
         <div id="dialog_container">
              <div id="dialog">
-                  <slot></slot>
+                  <slot id="dialog_slot"></slot>
              </div>
         </div>
         `;
@@ -70,12 +75,12 @@ class CritterDialog extends PolymerElement {
 
     open() {
         this.updateStyles({
-            '--display-dialog': 'block'
+            '--display-dialog': 'grid'
         });
     }
 
     close(e) {
-        if (e.target.id !== "dialog_container") {
+        if (e && e.target.id !== "dialog_container") {
             return;
         }
         this.updateStyles({

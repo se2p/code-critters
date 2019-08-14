@@ -1,6 +1,8 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+
 import '../critter-blockly/critter-blockly.js';
 import '../critter-tab/critter-tab.js';
 
@@ -15,7 +17,7 @@ A creator for mutated critters
 ```
 
 */
-class CritterMutantCreator extends Level(PolymerElement) {
+class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
     static get template() {
         return html`
     <style>
@@ -25,7 +27,7 @@ class CritterMutantCreator extends Level(PolymerElement) {
 
       .tab {
         display: none;
-        width: 45%;
+        width: 90%;
         margin-right: 5%;
         float: left;
       }
@@ -35,10 +37,7 @@ class CritterMutantCreator extends Level(PolymerElement) {
       }
     </style>
     <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
-    <critter-blockly class="tab init tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
-      <span>Mutant init Code</span>
-    </critter-blockly>
-    <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" init>
+    <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
       <span>Mutant Code</span>
     </critter-blockly>
      `;
@@ -113,22 +112,14 @@ class CritterMutantCreator extends Level(PolymerElement) {
 
     _createMutant(number) {
         let newTab = document.createElement("critter-blockly");
-        newTab.className = "tab init tab-" + number;
+        newTab.className = "tab code tab-" + number;
         newTab.trashcan = true;
         newTab.height = this._boardHeight;
         newTab.controls = true;
-        newTab.init = true;
-        newTab.innerHTML = "<span>Mutant init Code</span>";
+        newTab.cut = true;
+        newTab.xml = true;
+        newTab.innerHTML = "<span>Mutant Code</span>";
         this.shadowRoot.append(newTab);
-
-        let newTab2 = document.createElement("critter-blockly");
-        newTab2.className = "tab code tab-" + number;
-        newTab2.trashcan = true;
-        newTab2.height = this._boardHeight;
-        newTab2.controls = true;
-        newTab2.cut = true;
-        newTab2.innerHTML = "<span>Mutant Code</span>";
-        this.shadowRoot.append(newTab2);
     }
 
     /** computes the heights of critter-board**/
@@ -157,9 +148,9 @@ class CritterMutantCreator extends Level(PolymerElement) {
             toaster.show(this._toasterTime);
         });
 
-        req.addEventListener('error', e => {
+        req.addEventListener('static.error', e => {
             let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
+            toaster.type = "static.error";
             toaster.msg = "Could not save mtants";
             this.shadowRoot.append(toaster);
             toaster.show(this._toasterTime);
@@ -178,9 +169,31 @@ class CritterMutantCreator extends Level(PolymerElement) {
             if (i === this.tabs.length - 1 && this.tabs[i].title === "+") {
                 break;
             }
+
+            let code = this.shadowRoot.querySelector('.init.tab-' + i).getJavaScript();
+
+            let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+            let matchesInit = code.match(regExpInit) || [];
+
+            let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+            let matchesCUT = code.match(regExpCUT)  || [];
+
+            if(matchesCUT.length > 1){
+                this.showErrorToast("Too many CUTs in mutant");
+                return;
+            }
+
+            if(matchesInit.length > 1){
+                this.showErrorToast("Too many Initializations in mutant");
+                return;
+            }
+
+            let init = matchesInit[0];
+            let cut = matchesCUT[0];
+
             reqData.push({
-                init: this.shadowRoot.querySelector('.init.tab-' + i).getJavaScript(),
-                code: this.shadowRoot.querySelector('.code.tab-' + i).getJavaScript()
+                init: init,
+                code: cut
             });
         }
         return reqData;

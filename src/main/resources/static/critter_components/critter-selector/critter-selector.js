@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 
-
+import '/lib/@polymer/polymer/lib/elements/dom-repeat.js';
 /*
 # critter-insert
 
@@ -26,8 +26,11 @@ class CritterSelector extends PolymerElement {
                     font-size: 1.2em;
                 }
             </style>
-    
+               
             <select id="selector" name="selector">
+                  <template is="dom-repeat" items="{{values}}">
+                    <option value="{{item.value}}">{{item.name}}</option>
+                  </template>
             </select>
         `;
     }
@@ -39,8 +42,7 @@ class CritterSelector extends PolymerElement {
     static get properties() {
         return {
             values: {
-                type: [],
-                observer: "_valuesChanged"
+                type: []
             },
 
             selectedValue: {
@@ -49,6 +51,12 @@ class CritterSelector extends PolymerElement {
                 notify: true
             }
         }
+    }
+
+    static get observers() {
+        return [
+            '_valuesChanged(values, values.splices)'
+        ]
     }
 
     connectedCallback() {
@@ -60,14 +68,19 @@ class CritterSelector extends PolymerElement {
     }
 
     _valuesChanged() {
-        this.$.selector.innerHtml = "";
-        this.selectedValue = this.values[0];
-        this.values.forEach((value) => {
-            let opt = document.createElement("option");
-            opt.value = value;
-            opt.innerHTML = value;
-            this.$.selector.append(opt);
-        })
+        if(!this.values || this.values.length === 0){
+            return;
+        }
+        if(typeof this.values[0] === "string"){
+            let temp = [];
+            this.values.forEach((value) => {
+                temp.push({value: value, name: value});
+            });
+
+            this.values = temp;
+        }
+
+        this.selectedValue = this.values[0].value;
     }
 
     _valueChanged(event) {

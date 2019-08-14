@@ -24,6 +24,11 @@ class CritterDataStore extends PolymerElement {
 
     static get properties() {
         return {
+            user: {
+                type: Object,
+                value: {}
+            },
+
             levelName: {
                 type: String,
                 value: '',
@@ -115,7 +120,8 @@ class CritterDataStore extends PolymerElement {
         return [
             '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*)',
             '_sizeChanged(width, height)',
-            '_critterNumberChanged(numberOfCritters, numberOfHumans)'
+            '_critterNumberChanged(numberOfCritters, numberOfHumans)',
+            '_userChanged(user,*)',
         ]
     }
 
@@ -123,6 +129,10 @@ class CritterDataStore extends PolymerElement {
         super.connectedCallback();
         window.Core.CritterLevelData = this;
         this.cookie = this.getCookie();
+    }
+
+    _userChanged(){
+        this.dispatchEvent(new CustomEvent('_userChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     _dataChanged() {
@@ -218,12 +228,45 @@ class CritterDataStore extends PolymerElement {
                 c = c.substring(1);
             }
             if (c.indexOf('id') == 0) {
+                this.getMe();
                 return c.substring(3, c.length);
             }
         }
-        let cookie = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+        return setNewCookie();
+    }
+
+    setNewCookie() {
+        let arr = new Uint8Array(32);
+        (window.crypto || window.msCrypto).getRandomValues(arr);
+        let cookie = Array.from(arr, this.dec2hex).join('');
         this.setCookie('id', cookie);
         return cookie;
+    }
+
+    dec2hex(dec) {
+        return ('0' + dec.toString(16)).substr(-2)
+    }
+
+    getMe() {
+        let req = document.createElement('iron-ajax');
+        req.url = "/users/me";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+
+        req.addEventListener('response', e => {
+            let data = e.detail.__data.response;
+            this.user = data;
+        });
+
+        req.addEventListener('static.error', () => {
+            this.user = undefined;
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
     }
 }
 

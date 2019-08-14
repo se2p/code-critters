@@ -15,6 +15,22 @@ public class LevelDTO {
     private String[][] level;
     private HashMap<String, Integer> tower;
     private HashMap<String, Integer> spawn;
+    private String row;
+
+    public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String init, String xml, String test, String[][] level, HashMap<String, Integer> tower, HashMap<String, Integer> spawn, String row) {
+        this.id = id;
+        this.name = name;
+        this.numberOfCritters = numberOfCritters;
+        this.numberOfHumans = numberOfHumans;
+        this.CUT = CUT;
+        this.init = init;
+        this.xml = xml;
+        this.test = test;
+        this.level = level;
+        this.tower = tower;
+        this.spawn = spawn;
+        this.row = row;
+    }
 
     public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String xml, String test, String init, String[][] level) {
         this.id = id;
@@ -130,5 +146,13 @@ public class LevelDTO {
 
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    public String getRow() {
+        return row;
+    }
+
+    public void setRow(String row) {
+        this.row = row;
     }
 }

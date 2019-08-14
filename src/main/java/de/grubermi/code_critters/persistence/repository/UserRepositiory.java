@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface UserRepositiory extends CrudRepository<User, String> {
@@ -22,5 +23,11 @@ public interface UserRepositiory extends CrudRepository<User, String> {
 
     User findByUsernameAndEmail(String username, String email);
 
-    Iterable<User> findAllByRole(Role role);
+    List<User> findAllByRole(Role role);
+
+    boolean existsByCookie(String cookie);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }

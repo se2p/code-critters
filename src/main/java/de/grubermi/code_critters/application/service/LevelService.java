@@ -4,11 +4,14 @@ import de.grubermi.code_critters.application.exception.AlreadyExistsException;
 import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.persistence.entities.Level;
 import de.grubermi.code_critters.persistence.entities.Row;
+import de.grubermi.code_critters.persistence.entities.User;
 import de.grubermi.code_critters.persistence.repository.LevelRepository;
 import de.grubermi.code_critters.persistence.repository.MutantRepository;
 import de.grubermi.code_critters.persistence.repository.RowRepository;
+import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.dto.LevelDTO;
 import de.grubermi.code_critters.web.dto.MutantDTO;
+import de.grubermi.code_critters.web.dto.RowDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,12 +30,14 @@ public class LevelService {
     private final LevelRepository levelRepository;
     private final MutantRepository mutantRepository;
     private final RowRepository rowRepository;
+    private final UserRepositiory userRepositiory;
 
     @Autowired
-    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository) {
+    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository, UserRepositiory userRepositiory) {
         this.levelRepository = levelRepository;
         this.mutantRepository = mutantRepository;
         this.rowRepository = rowRepository;
+        this.userRepositiory = userRepositiory;
     }
 
     public void createLevel(LevelDTO dto) {
@@ -159,12 +164,21 @@ public class LevelService {
         List groupedLevels = new LinkedList();
 
         Collection<Row> rows = rowRepository.getRows();
-        for (Row row : rows) {
-            HashMap map = new HashMap<String, Object>();
-            map.put("name", row.getName());
-            map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
-            groupedLevels.add(map);
-
+        if(userRepositiory.existsByCookie(cookie)){
+            User user = userRepositiory.findByCookie(cookie);
+            for (Row row : rows) {
+                HashMap map = new HashMap<String, Object>();
+                map.put("name", row.getName());
+                map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, user));
+                groupedLevels.add(map);
+            }
+        } else {
+            for (Row row : rows) {
+                HashMap map = new HashMap<String, Object>();
+                map.put("name", row.getName());
+                map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
+                groupedLevels.add(map);
+            }
         }
         return groupedLevels;
     }
@@ -179,5 +193,17 @@ public class LevelService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<RowDTO> getRows() {
+        Collection<Row> rows = rowRepository.getRows();
+
+        List<RowDTO> rowDTOS = new LinkedList<>();
+
+        for (Row row : rows) {
+            rowDTOS.add(new RowDTO(row.getId(), row.getName()));
+        }
+
+        return rowDTOS;
     }
 }

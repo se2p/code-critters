@@ -1,17 +1,19 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+
 import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
 import '../critter-button/critter-button.js';
 import '../critter-blockly/critter-blockly.js';
-import '../critter-toaster/critter-toaster.js';
 import '../critter-tab/critter-tab.js';
 import '../critter-element-selector/critter-element-selector.js';
 import '../critter-mutant-creator/critter-mutant-creator.js';
 import '../critter-input/critter-input.js';
 import '../critter-loading/critter-loading.js';
+import '../critter-selector/critter-selector.js';
 
 import '/lib/@polymer/iron-ajax/iron-ajax.js';
 
@@ -29,7 +31,7 @@ Displays the game elements
 
 window.Core = window.Core || {};
 
-class CritterLevelCreator extends Level(PolymerElement) {
+class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
     static get template() {
         return html`
         <custom-style>
@@ -50,18 +52,18 @@ class CritterLevelCreator extends Level(PolymerElement) {
                     display: block;
                 }
 
-                .tab-1 critter-blockly {
-                    width: 45%;
-                    float: left;
-                }
-
                 #blockly_init{
                     margin-right: 5%;
                 }
 
-                #save_button{
+                #save_button,
+                critter-selector {
                     margin-left: 20px;
                     float: left;
+                }
+                
+                #save_button {
+                    margin-top: 20px;
                 }
 
                 #gameboard,
@@ -72,16 +74,20 @@ class CritterLevelCreator extends Level(PolymerElement) {
                 #element_selector{
                     margin-left: 20px;
                 }
-
-                #name_input{
-                    clear: both;
+                
+                .table{
+                    display: table;
                     float: left;
+                    clear: both;
                     margin-left: 20px;
+                    margin-top: 20px;
+                    margin-bottom: 40px;
                 }
+
 
                 #coordinate_container{
                     min-height: 40px;
-                    left: 70px;
+                    left: 200px;
                     position: relative;
                     align-items: center;
                     margin-left: 20px;
@@ -101,11 +107,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
             </critter-element-selector>
         </div>
         <div  class="tab-1 tab">
-            <critter-blockly id="blockly_init" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
-                <span>Init Code</span>
-            </critter-blockly>
-            <critter-blockly id="blockly_CUT" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
-                <span>CUT</span>
+            <critter-blockly id="blockly_cut" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
             </critter-blockly>
         </div>
         <div class="tab-2 tab">
@@ -116,7 +118,10 @@ class CritterLevelCreator extends Level(PolymerElement) {
             <critter-mutant-creator id="mutant_creator" height$="{{ _boardHeight}}" number-of-mutants="{{_globalData.numberOfMutants}}" ></critter-mutant-creator>
         </div>
         <br>
-        <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
+        <div class="table">
+            <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
+        </div>
+        <critter-selector values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
         <critter-button id="save_button">Save</critter-button>
         <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
         `;
@@ -136,6 +141,10 @@ class CritterLevelCreator extends Level(PolymerElement) {
             },
 
             selectedElement: {
+                type: String
+            },
+
+            selectedRow: {
                 type: String
             },
 
@@ -177,11 +186,10 @@ class CritterLevelCreator extends Level(PolymerElement) {
                 value: []
             },
 
-            _toasterTime: {
-                type: Number,
-                value: 5000
+            _rows: {
+                type: Array,
+                value: []
             }
-
         };
     }
 
@@ -199,6 +207,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
             this._initLevel();
             this._initNames();
+            this._initRows();
         });
     }
 
@@ -234,6 +243,29 @@ class CritterLevelCreator extends Level(PolymerElement) {
         return req;
     }
 
+    /** gets all existing rows names **/
+    _initRows() {
+        this._rows = [];
+        let req = document.createElement('iron-ajax');
+        req.url = "/generator/rows";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+
+        req.addEventListener('response', e => {
+            let rows = e.detail.__data.response;
+            rows.forEach((row) => {
+                this.push("_rows", {name: row.name, value: row.id});
+            });
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
+    }
+
     /** validates the Level Name **/
     _validateLevelName(event) {
         this.$.name_input.valid = !this._names.includes(event.detail.name);
@@ -255,7 +287,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
                 resolve();
             });
 
-            req.addEventListener('error', () => {
+            req.addEventListener('static.error', () => {
                 reject();
             });
 
@@ -271,50 +303,55 @@ class CritterLevelCreator extends Level(PolymerElement) {
         }
 
         if (!this.$.name_input.valid) {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Please enter a valid name";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("Please enter a valid name");
             return;
         }
 
-        if (!this.$.blockly_CUT.getJavaScript()) {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Please create some CUT";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+        if (!this.$.blockly_cut.getJavaScript()) {
+            this.showErrorToast("Please create some CUT");
             return;
         }
+
+        let code = this.$.blockly_cut.getJavaScript();
+
+        let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+        let matchesInit = code.match(regExpInit) || [];
+
+        let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+        let matchesCUT = code.match(regExpCUT)  || [];
+
+        if(matchesCUT.length === 0 && matchesInit.length === 0){
+            this.showErrorToast("At least one Initialization or one CUT is required");
+            return;
+        }
+
+        if(matchesCUT.length > 1){
+            this.showErrorToast("Too many CUTs");
+            return;
+        }
+
+        if(matchesInit.length > 1){
+            this.showErrorToast("Too many Initializations");
+            return;
+        }
+
+        let init = matchesInit[0];
+        let cut = matchesCUT[0];
+
 
         if (!this._globalData.tower || this._globalData.tower.x === -1) {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Please set the tower";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("Please set the tower");
             return;
         }
 
         if (!this._globalData.spawn || this._globalData.spawn.x === -1) {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Please set the tower";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("Please set the spawn");
             return;
         }
         if (!this.existPath(this._globalData.spawn)) {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "There is no path to the tower";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("There is no path to the tower");
             return;
         }
-
-        this.$.loading.show();
 
         let req = document.createElement('iron-ajax');
         req.url = "/generator/level/create";
@@ -330,10 +367,11 @@ class CritterLevelCreator extends Level(PolymerElement) {
             spawn: this._globalData.spawn,
             numberOfCritters: this._globalData.numberOfCritters,
             numberOfHumans: this._globalData.numberOfHumans,
-            cut: this.$.blockly_CUT.getJavaScript(),
-            init: this.$.blockly_init.getJavaScript(),
+            cut: cut,
+            init: init,
             test: this.$.blockly_test.getXML(),
-            xml: this.getXmlWithHeads(),
+            xml: this.$.blockly_cut.getXML(),
+            row: this.selectedRow,
         };
 
         req.addEventListener('response', async () => {
@@ -342,44 +380,17 @@ class CritterLevelCreator extends Level(PolymerElement) {
             this.$.loading.hide();
         });
 
-        req.addEventListener('error', e => {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Could not save level";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+        req.addEventListener('static.error', e => {
+            this.showErrorToast("Could not save level");
             this.$.loading.hide();
         });
+
+        this.$.loading.show();
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
 
         return req;
-    }
-
-    getXmlWithHeads(){
-        let xml = '<xml xmlns=\"http://www.w3.org/1999/xhtml\">\n';
-        let initXML;
-        let cutXML;
-        if(initXML = this.$.blockly_init.getXML()){
-            xml += '<block type="cut_head" id="init_head" x="42" y="105">\n' +
-                '<statement name="Content">\n';
-            let div = document.createElement('div');
-            div.innerHTML = initXML;
-            xml += div.firstChild.innerHTML;
-            xml += '</statement>\n' +
-                '</block>\n';
-        }if(cutXML = this.$.blockly_CUT.getXML()){
-            xml += '<block type="init_head" id="cut_head" x="450" y="105">\n' +
-                '<statement name="Content">\n';
-            let div = document.createElement('div');
-            div.innerHTML = cutXML;
-            xml += div.firstChild.innerHTML;
-            xml += '</statement>\n' +
-                '</block>\n';
-        }
-        console.log(xml);
-        return  xml + '</xml>';
     }
 
     /** computes the heights of critter-board**/
@@ -404,8 +415,7 @@ class CritterLevelCreator extends Level(PolymerElement) {
             this.shadowRoot.querySelector('#coordinate_container').style.display = "block";
         }
         if (detail.new === 3) {
-            this._globalData.cut = this.$.blockly_CUT.getXML();
-            this._globalData.init = this.$.blockly_init.getXML();
+            this._globalData.xml = this.$.blockly_cut.getXML();
         }
     }
 
