@@ -29,9 +29,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         assert authentication instanceof CustomAuthentication : "Illegal Authentication type";
         //timeout check implied in getUserByCookie
         UserDTO dto = userService.getUserByCookie(((CustomAuthentication) authentication).getCookie());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        GrantedAuthority grantedAuthorityAnonymous = new SimpleGrantedAuthority("ROLE_ANONYMOUS");
+        authorities.add(grantedAuthorityAnonymous);
+        authentication.setAuthenticated(true);
         if (dto != null && dto.getRole() != null && dto.getActive()) {
-            authentication.setAuthenticated(true);
-            Set<GrantedAuthority> authorities = new HashSet<>();
+
             if (dto.getRole() == Role.user || dto.getRole() == Role.admin) {
                 GrantedAuthority grantedAuthorityUser = new SimpleGrantedAuthority("ROLE_USER");
                 authorities.add(grantedAuthorityUser);
@@ -41,10 +44,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 GrantedAuthority grantedAuthorityAdmin = new SimpleGrantedAuthority("ROLE_ADMIN");
                 authorities.add(grantedAuthorityAdmin);
             }
-            ((CustomAuthentication) authentication).setAuthorities(authorities);
-        } else {
-            authentication.setAuthenticated(false);
         }
+        ((CustomAuthentication) authentication).setAuthorities(authorities);
         return authentication;
     }
 
