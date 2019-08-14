@@ -1,9 +1,5 @@
 import { dedupingMixin } from '/lib/@polymer/polymer/lib/utils/mixin.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
-import {html} from '/lib/@polymer/polymer/polymer-element.js';
-
-
-import '/static/rasterizehtml/dist/rasterizeHTML.js';
 
 
 /*

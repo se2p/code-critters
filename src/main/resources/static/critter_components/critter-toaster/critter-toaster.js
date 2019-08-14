@@ -108,7 +108,7 @@ class CritterToaster extends I18n(PolymerElement) {
     }
 
     _typeChanged() {
-        if (this.type === 'error') {
+        if (this.type === 'static.error') {
             this.$.success.style.display = "none";
             this.$.error.style.display = "block";
             this.$.info.style.display = "none";

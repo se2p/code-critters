@@ -1,10 +1,11 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+
 import '../critter-popup/critter-popup.js';
 import '../critter-button/critter-button.js';
 import '../critter-blockly/critter-blockly.js';
-import '../critter-toaster/critter-toaster.js';
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 import '/lib/@polymer/iron-iconset-svg/iron-iconset-svg.js';
@@ -22,7 +23,7 @@ A popup displayed on  certain position
 
 @demo
 */
-class CritterTestPopup extends Level(PolymerElement) {
+class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -205,11 +206,7 @@ class CritterTestPopup extends Level(PolymerElement) {
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
         if (code === '') {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "You have to create a test first";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("You have to create a test first");
             this._popupClose();
             return;
         }
