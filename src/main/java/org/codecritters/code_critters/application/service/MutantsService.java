@@ -1,11 +1,11 @@
-package de.grubermi.code_critters.application.service;
+package org.codecritters.code_critters.application.service;
 
-import de.grubermi.code_critters.persistence.entities.Level;
-import de.grubermi.code_critters.persistence.entities.Mutant;
-import de.grubermi.code_critters.persistence.repository.LevelRepository;
-import de.grubermi.code_critters.persistence.repository.MutantRepository;
-import de.grubermi.code_critters.web.dto.MutantDTO;
-import de.grubermi.code_critters.web.dto.MutantsDTO;
+import org.codecritters.code_critters.persistence.entities.Level;
+import org.codecritters.code_critters.persistence.entities.Mutant;
+import org.codecritters.code_critters.persistence.repository.LevelRepository;
+import org.codecritters.code_critters.persistence.repository.MutantRepository;
+import org.codecritters.code_critters.web.dto.MutantDTO;
+import org.codecritters.code_critters.web.dto.MutantsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

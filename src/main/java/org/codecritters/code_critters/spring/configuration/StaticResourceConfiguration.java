@@ -1,4 +1,4 @@
-package de.grubermi.code_critters.spring.configuration;
+package org.codecritters.code_critters.spring.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

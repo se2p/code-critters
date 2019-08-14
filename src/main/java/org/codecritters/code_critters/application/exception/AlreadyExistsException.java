@@ -1,4 +1,4 @@
-package de.grubermi.code_critters.application.exception;
+package org.codecritters.code_critters.application.exception;
 
 public class AlreadyExistsException extends ApplicationException {
 

@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.spring.filter;
+package org.codecritters.code_critters.spring.filter;
 
-import de.grubermi.code_critters.spring.CustomAuthentication;
+import org.codecritters.code_critters.spring.CustomAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

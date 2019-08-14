@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.application.service;
+package org.codecritters.code_critters.application.service;
 
-import de.grubermi.code_critters.web.enums.Language;
+import org.codecritters.code_critters.web.enums.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;

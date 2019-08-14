@@ -1,20 +1,19 @@
-package de.grubermi.code_critters.application.service;
+package org.codecritters.code_critters.application.service;
 
-import de.grubermi.code_critters.application.exception.NotFoundException;
-import de.grubermi.code_critters.persistence.entities.Level;
-import de.grubermi.code_critters.persistence.entities.Result;
-import de.grubermi.code_critters.persistence.entities.Score;
-import de.grubermi.code_critters.persistence.entities.User;
-import de.grubermi.code_critters.persistence.repository.LevelRepository;
-import de.grubermi.code_critters.persistence.repository.ResultRepository;
-import de.grubermi.code_critters.persistence.repository.ScoreRepository;
-import de.grubermi.code_critters.persistence.repository.UserRepositiory;
-import de.grubermi.code_critters.web.dto.ResultDTO;
-import de.grubermi.code_critters.web.dto.ScoreDTO;
+import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.persistence.entities.Level;
+import org.codecritters.code_critters.persistence.entities.Result;
+import org.codecritters.code_critters.persistence.entities.Score;
+import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.repository.LevelRepository;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
+import org.codecritters.code_critters.persistence.repository.ScoreRepository;
+import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.web.dto.ResultDTO;
+import org.codecritters.code_critters.web.dto.ScoreDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Service

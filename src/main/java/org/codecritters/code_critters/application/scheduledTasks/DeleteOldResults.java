@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.application.scheduledTasks;
+package org.codecritters.code_critters.application.scheduledTasks;
 
-import de.grubermi.code_critters.persistence.repository.ResultRepository;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

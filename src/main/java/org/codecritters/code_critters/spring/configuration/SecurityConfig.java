@@ -1,8 +1,8 @@
-package de.grubermi.code_critters.spring.configuration;
+package org.codecritters.code_critters.spring.configuration;
 
 
-import de.grubermi.code_critters.spring.CustomAuthenticationProvider;
-import de.grubermi.code_critters.spring.filter.CookieAuthFilter;
+import org.codecritters.code_critters.spring.CustomAuthenticationProvider;
+import org.codecritters.code_critters.spring.filter.CookieAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

@@ -17,11 +17,11 @@ public class Result {
     private int stars;
     private String cookie;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "user.id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "level.id")
     private Level level;
 

@@ -1,14 +1,14 @@
-package de.grubermi.code_critters.application.service;
+package org.codecritters.code_critters.application.service;
 
-import de.grubermi.code_critters.application.exception.AlreadyExistsException;
-import de.grubermi.code_critters.application.exception.IllegalActionException;
-import de.grubermi.code_critters.application.exception.IncompleteDataException;
-import de.grubermi.code_critters.application.exception.NotFoundException;
-import de.grubermi.code_critters.persistence.entities.User;
-import de.grubermi.code_critters.persistence.repository.ResultRepository;
-import de.grubermi.code_critters.persistence.repository.UserRepositiory;
-import de.grubermi.code_critters.web.dto.UserDTO;
-import de.grubermi.code_critters.web.enums.Role;
+import org.codecritters.code_critters.application.exception.AlreadyExistsException;
+import org.codecritters.code_critters.application.exception.IllegalActionException;
+import org.codecritters.code_critters.application.exception.IncompleteDataException;
+import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
+import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.web.dto.UserDTO;
+import org.codecritters.code_critters.web.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

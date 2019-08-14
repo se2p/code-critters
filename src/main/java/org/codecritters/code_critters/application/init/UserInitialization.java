@@ -1,10 +1,10 @@
-package de.grubermi.code_critters.application.init;
+package org.codecritters.code_critters.application.init;
 
-import de.grubermi.code_critters.application.service.PasswordService;
-import de.grubermi.code_critters.persistence.entities.User;
-import de.grubermi.code_critters.persistence.repository.UserRepositiory;
-import de.grubermi.code_critters.web.enums.Language;
-import de.grubermi.code_critters.web.enums.Role;
+import org.codecritters.code_critters.application.service.PasswordService;
+import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.web.enums.Language;
+import org.codecritters.code_critters.web.enums.Role;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

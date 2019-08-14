@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.application.service;
+package org.codecritters.code_critters.application.service;
 
-import de.grubermi.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.entities.User;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 

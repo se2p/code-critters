@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.spring.filter;
+package org.codecritters.code_critters.spring.filter;
 
-import de.grubermi.code_critters.spring.HtmlResponseWrapper;
+import org.codecritters.code_critters.spring.HtmlResponseWrapper;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
-package de.grubermi.code_critters.spring.configuration;
+package org.codecritters.code_critters.spring.configuration;
 
-import de.grubermi.code_critters.web.controller.CustomErrorController;
+import org.codecritters.code_critters.web.controller.CustomErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
