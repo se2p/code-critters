@@ -1,9 +1,11 @@
 package de.grubermi.code_critters.application.service;
 
 import de.grubermi.code_critters.application.exception.AlreadyExistsException;
+import de.grubermi.code_critters.application.exception.IllegalActionException;
 import de.grubermi.code_critters.application.exception.IncompleteDataException;
 import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.persistence.entities.User;
+import de.grubermi.code_critters.persistence.repository.ResultRepository;
 import de.grubermi.code_critters.persistence.repository.UserRepositiory;
 import de.grubermi.code_critters.web.dto.UserDTO;
 import de.grubermi.code_critters.web.enums.Role;
@@ -11,15 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private final UserRepositiory userRepositiory;
+    private final ResultRepository resultRepository;
     private final MailService mailService;
     private final PasswordService passwordService;
 
@@ -29,10 +29,11 @@ public class UserService {
     private int timeout;
 
     @Autowired
-    public UserService(UserRepositiory userRepositiory, MailService mailService, PasswordService passwordService) {
+    public UserService(UserRepositiory userRepositiory, MailService mailService, PasswordService passwordService, ResultRepository resultRepository) {
         this.userRepositiory = userRepositiory;
         this.mailService = mailService;
         this.passwordService = passwordService;
+        this.resultRepository = resultRepository;
     }
 
     public void registerUser(UserDTO dto, String url) {
@@ -119,7 +120,7 @@ public class UserService {
 
     public void resetPassword(String secret, UserDTO dto) {
         User user = userRepositiory.findBySecret(secret);
-        if (user != null) {
+        if (user != null && user.getResetPassword()) {
             user.setSecret(null);
             user.setResetPassword(false);
 
@@ -171,11 +172,11 @@ public class UserService {
 
     public UserDTO getUserByCookieAndDate(String cookie, Date date) {
         User user = userRepositiory.findByCookieAndLastUsedAfter(cookie, date);
-        if (user == null) {
-            throw new NotFoundException("No user with this cookie", "invalid_cookie");
+        if (user != null) {
+            userRepositiory.save(user);
+            return userToDTO(user);
         }
-        userRepositiory.save(user);
-        return this.userToDTO(user);
+        return null;
     }
 
     public void logoutUser(String cookie) {
@@ -186,4 +187,58 @@ public class UserService {
         }
     }
 
+    public void deleteUser(String cookie) {
+        User user = userRepositiory.findByCookie(cookie);
+
+        List<User> users = userRepositiory.findAllByRole(Role.admin);
+        if (users.size() == 1 && users.contains(user)) {
+            throw new IllegalActionException("Cannot delete last remaining admin", "delete_last_admin");
+        }
+        if (user != null) {
+            resultRepository.deleteAllByUser(user);
+            userRepositiory.delete(user);
+        }
+    }
+
+    public void changeUser(UserDTO dto, String cookie, String url) {
+        User user = userRepositiory.findByCookie(cookie);
+
+        if(dto.getPassword() != null && !dto.getPassword().equals("")){
+            if(passwordService.verifyPassword(dto.getPassword(), user.getPassword(), user.getSalt())) {
+                user = passwordService.hashPassword(dto.getPassword(), user);
+                userRepositiory.save(user);
+            } else {
+                throw new NotFoundException("Password incorrect", "invalid_password");
+            }
+        }
+        if(!dto.getUsername().equals(user.getUsername())){
+            if(!userRepositiory.existsByUsername(dto.getUsername())) {
+                user.setUsername(dto.getUsername());
+            } else {
+                throw new AlreadyExistsException("User with this username already exists!", "username_exists");
+            }
+        }
+        if(!dto.getEmail().equals(user.getEmail())){
+            if(!userRepositiory.existsByEmail(dto.getEmail())) {
+                user.setEmail(dto.getEmail());
+                user.setActive(false);
+                user.setSecret(generateSecret());
+
+                Map<String, String> mailTemplateData = new HashMap();
+
+                String link = url + "/users/activate/" + user.getSecret();
+
+                mailTemplateData.put("reciver", user.getEmail());
+                mailTemplateData.put("subject", "Confirm Email");
+                mailTemplateData.put("user", user.getUsername());
+                mailTemplateData.put("secret", link);
+                mailTemplateData.put("baseURL", url);
+                mailService.sendMessageFromTemplate("confirmEmail", mailTemplateData, user.getLanguage());
+            } else {
+                throw new AlreadyExistsException("User with this email already exists!", "email_exists");
+            }
+        }
+
+        userRepositiory.save(user);
+    }
 }

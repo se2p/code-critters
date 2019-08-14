@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Component
 public class UserInitialization {
@@ -29,8 +30,8 @@ public class UserInitialization {
 
     @PostConstruct
     public void init() {
-        Iterable<User> users = userRepositiory.findAllByRole(Role.admin);
-        if (users == null || !users.iterator().hasNext()) {
+        List<User> users = userRepositiory.findAllByRole(Role.admin);
+        if (users == null || users.isEmpty()) {
             User user = new User();
             user.setActive(true);
             user.setEmail("admin@admin.de");

@@ -8,11 +8,21 @@ public class UserDTO {
     private String username;
     private String email;
     private String password;
+    private String oldPassword;
     private String cookie;
     private boolean active;
     private Language language;
     private Role role;
 
+
+    //needed for user change
+    public UserDTO(String username, String email, String oldPassword, String password, Language language) {
+        this.username = username;
+        this.email = email;
+        this.oldPassword = oldPassword;
+        this.password = password;
+        this.language = language;
+    }
 
     //needed for registration
     public UserDTO(String username, String email, String password, Language language) {
@@ -91,5 +101,13 @@ public class UserDTO {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 }

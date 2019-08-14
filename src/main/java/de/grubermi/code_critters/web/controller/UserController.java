@@ -1,14 +1,16 @@
 package de.grubermi.code_critters.web.controller;
 
+import de.grubermi.code_critters.application.exception.NotFoundException;
 import de.grubermi.code_critters.application.service.UserService;
 import de.grubermi.code_critters.web.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -34,7 +36,7 @@ public class UserController {
      * @throws MalformedURLException If the request URL is not well formatted
      */
     @PostMapping(path = "/register")
-    public void registerUser(@RequestBody UserDTO dto,HttpServletRequest request) throws MalformedURLException {
+    public void registerUser(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
         userService.registerUser(dto, this.getBaseURL(request));
     }
 
@@ -47,7 +49,7 @@ public class UserController {
      * @return Map containing users data
      */
     @PostMapping(path = "/login")
-    public Map<String, String> loginUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletResponse httpServletResponse) {
+    public Map<String, String> loginUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         UserDTO user = userService.loginUser(dto, cookie);
 
         Map<String, String> data = new HashMap<>();
@@ -63,7 +65,11 @@ public class UserController {
             data.put("email", user.getEmail());
             data.put("role", user.getRole().toString());
             data.put("language", user.getLanguage().toString());
-
+            SecurityContextHolder.clearContext();
+            HttpSession session = httpServletRequest.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
         }
 
         return data;
@@ -71,8 +77,29 @@ public class UserController {
 
     @PostMapping(path = "/logout")
     @Secured("ROLE_USER")
-    public void logoutUser(@CookieValue("id") String cookie) {
+    public void logoutUser(@CookieValue("id") String cookie, HttpServletRequest httpServletRequest) {
         userService.logoutUser(cookie);
+        SecurityContextHolder.clearContext();
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+
+    @DeleteMapping(path = "/delete")
+    @Secured("ROLE_USER")
+    public void deleteUser(@CookieValue("id") String cookie, HttpServletRequest httpServletRequest) {
+        userService.deleteUser(cookie);
+        SecurityContextHolder.clearContext();
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+
+    @PostMapping(path = "/change")
+    public void changeUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest request) throws MalformedURLException {
+        userService.changeUser(dto, cookie, this.getBaseURL(request));
     }
 
     @PostMapping(path = "/forgot")
@@ -113,7 +140,9 @@ public class UserController {
     @Secured("ROLE_USER")
     public Map<String, String> getMe(@CookieValue("id") String cookie) {
         UserDTO user = userService.getUserByCookie(cookie);
-
+        if(user == null){
+            throw new NotFoundException("Cookie invalid", "invalid_cookie");
+        }
         Map<String, String> data = new HashMap<>();
         data.put("username", user.getUsername());
         data.put("email", user.getEmail());
