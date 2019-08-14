@@ -18,4 +18,6 @@ public interface ResultRepository extends CrudRepository<Result, String> {
     Result getResultByLevelAndUser(Level level, User user);
 
     List<Result> getAllByUpdatedBeforeAndUserIsNull(Date date);
+
+    void deleteAllByUser(User user);
 }

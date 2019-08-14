@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Code Critters - Profile</title>
+    <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+
+    <script type=module src="./critter_components/critter-header/critter-header.js">
+    </script>
+    <script type=module src="./critter_components/critter-highscore/critter-highscore.js">
+    </script>
+    <script type=module
+            src="./critter_components/critter-background/critter-background.js">
+    </script>
+
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+
+
+    <custom-style>
+        <style>
+            body {
+                font-family: Arial;
+                font-size: 0.8em;
+                height: 100vh;
+                margin: 0;
+                background-color: #2f8136;
+            }
+
+            #foreground_container {
+                max-width: 900px;
+                position: relative;
+                height: 100vh;
+                margin: auto;
+                /*background-color: rgba(217, 248, 239, 0.4);*/
+                background-color: #F3F4F6;
+                z-index: 2;
+            }
+
+            critter-button {
+                width: 100px;
+            }
+
+            critter-background {
+                z-index: 1;
+            }
+
+
+            .content {
+                position: relative;
+                margin: 15px;
+            }
+        </style>
+
+    </custom-style>
+
+</head>
+<body>
+<div id="foreground_container">
+    <critter-header></critter-header>
+    <div class="content">
+        <critter-highscore></critter-highscore>
+    </div>
+</div>
+</body>
+<script>
+    renderBachground = () => {
+        let bg;
+        if (window.innerWidth >= 1150 && !document.querySelector("critter-background")) {
+            bg = document.createElement("critter-background");
+            bg.mainContainerWidth = 900;
+            document.querySelector("body").append(bg);
+        } else if (window.innerWidth < 1150 && (bg = document.querySelector("critter-background"))) {
+            bg.detach();
+            document.querySelector("body").removeChild(bg);
+        }
+    };
+
+    window.addEventListener("resize", renderBachground);
+    renderBachground();
+</script>
+
+</html>
