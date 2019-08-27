@@ -253,7 +253,7 @@ class CritterDataStore extends PolymerElement {
                 return c.substring(3, c.length);
             }
         }
-        return setNewCookie();
+        return this.setNewCookie();
     }
 
     setNewCookie() {
