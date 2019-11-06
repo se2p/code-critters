@@ -41,10 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class LevelService {
@@ -151,7 +148,18 @@ public class LevelService {
     }
 
     public List<String> getLevelNames() {
-        return levelRepository.getLevelNames();
+        List<String> list = levelRepository.getLevelNames();
+        Collections.sort(list, (o1, o2) -> {
+            if(o1.startsWith("level_") && o2.startsWith("level_"));{
+                if(Integer.valueOf(o1.substring(6)) < Integer.valueOf(o2.substring(6))){
+                    return -1;
+                } else if(Integer.valueOf(o1.substring(6)) > Integer.valueOf(o2.substring(6))){
+                    return 1;
+                }
+            }
+            return 0;
+        });
+        return list;
 
     }
 
