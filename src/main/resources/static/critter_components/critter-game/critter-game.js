@@ -567,10 +567,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this.score -= 25 * (this._globalData.countMines());
         // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
-        this.showScore();
         this.score = (this._finishedHumans + this._killedCritters) * 50 +
             (-25 * (this._globalData.countMines())) + //TODO subtract free mines
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
+        this.showScore();
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
@@ -587,6 +587,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let dialogScore = this.$.dialog_score;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
         let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
+        dialogScore.overallScore = this.score;
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
         await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines());

@@ -112,7 +112,6 @@ public class GeneratorController {
     }
 
     @GetMapping(path = "/names")
-    @Secured("ROLE_ADMIN")
     public List<String> getLevelNames() {
         return levelService.getLevelNames();
     }

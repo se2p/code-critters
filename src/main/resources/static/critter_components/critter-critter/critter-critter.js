@@ -412,6 +412,12 @@ class CritterCritter extends Level(PolymerElement) {
         };
     }
 
+    constructor() {
+        super();
+        this._globalData = window.Core.CritterLevelData;
+        this._timeoutManager = window.Core.timeouts;
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -421,8 +427,6 @@ class CritterCritter extends Level(PolymerElement) {
             this.notifyPath("position", this.position.x);
             this.$.critter_container.addEventListener('mouseover', this._onHover.bind(this));
             this.$.critter_container.addEventListener('mouseout', this._onHoverOut.bind(this));
-            this._globalData = window.Core.CritterLevelData;
-            this._timeoutManager = window.Core.timeouts;
         });
     }
 

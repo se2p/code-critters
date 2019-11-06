@@ -92,7 +92,10 @@ class CritterScore extends I18n(PolymerElement) {
                 type: Number,
                 value: 0
             },
-
+            overallScore: {
+                type: Number,
+                value: 0
+            },
             _shownScore: {
                 type: Number,
                 value: 0
@@ -130,12 +133,23 @@ class CritterScore extends I18n(PolymerElement) {
 
     _onScoreIncreased(e) {
         let newScore = this.score + e.detail.score;
-        if(this._prevScore < 950 && newScore >= 950) {
-            this.dispatchEvent(new CustomEvent('_thirdStarReached', {bubbles: true, composed: true}));
-        } else if (this._prevScore < 800 && newScore >= 800) {
-            this.dispatchEvent(new CustomEvent('_secondStarReached', {bubbles: true, composed: true}));
-        } else if (this._prevScore < 500 && newScore >= 500) {
-            this.dispatchEvent(new CustomEvent('_firstStarReached', {bubbles: true, composed: true}));
+        if(this.overallScore  >= newScore) {
+            if (this._prevScore < 950 && newScore >= 950) {
+                this.dispatchEvent(new CustomEvent('_thirdStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            } else if (this._prevScore < 800 && newScore >= 800) {
+                this.dispatchEvent(new CustomEvent('_secondStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            } else if (this._prevScore < 500 && newScore >= 500) {
+                this.dispatchEvent(new CustomEvent('_firstStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            }
         }
         this._prevScore = newScore;
         this._shownScore = this.score + e.detail.score;
