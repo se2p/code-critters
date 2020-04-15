@@ -81,7 +81,7 @@ class CritterI18n extends PolymerElement {
             if (this.supportedLanguages.includes(navigator.language)) {
                 this._setLanguage(navigator.language);
             } else {
-               this._setLanguage("en_US");
+               this._setLanguage("en-US");
             }
         } else {
             this.loadTranslationData(localStorage.getItem("language"));
