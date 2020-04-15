@@ -5,7 +5,7 @@
 
 	<groupId>org.codecritters.code_critters</groupId>
 	<artifactId>Code-Critters</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>Code-Critters</name>
