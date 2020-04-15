@@ -1,5 +1,26 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 
 import '../critter-critter/critter-simple-critter.js';
@@ -137,9 +158,7 @@ class CritterBackground extends Level(PolymerElement) {
                 value: []
             },
 
-            _interval : {
-
-            }
+            _interval: {}
 
         };
     }
@@ -148,7 +167,9 @@ class CritterBackground extends Level(PolymerElement) {
         return 'critter-background';
     }
 
-    static get importMeta() { return import.meta; }
+    static get importMeta() {
+        return import.meta;
+    }
 
     static get urlTemplate() {
         let string = new URL('.', import.meta.url).toString();
@@ -193,13 +214,13 @@ class CritterBackground extends Level(PolymerElement) {
             this._map.push(row);
         }
         this._map[3][2] = 1;
-        this._map[(countWidth-3)][(countHeight-3)] = 1;
-        this.tower.x = countWidth-3;
-        this.tower.y = countHeight-3;
+        this._map[(countWidth - 3)][(countHeight - 3)] = 1;
+        this.tower.x = countWidth - 3;
+        this.tower.y = countHeight - 3;
 
         let spawn = this.shadowRoot.querySelector(".bg_field_2_3");
-        let tower = this.shadowRoot.querySelector(".bg_field_" + (countWidth-3) + "_" +
-            (countHeight-3));
+        let tower = this.shadowRoot.querySelector(".bg_field_" + (countWidth - 3) + "_" +
+            (countHeight - 3));
 
         tower.classList.add("towerField");
         spawn.classList.add("spawnField");
@@ -213,12 +234,14 @@ class CritterBackground extends Level(PolymerElement) {
 
     startCritters() {
         let flag = false;
-        if(this._interval) {
+        if (this._interval) {
             clearInterval(this._interval);
         }
         this.createCritter(flag);
         this._interval = setInterval(() => {
-            this.createCritter(flag = !flag);
+            if(this._critterList.length < 14) {
+                this.createCritter(flag = !flag);
+            }
         }, 6000);
     }
 
@@ -236,11 +259,11 @@ class CritterBackground extends Level(PolymerElement) {
             } else if (possibilities.length === 0) {
                 path.pop();
                 if (path.length === 0) {
-                        console.log((steps + 1) + "steps were needed!");
-                        if(steps > 3) {
-                            return;
-                        }
-                        return this.computePath(steps + 1);
+                    console.log((steps + 1) + "steps were needed!");
+                    if (steps > 3) {
+                        return;
+                    }
+                    return this.computePath(steps + 1);
                 }
                 source = path[path.length - 1];
             }
@@ -252,7 +275,7 @@ class CritterBackground extends Level(PolymerElement) {
 
     removeCritters() {
         this._critterList.forEach((critter) => {
-            this._critterList.splice( this._critterList.indexOf(critter), 1 );
+            this._critterList.splice(this._critterList.indexOf(critter), 1);
             critter.parentNode.removeChild(critter);
             critter.detach();
         })
@@ -266,10 +289,10 @@ class CritterBackground extends Level(PolymerElement) {
         critter.path = this.computePath();
         this._critterList.push(critter);
         critter.addEventListener("_critterFinished", () => {
-            this._critterList.splice( this._critterList.indexOf(critter), 1 );
+            this._critterList.splice(this._critterList.indexOf(critter), 1);
             critter.parentNode.removeChild(critter);
         });
-        if(flag){
+        if (flag) {
             this.$.background_container_right.append(critter);
         } else {
             this.$.background_container_left.append(critter);

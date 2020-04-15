@@ -1,7 +1,28 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 
-
+import '/lib/@polymer/polymer/lib/elements/dom-repeat.js';
 /*
 # critter-insert
 
@@ -26,8 +47,11 @@ class CritterSelector extends PolymerElement {
                     font-size: 1.2em;
                 }
             </style>
-    
+               
             <select id="selector" name="selector">
+                  <template is="dom-repeat" items="{{values}}">
+                    <option value="{{item.value}}">{{item.name}}</option>
+                  </template>
             </select>
         `;
     }
@@ -39,8 +63,7 @@ class CritterSelector extends PolymerElement {
     static get properties() {
         return {
             values: {
-                type: [],
-                observer: "_valuesChanged"
+                type: []
             },
 
             selectedValue: {
@@ -49,6 +72,12 @@ class CritterSelector extends PolymerElement {
                 notify: true
             }
         }
+    }
+
+    static get observers() {
+        return [
+            '_valuesChanged(values, values.splices)'
+        ]
     }
 
     connectedCallback() {
@@ -60,14 +89,19 @@ class CritterSelector extends PolymerElement {
     }
 
     _valuesChanged() {
-        this.$.selector.innerHtml = "";
-        this.selectedValue = this.values[0];
-        this.values.forEach((value) => {
-            let opt = document.createElement("option");
-            opt.value = value;
-            opt.innerHTML = value;
-            this.$.selector.append(opt);
-        })
+        if(!this.values || this.values.length === 0){
+            return;
+        }
+        if(typeof this.values[0] === "string"){
+            let temp = [];
+            this.values.forEach((value) => {
+                temp.push({value: value, name: value});
+            });
+
+            this.values = temp;
+        }
+
+        this.selectedValue = this.values[0].value;
     }
 
     _valueChanged(event) {

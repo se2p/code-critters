@@ -1,7 +1,6 @@
 package de.grubermi.code_critters.application.scheduledTasks;
 
-import de.grubermi.code_critters.persistence.entities.Result;
-import de.grubermi.code_critters.persistence.repository.ResultRepository;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,6 +28,6 @@ public class DeleteOldResults {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
         Date date = cal.getTime();
-        resultRepository.delete(resultRepository.getAllByUpdatedBefore(date));
+        resultRepository.deleteAll(resultRepository.getAllByUpdatedBeforeAndUserIsNull(date));
     }
 }

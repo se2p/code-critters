@@ -1,4 +1,27 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 /*
@@ -16,7 +39,7 @@ A Simple Button
 window.Core = window.Core || {};
 window.Core.toasts = window.Core.toasts || [];
 
-class CritterToaster extends PolymerElement {
+class CritterToaster extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
@@ -78,7 +101,7 @@ class CritterToaster extends PolymerElement {
                     <iron-icon id="info" icon="icons:error"></iron-icon>
                     <iron-icon id="success" icon="icons:check-circle"></iron-icon>
                 </div>
-                <div id="msg">[[msg]]</div>
+                <div id="msg">[[__(msg)]]</div>
             </div>
         `;
     }
@@ -106,7 +129,7 @@ class CritterToaster extends PolymerElement {
     }
 
     _typeChanged() {
-        if (this.type === 'error') {
+        if (this.type === 'static.error') {
             this.$.success.style.display = "none";
             this.$.error.style.display = "block";
             this.$.info.style.display = "none";
@@ -135,8 +158,9 @@ class CritterToaster extends PolymerElement {
             if (index > -1) {
                 window.Core.toasts.splice(index, 1);
             }
-            this.$.toaster.style.display = "none";
+            this.$.toaster.style.opacity = "0";
             setTimeout(() => {
+                this.$.toaster.style.display = "none";
                 this.getRootNode().removeChild(this);
             }, 1000);
         }, timeout);

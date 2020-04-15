@@ -1,11 +1,36 @@
 
 <!DOCTYPE html>
+<!--
+  #%L
+  Code Critters
+  %%
+  Copyright (C) 2019 Michael Gruber
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+
 <html>
+<meta http-equiv="content-type"
+      content="application/xhtml+xml; charset=utf-8"/>
 <head>
   <script src="/static/blockly/blockly_compressed.js"></script>
   <script src="/static/blockly/blocks_compressed.js"></script>
   <script src="/static/blockly/javascript_compressed.js"></script>
-  <script src="/static/blockly/msg/js/en.js"></script>
+  <script src="/static/blockly/msg/js/en.js" id="lang_script"></script>
+  <script src="/translation/customBlocks/customBlocks_en.js" id="custom_blocks"></script>
   <script src="/customBlocks.js"></script>
 
 
@@ -115,17 +140,52 @@
   var getCode = function() {
     var jsCode = Blockly.JavaScript.workspaceToCode(workspace);
     return jsCode;
-  }
+  };
 
   var getXML = function() {
     var xml = Blockly.Xml.workspaceToDom(workspace);
     var xml_text = Blockly.Xml.domToText(xml);
     return xml_text;
-  }
+  };
 
   var getBlockById = function(id) {
       return  workspace.getBlockById(id);
-  }
+  };
+
+  var changeLanguage = async function(langTag) {
+    document.getElementById("lang_script").remove();
+    //document.getElementById("customBlocks").remove();
+    var scriptLang = document.createElement("script");
+    var scriptCustom = document.createElement("script");
+    var xml = getXML();
+    scriptLang.id = "lang_script";
+    scriptLang.src = "/static/blockly/msg/js/" + langTag + ".js";
+    scriptCustom.id = "custom_blocks";
+    scriptCustom.src = "/translation/customBlocks/customBlocks_" + langTag + ".js";
+
+    var promises = [];
+    promises.push(new Promise(resolve => {
+              scriptLang.addEventListener('load', function () {
+                resolve();
+              });
+            })
+    );
+
+    promises.push(new Promise(resolve => {
+      scriptCustom.addEventListener('load', function () {
+        resolve();
+              });
+          })
+    );
+
+    document.getElementsByTagName('head')[0].appendChild(scriptLang);
+    document.getElementsByTagName('head')[0].appendChild(scriptCustom);
+
+    await Promise.all(promises);
+    workspace.dispose();
+    renderBlockly();
+
+  };
 
 </script>
 

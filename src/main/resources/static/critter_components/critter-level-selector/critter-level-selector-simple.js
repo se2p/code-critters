@@ -1,5 +1,27 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-button/critter-button.js';
 import '../critter-selector/critter-selector.js';
 
@@ -18,22 +40,17 @@ A Simple Button
 @demo
 */
 
-class CritterLevelSelectorSimple extends PolymerElement {
+class CritterLevelSelectorSimple extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
                 #load_button{
                     margin: var( --margin-selector-button);
                 }
-                
-                critter-button {
-                min-width: 100px;
-                min-height: 40px;
-            }
             </style>
             <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>
             <br>
-            <critter-button id="load_button">Load Level</critter-button>
+            <critter-button id="load_button">[[__('load_level')]]</critter-button>
     `;
     }
 

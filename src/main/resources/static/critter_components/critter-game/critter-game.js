@@ -1,8 +1,29 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-level-selector/critter-level-selector-simple.js';
-import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
 import '../critter-critter/critter-critter.js';
 import '../critter-button/critter-button.js';
@@ -37,7 +58,7 @@ Displays the game elements
 window.Core = window.Core || {};
 window.Core.GameRoot = window.Core.GameRoot || [];
 
-class CritterGame extends Level(PolymerElement) {
+class CritterGame extends I18n(Level(PolymerElement)) {
     static get template() {
         return html`
         ${critterStyle}
@@ -153,7 +174,7 @@ class CritterGame extends Level(PolymerElement) {
                 text-align: center;
             }
 
-            #selector_container critter-level-selector{
+            #selector_container critter-level-selector-simple{
                 --margin-selector-button: auto;
             }
             
@@ -168,7 +189,7 @@ class CritterGame extends Level(PolymerElement) {
 
         </style>
 
-        <critter-data-store></critter-data-store>
+        
         <critter-timeout-manager></critter-timeout-manager>
 
 
@@ -188,7 +209,7 @@ class CritterGame extends Level(PolymerElement) {
                 <critter-score id="dialog_score"></critter-score>
             </div>
             <div id="selector_container">
-                <h3>Select the next level:</h3>
+                <h3>[[__('select_next')]]</h3>
                 <critter-level-selector-simple></critter-level-selector-simple>
             </div>
         </critter-dialog>
@@ -215,9 +236,9 @@ class CritterGame extends Level(PolymerElement) {
         <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
         <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
         <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
-        <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-        <div id="finished_container">{{_finishedHumans}} of&nbsp;<span id="humansNumber"></span>&nbsp;humans have finished</div>
-        <div id="killed_container">{{_killedCritters}} of&nbsp;<span id="critterNumber"></span> &nbsp;critters have been detected</div>
+        <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+        <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
+        <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
         `;
     }
 
@@ -546,10 +567,10 @@ class CritterGame extends Level(PolymerElement) {
         // this.score -= 25 * (this._globalData.countMines());
         // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
-        this.showScore();
         this.score = (this._finishedHumans + this._killedCritters) * 50 +
             (-25 * (this._globalData.countMines())) + //TODO subtract free mines
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
+        this.showScore();
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
@@ -566,6 +587,7 @@ class CritterGame extends Level(PolymerElement) {
         let dialogScore = this.$.dialog_score;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
         let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
+        dialogScore.overallScore = this.score;
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
         await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines());

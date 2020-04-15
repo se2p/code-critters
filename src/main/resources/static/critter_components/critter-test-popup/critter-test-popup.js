@@ -1,10 +1,32 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+
 import '../critter-popup/critter-popup.js';
 import '../critter-button/critter-button.js';
 import '../critter-blockly/critter-blockly.js';
-import '../critter-toaster/critter-toaster.js';
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 import '/lib/@polymer/iron-iconset-svg/iron-iconset-svg.js';
@@ -22,7 +44,7 @@ A popup displayed on  certain position
 
 @demo
 */
-class CritterTestPopup extends Level(PolymerElement) {
+class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -205,11 +227,7 @@ class CritterTestPopup extends Level(PolymerElement) {
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
         if (code === '') {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "You have to create a test first";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this.showErrorToast("You have to create a test first");
             this._popupClose();
             return;
         }

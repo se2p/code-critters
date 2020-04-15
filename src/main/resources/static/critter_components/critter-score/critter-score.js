@@ -1,5 +1,27 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import './critter-score-line.js';
 
@@ -17,7 +39,7 @@ A Simple Button
 
 @demo
 */
-class CritterScore extends PolymerElement {
+class CritterScore extends I18n(PolymerElement) {
 
     static get template() {
         return html`
@@ -45,10 +67,10 @@ class CritterScore extends PolymerElement {
     
     
         <div id="score_table">
-            <critter-score-line id="finished_humans_line">Finished Humans</critter-score-line>
-            <critter-score-line id="killed_critters_line">Killed Critters</critter-score-line>
-            <critter-score-line id="mines_line">Needed Mines</critter-score-line>
-            <critter-score-line id="time_line">Time Bonus</critter-score-line>
+            <critter-score-line id="finished_humans_line">[[__('finished_humans')]]</critter-score-line>
+            <critter-score-line id="killed_critters_line">[[__('killed_mutants')]]</critter-score-line>
+            <critter-score-line id="mines_line">[[__('needed_mines')]]</critter-score-line>
+            <critter-score-line id="time_line">[[__('time_bonus')]]</critter-score-line>
             <div class="score_row" id="final_score_line">
                   <div class="score_cell"></div>
                   <div class="score_cell"></div>
@@ -70,7 +92,10 @@ class CritterScore extends PolymerElement {
                 type: Number,
                 value: 0
             },
-
+            overallScore: {
+                type: Number,
+                value: 0
+            },
             _shownScore: {
                 type: Number,
                 value: 0
@@ -108,12 +133,23 @@ class CritterScore extends PolymerElement {
 
     _onScoreIncreased(e) {
         let newScore = this.score + e.detail.score;
-        if(this._prevScore < 950 && newScore >= 950) {
-            this.dispatchEvent(new CustomEvent('_thirdStarReached', {bubbles: true, composed: true}));
-        } else if (this._prevScore < 800 && newScore >= 800) {
-            this.dispatchEvent(new CustomEvent('_secondStarReached', {bubbles: true, composed: true}));
-        } else if (this._prevScore < 500 && newScore >= 500) {
-            this.dispatchEvent(new CustomEvent('_firstStarReached', {bubbles: true, composed: true}));
+        if(this.overallScore  >= newScore) {
+            if (this._prevScore < 950 && newScore >= 950) {
+                this.dispatchEvent(new CustomEvent('_thirdStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            } else if (this._prevScore < 800 && newScore >= 800) {
+                this.dispatchEvent(new CustomEvent('_secondStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            } else if (this._prevScore < 500 && newScore >= 500) {
+                this.dispatchEvent(new CustomEvent('_firstStarReached', {
+                    bubbles: true,
+                    composed: true
+                }));
+            }
         }
         this._prevScore = newScore;
         this._shownScore = this.score + e.detail.score;

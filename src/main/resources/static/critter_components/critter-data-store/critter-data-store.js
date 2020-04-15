@@ -1,3 +1,24 @@
+/*-
+ * #%L
+ * Code Critters
+ * %%
+ * Copyright (C) 2019 Michael Gruber
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 
 /*
@@ -24,6 +45,11 @@ class CritterDataStore extends PolymerElement {
 
     static get properties() {
         return {
+            user: {
+                type: Object,
+                value: {}
+            },
+
             levelName: {
                 type: String,
                 value: '',
@@ -115,7 +141,8 @@ class CritterDataStore extends PolymerElement {
         return [
             '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*)',
             '_sizeChanged(width, height)',
-            '_critterNumberChanged(numberOfCritters, numberOfHumans)'
+            '_critterNumberChanged(numberOfCritters, numberOfHumans)',
+            '_userChanged(user,*)',
         ]
     }
 
@@ -123,6 +150,10 @@ class CritterDataStore extends PolymerElement {
         super.connectedCallback();
         window.Core.CritterLevelData = this;
         this.cookie = this.getCookie();
+    }
+
+    _userChanged(){
+        this.dispatchEvent(new CustomEvent('_userChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     _dataChanged() {
@@ -218,12 +249,45 @@ class CritterDataStore extends PolymerElement {
                 c = c.substring(1);
             }
             if (c.indexOf('id') == 0) {
+                this.getMe();
                 return c.substring(3, c.length);
             }
         }
-        let cookie = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+        return this.setNewCookie();
+    }
+
+    setNewCookie() {
+        let arr = new Uint8Array(32);
+        (window.crypto || window.msCrypto).getRandomValues(arr);
+        let cookie = Array.from(arr, this.dec2hex).join('');
         this.setCookie('id', cookie);
         return cookie;
+    }
+
+    dec2hex(dec) {
+        return ('0' + dec.toString(16)).substr(-2)
+    }
+
+    getMe() {
+        let req = document.createElement('iron-ajax');
+        req.url = "/users/me";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+
+        req.addEventListener('response', e => {
+            let data = e.detail.__data.response;
+            this.user = data;
+        });
+
+        req.addEventListener('static.error', () => {
+            this.user = undefined;
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
     }
 }
 
