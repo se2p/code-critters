@@ -54,6 +54,7 @@
 </div>
 
 <script>
+  var ready = false;
   var showToolbox = false;
   var showControls = false;
   var showTrashcan = false;
@@ -107,6 +108,8 @@
   window.addEventListener('resize', onresize, false);
   onresize();
   Blockly.svgResize(workspace);
+  window.dispatchEvent(new CustomEvent("_blocklyReady", {detail: {}, bubbles: true, composed: true}));
+  ready = true;
 
   var setToolbox = function(newToolbox){
     toolbox.innerHTML = newToolbox;
