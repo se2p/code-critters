@@ -20,10 +20,9 @@
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
-
 
 
 /*
@@ -65,7 +64,9 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     `;
     }
 
-    static get importMeta() { return import.meta; }
+    static get importMeta() {
+        return import.meta;
+    }
 
     static get is() {
         return 'critter-blockly';
@@ -105,16 +106,15 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
                 observer: '_codeChanged'
             },
 
-            init: {
-                type: Boolean,
-                value: false,
-                observer: '_codeChanged'
-            },
-
             readOnly: {
                 type: Boolean,
                 value: false,
                 observer: '_readOnlyChanged'
+            },
+
+            restarted: {
+                type: Array,
+                value: []
             },
 
         };
@@ -130,43 +130,50 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         super.connectedCallback();
 
         afterNextRender(this, function () {
-            let rootNode = window.Core.GameRoot;
-            this.$.blockly_frame.addEventListener("load", () => this._updateIFrame());
-            rootNode.addEventListener("_toolboxChanged", this._toolboxChanged);
             this._globalData = window.Core.CritterLevelData;
+            this.attachEventListeners();
             if (window.Core.Generator) {
                 this._loadFullToolBox();
             }
+            this._updateIFrame();
         });
     }
 
-    _attachEventListeners() {
+    attachEventListeners() {
         let rootNode = window.Core.GameRoot;
         if (this.cut) {
-            rootNode.addEventListener("_xmlCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_testCodeChanged", this._codeChanged);
+            rootNode.addEventListener("_xmlCodeChanged", this._codeChanged.bind(this));
+            rootNode.removeEventListener("_testCodeChanged", this._codeChanged.bind(this));
         } else {
-            rootNode.addEventListener("_testCodeChanged", this._codeChanged);
-            rootNode.removeEventListener("_xmlCodeChanged", this._codeChanged);
+            rootNode.addEventListener("_testCodeChanged", this._codeChanged.bind(this));
+            rootNode.removeEventListener("_xmlCodeChanged", this._codeChanged.bind(this));
         }
+        this.$.blockly_frame.contentWindow.addEventListener("_blocklyReady", () => this._updateIFrame());
+        rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
     }
 
     /** updates the IFrame **/
     _updateIFrame() {
-        this._toolboxChanged();
-        this._controlsChanged();
-        this._trashcanChanged();
-        this._codeChanged();
-        this._readOnlyChanged();
-        this._onLanguageChanged();
+        if (this.$.blockly_frame.contentWindow.ready) {
+            this._toolboxChanged();
+            this._controlsChanged();
+            this._trashcanChanged();
+            this._codeChanged();
+            this._readOnlyChanged();
+            this._onLanguageChanged();
+        } else {
+            this.restartFunction(this._updateIFrame)
+        }
+
     }
 
     /** updates the toolbox of the IFrame **/
     _toolboxChanged() {
         if (!this.$.blockly_frame || !this.$.blockly_frame.contentWindow.setToolbox) {
+            this.restartFunction(this._toolboxChanged);
             return;
         }
-        if (((window.Core.Generator || (!this.cut && !this.init)))) {
+        if (((window.Core.Generator || !this.cut ))) {
             this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox);
         } else {
             this.$.blockly_frame.contentWindow.setToolbox("");
@@ -190,14 +197,45 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     /** updates the code of the IFrame **/
     _codeChanged() {
         if (!this._globalData) {
+            if(this.cut){
+                this.restartFunction(this._codeChanged);
+            }
             return
         }
         let code = "";
-        if (this.cut && this._globalData.xml && this._globalData.xml) {
-            code = this._globalData.xml;
-            this.setCode(code);
-            if(this.$.blockly_frame.contentWindow.getBlockById("cut_head")
-                && this.$.blockly_frame.contentWindow.getBlockById("init_head")){
+        if (this.cut) {
+            if (this._globalData.xml) {
+                code = this._globalData.xml;
+                code = this.getCenteredCode(code);
+                if(!code){
+                    this.restartFunction(this._codeChanged);
+                    return;
+                }
+            } else {
+                this.restartFunction(this._codeChanged);
+                return;
+            }
+        }
+        this.setCode(code);
+    }
+
+    /** Restart a funktion if not all required elements for the function are available **/
+    restartFunction(func) {
+        if (this.restarted.includes(func)) {
+            return;
+        }
+        setTimeout(() => {
+            this.restarted.splice(this.restarted.indexOf(func), 1);
+            this[func.name]();
+        }, 200);
+
+    }
+
+    getCenteredCode(code){
+        this.setCode(code);
+        if (this.$.blockly_frame.contentWindow.getBlockById) {
+            if (this.$.blockly_frame.contentWindow.getBlockById("cut_head")
+                && this.$.blockly_frame.contentWindow.getBlockById("init_head")) {
                 let cutWidth = this.$.blockly_frame.contentWindow.getBlockById("cut_head").width;
                 let initWidth = this.$.blockly_frame.contentWindow.getBlockById("init_head").width;
 
@@ -221,8 +259,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         } else {
             return
         }
-
-        this.setCode(code);
+        return code;
     }
 
     /** sets the blockly code**/
@@ -258,7 +295,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
 
     /** loads full toolbox **/
     _loadFullToolBox() {
-        if (this._globalData) {
+        if (this._globalData && this.$.blockly_frame.contentWindow.ready) {
             let req = document.createElement('iron-ajax');
             req.url = "/generator/toolbox";
             req.method = "GET";
@@ -271,6 +308,8 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
                 this._globalData.toolbox = e.detail.__data.response;
             });
             req.generateRequest();
+        } else {
+            this.restartFunction(this._loadFullToolBox);
         }
     }
 

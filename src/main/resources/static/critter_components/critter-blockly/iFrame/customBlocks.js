@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-goog.addDependency("../" + "/hair_field_colour.js", ['Blockly.HairFieldColour'], ['Blockly.Field', 'Blockly.utils', 'goog.dom', 'goog.events', 'goog.style', 'goog.ui.ColorPicker']);
-goog.require('Blockly.HairFieldColour');
+//goog.addDependency("../" + "/hair_field_colour.js", ['Blockly.HairFieldColour'], ['Blockly.Field', 'Blockly.utils', 'goog.dom', 'goog.events', 'goog.style', 'goog.ui.ColorPicker']);
+//goog.require('Blockly.HairFieldColour');
 
 Blockly.JavaScript['properties'] = function(block) {
     var dropdown_properties = block.getFieldValue('properties');
