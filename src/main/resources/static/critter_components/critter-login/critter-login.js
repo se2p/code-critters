@@ -182,10 +182,12 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
     _onLoginSuccess(e) {
         this._globalData.user = e.detail.__data.response;
+        this.showSuccessToast("login_successful");
         this.$.login_dialog.close();
     }
 
     _onRegisterSuccess(e) {
+        this.showSuccessToast("registration_successful")
         this.$.register_dialog.close();
     }
 
@@ -228,18 +230,28 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             this._globalData.setNewCookie();
             this.showLogin = true;
         });
-        req.addEventListener('static.error', (e) => this._onError(e));
+        req.addEventListener('error', (e) => this._onError(e));
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
     }
 
     _onError(e) {
-        if(e.detail.request.__data.response.msg_key) {
-            this.showErrorToast(e.detail.request.__data.response.msg_key);
-            return;
+        if(e.error === "Username or Password incorrect") {
+            this.showErrorToast("invalid_username_or_password");
+        } else if (e.error === "activate_first") {
+            this.showErrorToast("activation_error");
+        } else if (e.message != null) {
+            if (e.message === "User with this username already exists!") {
+                this.showErrorToast("username_exists");
+            } else if (e.message === "User with this email already exists!") {
+                this.showErrorToast("email_exists");
+            } else {
+                this.showErrorToast("fill_fields");
+            }
+        } else {
+            this.showErrorToast("submit_error");
         }
-        console.log("Error");
     }
 
     _openLoginDialog(){

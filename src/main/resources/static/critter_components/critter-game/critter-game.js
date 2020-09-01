@@ -85,7 +85,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 float: left;
             }
 
-
             #send_button,
             #speedUp_button,
             #coordinate_container{
@@ -96,6 +95,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             #reload_button{
             margin-left: 100px;
                 float: left;
+            }
+            
+            #game_containers {
+                padding: 2%;
             }
 
             #coordinate_container{
@@ -186,7 +189,13 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             critter-store {
                 font-size: 0.85em;
             }
-
+            
+            #header hr {
+                color: #FFA600;
+                background-color: #FFA600;
+                height: 3px;
+                margin: 0;
+            }
         </style>
 
         
@@ -213,32 +222,37 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 <critter-level-selector-simple></critter-level-selector-simple>
             </div>
         </critter-dialog>
-        <critter-header></critter-header>
-
+        
         <div class="row">
-            <!--<div id="board_container" class=" col-lg col-lg-6 col-md-12  mt-3 float-left mx-auto" style="width: fit-content">-->
-            <div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">
+            <div class="col-sm-12" id="header">
+                <critter-header></critter-header>
+                <hr>
+            </div>
+        </div>
+        <div class="row" id="game_containers">
+            <div id="board_container" class="col-sm-5" style="max-width: fit-content">
+            <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
                 <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
                 </critter-gameboard>
                 <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
                 </div>
                 <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
                 </critter-test-popup>
+                <br>
+                <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
+                <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
+                <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
+                <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+                <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
+                <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
             </div>
-            <!--<div id="blockly_container" class="col-lg-6 col-md-12 mt-3 float-left">-->
-            <div id="blockly_container" class="col-lg mt-3">
+            <div id="blockly_container" class="col-sm-7">
+            <!--<div id="blockly_container" class="col-lg mt-3">-->
                 <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
                                  read-only>
                 </critter-blockly>
             </div>
         </div>
-        <br>
-        <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
-        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
-        <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
-        <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-        <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
-        <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
         `;
     }
 

@@ -30,6 +30,7 @@ import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.UserDTO;
+import org.codecritters.code_critters.web.enums.Language;
 import org.codecritters.code_critters.web.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,23 +60,27 @@ public class UserService {
     }
 
     public void registerUser(UserDTO dto, String url) {
-        if (userRepositiory.existsByUsernameOrEmail(dto.getUsername(), dto.getEmail())) {
-            throw new AlreadyExistsException("User with this username or email already exists!");
+        if (userRepositiory.existsByUsername(dto.getUsername())) {
+            throw new AlreadyExistsException("User with this username already exists!");
+        }
+
+        if(userRepositiory.existsByEmail(dto.getEmail())) {
+            throw new AlreadyExistsException("User with this email already exists!");
         }
 
         User user = new User();
-        if (dto.getEmail() == null) {
-            throw new IncompleteDataException("Email missing");
-        }
-        user.setEmail(dto.getEmail());
-
         if (dto.getUsername() == null) {
             throw new IncompleteDataException("Username missing");
         }
         user.setUsername(dto.getUsername());
 
+        if (dto.getEmail() == null) {
+            throw new IncompleteDataException("Email missing");
+        }
+        user.setEmail(dto.getEmail());
+
         if (dto.getLanguage() == null) {
-            throw new IncompleteDataException("Language missing");
+            user.setLanguage(Language.en);
         }
         user.setLanguage(dto.getLanguage());
 
@@ -107,7 +112,7 @@ public class UserService {
 
         if (user != null) {
 
-            if (passwordService.verifyPassword(dto.getPassword(), user.getPassword(), user.getSalt())) {
+            if ((dto.getPassword() != null) && (passwordService.verifyPassword(dto.getPassword(), user.getPassword(), user.getSalt()))) {
                 user.setCookie(cookie);
                 userRepositiory.save(user);
                 return userToDTO(user);
@@ -225,14 +230,19 @@ public class UserService {
     public void changeUser(UserDTO dto, String cookie, String url) {
         User user = userRepositiory.findByCookie(cookie);
 
-        if(dto.getPassword() != null && !dto.getPassword().equals("")){
-            if(passwordService.verifyPassword(dto.getPassword(), user.getPassword(), user.getSalt())) {
-                user = passwordService.hashPassword(dto.getPassword(), user);
+        if(dto.getOldPassword() != null && !dto.getOldPassword().equals("")){
+            if(passwordService.verifyPassword(dto.getOldPassword(), user.getPassword(), user.getSalt())) {
+                user = passwordService.hashPassword(dto.getOldPassword(), user);
                 userRepositiory.save(user);
             } else {
                 throw new NotFoundException("Password incorrect", "invalid_password");
             }
         }
+
+        if(dto.getUsername().trim().equals("") || dto.getEmail().trim().equals("")) {
+            throw new IllegalActionException("These fields cannot be empty", "fill_fields");
+        }
+
         if(!dto.getUsername().equals(user.getUsername())){
             if(!userRepositiory.existsByUsername(dto.getUsername())) {
                 user.setUsername(dto.getUsername());
@@ -240,6 +250,7 @@ public class UserService {
                 throw new AlreadyExistsException("User with this username already exists!", "username_exists");
             }
         }
+
         if(!dto.getEmail().equals(user.getEmail())){
             if(!userRepositiory.existsByEmail(dto.getEmail())) {
                 user.setEmail(dto.getEmail());

@@ -64,19 +64,19 @@ class CritterInput extends I18n(PolymerElement) {
                     font-size: 1em;
                     background-color: transparent;
                     border: none;
-                    border-bottom: 2px solid #039BE5;
+                    border-bottom: 2px solid #FFA600;
                     display: table-cell;
                 }
         
                 input:focus{
                     border: none;
-                    border-bottom: 2px solid #039BE5;
+                    border-bottom: 2px solid #FFA600;
                     outline: none;
                 }
         
                 input:invalid{
                     border: none;
-                    border-bottom: 2px solid #e5424a;
+                    border-bottom: 2px solid darkred;
                     outline: none;
                 }
             </style>

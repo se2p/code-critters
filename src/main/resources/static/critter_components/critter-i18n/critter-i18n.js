@@ -46,7 +46,7 @@ class CritterI18n extends PolymerElement {
           }
           
           #flag_container img{
-              float: right;
+              float: left;
               margin: 0 5px;
               cursor: pointer;
           }

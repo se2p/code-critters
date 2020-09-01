@@ -46,9 +46,14 @@ class CritterHighscore extends I18n(PolymerElement) {
         return html`
             <style>
             
+            :host {
+                width: 100%;
+                height: 0;
+            }
+            
             .table{
             display: table;
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
             margin: auto;
             }
@@ -64,12 +69,12 @@ class CritterHighscore extends I18n(PolymerElement) {
             }
             
             .heading_row{
-                border-bottom: solid 3px #039BE5;
+                border-bottom: solid 3px #FFA600;
                 font-size: 1.5em;
             }
             
             .myResult{
-                background-color: lightblue;
+                background-color: lightgoldenrodyellow;
             }
             
             .space{

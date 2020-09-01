@@ -40,50 +40,46 @@ A Simple Button
 class CritterButton extends PolymerElement {
     static get template() {
         return html`
-    <style>
-      :host {
-        display: block;
-        width: -moz-fit-content;
-        width: fit-content;
+            <style>
+                :host {
+                    display: block;
+                    width: -moz-fit-content;
+                    width: fit-content;
         
-        --critter-button-color-disabled: #677d91;
-        --critter-button-color: #039BE5;
-        --critter-button-text-color: whitesmoke;
-        --critter-button-text-color-disabled: gainsboro;
+                    --critter-button-color-disabled: #677d91;
+                    --critter-button-color: #FFA600;
+                    --critter-button-text-color: black;
+                    --critter-button-text-color-disabled: darkgrey;
+                }
 
-      }
-
-
-      #button {
-        border-radius: 4px;
-        min-height: 40px;
-        color: var(--critter-button-text-color);
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-        background-color: var(--critter-button-color);
-        cursor: pointer;
-        padding: 0 10px;
-      }
+                #button {
+                    border-radius: 4px;
+                    min-height: 40px;
+                    color: var(--critter-button-text-color);
+                    text-align: center;
+                    justify-content: center;
+                    align-items: center;
+                    display: flex;
+                    background-color: var(--critter-button-color);
+                    cursor: pointer;
+                    padding: 0 10px;
+                }
       
-      #button:hover{
-         background-color: var(--critter-button-color);
-      }
+                #button:hover{
+                    background-color: var(--critter-button-color);
+                }
 
-        #button.disabled,
-        #button.disabled:hover{
-            background-color: var(--critter-button-color-disabled);
-            cursor: not-allowed;
-            color: var(--critter-button-text-color-disabled);
-        }
-
-
-    </style>
-     <div id="button" class$="[[_disabledString]]">
-          <slot></slot>
-     </div>
-    `;
+                #button.disabled,
+                #button.disabled:hover{
+                    background-color: var(--critter-button-color-disabled);
+                    cursor: not-allowed;
+                    color: var(--critter-button-text-color-disabled);
+                }
+            </style>
+            <div id="button" class$="[[_disabledString]]">
+                <slot></slot>
+            </div>
+        `;
     }
 
     static get is() {

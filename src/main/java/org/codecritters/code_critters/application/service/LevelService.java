@@ -25,7 +25,7 @@ package org.codecritters.code_critters.application.service;
 import org.codecritters.code_critters.application.exception.AlreadyExistsException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.Level;
-import org.codecritters.code_critters.persistence.entities.Row;
+import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
 import org.codecritters.code_critters.persistence.repository.MutantRepository;
@@ -193,17 +193,17 @@ public class LevelService {
     public List getLevelsGrouped(String cookie) {
         List groupedLevels = new LinkedList();
 
-        Collection<Row> rows = rowRepository.getRows();
+        Collection<CritterRow> rows = rowRepository.getRows();
         if(userRepositiory.existsByCookie(cookie)){
             User user = userRepositiory.findByCookie(cookie);
-            for (Row row : rows) {
+            for (CritterRow row : rows) {
                 HashMap map = new HashMap<String, Object>();
                 map.put("name", row.getName());
                 map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, user));
                 groupedLevels.add(map);
             }
         } else {
-            for (Row row : rows) {
+            for (CritterRow row : rows) {
                 HashMap map = new HashMap<String, Object>();
                 map.put("name", row.getName());
                 map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
@@ -226,11 +226,11 @@ public class LevelService {
     }
 
     public List<RowDTO> getRows() {
-        Collection<Row> rows = rowRepository.getRows();
+        Collection<CritterRow> rows = rowRepository.getRows();
 
         List<RowDTO> rowDTOS = new LinkedList<>();
 
-        for (Row row : rows) {
+        for (CritterRow row : rows) {
             rowDTOS.add(new RowDTO(row.getId(), row.getName()));
         }
 

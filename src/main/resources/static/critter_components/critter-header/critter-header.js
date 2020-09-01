@@ -29,9 +29,9 @@ import '../critter-login/critter-login.js';
 import '../critter-parameter-handler/critter-parameter-handler.js';
 
 /*
-# critter-insert
+# critter-header
 
-A Simple Button
+The page header
 
 ## Example
 ```html
@@ -50,60 +50,51 @@ class CritterHeader extends I18n(PolymerElement) {
                     height: 0;
                 }
                 
-                #image a{
-                    float: left;
+                #image {
+                    text-align: center;
                 }
                 
                 #image span{
-                    color: #464c53;
                     text-decoration: none;
                     font-size: 3em;
                     height: 100%;
-                    display: table-cell;
-                    vertical-align: middle;
-                    float: left;
-                    margin: 0 8px;
-                }
-                #image img {
-                    margin-bottom: 3px;
-                }
-                header{
-                    clear: both;
+                    color: black;
                 }
                 
-                critter-login {
-                    position: absolute;
-                    right: 30px;
-                    color: rgba(255,255,255,.5);
+                #image a:hover {
+                    color: #ffa600; !important;
+                    text-decoration: none;
+                }
+                
+                #login_container{
+                    color: black;
+                    text-align: end;
+                }
+                
+                #header {
+                    background-color: white;
+                    color: black;
                 }
                 
             </style>
             
             ${critterStyle}
             
-            <critter-i18n></critter-i18n>
-            <critter-parameter-handler></critter-parameter-handler>
-       
-            <div id="image" class="container mx-auto" style="width: fit-content;">
-                <a href="/">
-                    <img src="[[importPath]]images/logo.png">
-                </a>
-                <span>Code Critters</span>
+            <div class="navbar navbar-dark navbar-fixed-top" id="header">
+                <div class="col-sm-4" id="flags">
+                    <critter-i18n></critter-i18n>
+                    <critter-parameter-handler></critter-parameter-handler>
+                </div>
+                <div class="col-sm-4" id="image" class="container mx-auto" style="width: fit-content;">
+                    <a href="/">
+                        <img src="[[importPath]]images/logo.png">
+                        <span>Code Critters</span>
+                    </a>
+                </div>
+                <div class="col-sm-4" id="login_container">
+                    <critter-login></critter-login>
+                </div>
             </div>
-             <header class="navbar navbar-dark navbar-expand-sm bg-dark">
-             <ul class="navbar-nav">
-                 <li class="nav-item">
-                    <a class="nav-link" href="/">[[__('home')]]</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="/levels">[[__('levels')]]</a>
-                 </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="/highscore">[[__('highscore')]]</a>
-                 </li>
-             </ul>
-             <critter-login></critter-login>
-             </header>
         `;
     }
 

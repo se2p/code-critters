@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `level` (
   `row_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKiyx8r274befk3mij0vy9lcnth` (`row_id`),
-  CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `row` (`id`)
+  CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle codecritters.level: ~10 rows (ungefähr)
@@ -187,8 +187,8 @@ INSERT INTO `result` (`id`, `cookie`, `score`, `stars`, `updated`, `level_id`) V
 /*!40000 ALTER TABLE `result` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle codecritters.row
-DROP TABLE IF EXISTS `row`;
-CREATE TABLE IF NOT EXISTS `row` (
+DROP TABLE IF EXISTS `critter_row`;
+CREATE TABLE IF NOT EXISTS `critter_row` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `position` int(11) NOT NULL,
@@ -197,12 +197,12 @@ CREATE TABLE IF NOT EXISTS `row` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle codecritters.row: ~2 rows (ungefähr)
-DELETE FROM `row`;
-/*!40000 ALTER TABLE `row` DISABLE KEYS */;
-INSERT INTO `row` (`id`, `name`, `position`) VALUES
+DELETE FROM `critter_row`;
+/*!40000 ALTER TABLE `critter_row` DISABLE KEYS */;
+INSERT INTO `critter_row` (`id`, `name`, `position`) VALUES
 	('0d3c9148-4732-11e9-b210-d663bd873d93', 'Beginner', 1),
 	('f87be380-4731-11e9-b210-d663bd873d93', 'Tutorials', 0);
-/*!40000 ALTER TABLE `row` ENABLE KEYS */;
+/*!40000 ALTER TABLE `critter_row` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

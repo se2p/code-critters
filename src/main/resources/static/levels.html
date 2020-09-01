@@ -27,11 +27,11 @@
     <title>Code Critters - LEVELS</title>
     <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type=module src="./critter_components/critter-level-selector/critter-level-selector.js">
+    <script type=module src="critter_components/critter-level-selector/critter-level-selector.js">
     </script>
-    <script type=module src="./critter_components/critter-header/critter-header.js">
+    <script type=module src="critter_components/critter-header/critter-header.js">
     </script>
-    <script type=module src="./critter_components/critter-background/critter-background.js">
+    <script type=module src="critter_components/critter-background/critter-background.js">
     </script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
@@ -47,7 +47,7 @@
                 background-color: #2f8136;
             }
             #foreground_container{
-                max-width: 900px;
+                width: 100%;
                 position: relative;
                 height: 100vh;
                 margin: auto;
@@ -84,6 +84,7 @@
     </div>
 </div>
 </body>
+<!--
 <script>
     renderBachground = () => {
         let bg;
@@ -100,5 +101,6 @@
     window.addEventListener("resize", renderBachground);
     renderBachground();
 </script>
+-->
 
 </html>

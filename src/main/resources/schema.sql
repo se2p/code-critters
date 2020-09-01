@@ -1,5 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS  `row` (
+CREATE TABLE IF NOT EXISTS  `critter_row` (
                        `id` VARCHAR(255) NOT NULL,
                        `name` VARCHAR(255) NOT NULL,
                        `position` INT(11) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `level` (
                          `row_id` VARCHAR(255) NULL DEFAULT NULL,
                          PRIMARY KEY (`id`),
                          INDEX `FKiyx8r274befk3mij0vy9lcnth` (`row_id`),
-                         CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `row` (`id`)
+                         CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`)
 )
     COLLATE='latin1_swedish_ci'
     ENGINE=InnoDB

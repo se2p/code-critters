@@ -51,11 +51,21 @@ class CritterChangeProfile extends I18n(PolymerElement) {
             
             [hidden] {
                     display: none !important;
-                  }
+            }
             
-             .controls{
-                margin: auto;
-                width: fit-content;
+            critter-form {
+                font-family: Arial;
+                font-size: 1.2em;
+            }
+            
+            critter-dialog {
+                font-family: Arial;
+                font-size: 1.2em;
+            }
+            
+            .controls{
+                width: 50%;
+                margin: 0 auto;
            }
             
             .controls critter-button{
@@ -72,22 +82,23 @@ class CritterChangeProfile extends I18n(PolymerElement) {
             
            <critter-form id="form" method="POST" target="users/change" >
                 <critter-input label="username" name="username" value="[[user.username]]"></critter-input><br> 
-                <critter-input label="Email" name="email" value="[[user.email]]"></critter-input><br>
+                <critter-input id="email" label="Email" name="email" value="[[user.email]]"></critter-input><br>
                 <critter-button id="changePasswordButton" hidden="[[_changePassword]]">[[__("change_password")]]</critter-button>
-                <critter-input label="old_password" name="oldPassword" type="password" hidden="[[!_changePassword]]"></critter-input><br>
+                <critter-input id="oldPassword" label="old_password" name="oldPassword" type="password" hidden="[[!_changePassword]]"></critter-input><br>
                 <critter-input label="password" name="password" type="password" hidden="[[!_changePassword]]"></critter-input><br>
                 <critter-input label="password_confirm" name="password" type="password" no-serialize match="password" hidden="[[!_changePassword]]"></critter-input><br>
                 <critter-input name="language" type="hidden" value="[[language]]"></critter-input><br>
                 
                 <div class="controls" slot="controls">
-                    <critter-button submit>[[__("save")]]</critter-button>
+                    <critter-button id="submitButton" submit>[[__("save")]]</critter-button>
                     <critter-button id="preDeleteButton">[[__("delete_profile")]]</critter-button>
                 </div>
             </critter-form>
             
             <critter-dialog id="delete_dialog">
-            [[__("really_delete_account")]]
+            <p>[[__("really_delete_account")]]</p>
             <critter-button id="breakDeleteButton">[[__("break")]]</critter-button>
+            <br>
             <critter-button id="deleteButton">[[__("delete_profile")]]</critter-button>
             </critter-dialog>
         `;

@@ -45,14 +45,36 @@ class CritterLevelRow extends PolymerElement {
             #level_row *{
                 float: left;
             }
+            
             #row_container{
                 clear: both;
+                overflow: auto;
+            }
+            
+            #heading hr {
+                display: block;
+                color: #FFA600;
+                background-color: #FFA600;
+                height: 3px;
+                margin-right: 0;
+                width: 25%;
+            }
+            
+            #heading {
+                text-align: right;
             }
             </style>
             
-            <div id="row_container">
-                <span id="heading">[[name]]</span>
-                <div id="level_row"></div>
+            <div class="row" id="row_container">
+                <div class="col-sm-4">
+                    <span id="heading">
+                        <hr align="right">
+                        <h3><b>[[name]]</b></h3>
+                    </span>
+                </div>
+                <div class="col-sm-8">
+                    <div id="level_row"></div>
+                </div>
             </div>
 
     `;

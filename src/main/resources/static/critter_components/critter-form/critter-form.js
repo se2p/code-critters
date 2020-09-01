@@ -50,7 +50,6 @@ class CritterForm extends Toaster(I18n(PolymerElement)) {
             :host{
                 display: block;
             }
-        
             
             #input_slot {
                 display: table;
@@ -143,7 +142,7 @@ class CritterForm extends Toaster(I18n(PolymerElement)) {
         }
 
         req.addEventListener('response', (e) => this.onSuccess(e));
-        req.addEventListener('static.error', (e) => this.onError(e.detail.error.request.__data.response));
+        req.addEventListener('error', (e) => this.onError(e.detail.error.request.__data.response));
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;

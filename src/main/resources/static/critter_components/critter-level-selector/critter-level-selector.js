@@ -56,7 +56,8 @@ class CritterLevelSelector extends Level(PolymerElement) {
             </style>
             
             <critter-data-store></critter-data-store>
-            <div id="preview_container">
+            <div class="row">
+                <div class="col-sm-12" id="preview_container"></div>
             </div>
     `;
     }

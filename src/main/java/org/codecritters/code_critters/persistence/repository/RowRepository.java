@@ -22,7 +22,7 @@ package org.codecritters.code_critters.persistence.repository;
  * #L%
  */
 
-import org.codecritters.code_critters.persistence.entities.Row;
+import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -30,8 +30,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-public interface RowRepository extends CrudRepository<Row, String> {
+public interface RowRepository extends CrudRepository<CritterRow, String> {
 
-    @Query("SELECT r FROM Row as r ORDER BY r.position ASC")
-    Collection<Row> getRows();
+    @Query("SELECT r FROM CritterRow as r ORDER BY r.position ASC")
+    Collection<CritterRow> getRows();
 }

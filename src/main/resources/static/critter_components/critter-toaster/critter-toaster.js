@@ -47,9 +47,14 @@ class CritterToaster extends I18n(PolymerElement) {
                 #toaster {
                     border: 1px solid grey;
                     position: fixed;
-                    right: 40px;
-                    top: -45px;
+                    top: 50%;
+                    left: 50%;
+                    margin: auto;
+                    -ms-transform: translateX(-50%) translateY(-50%);
+                    -webkit-transform: translate(-50%,-50%);
+                    transform: translate(-50%,-50%);
                     transition: 500ms;
+                    z-index: 9999;
                 }
     
                 #toaster * {
@@ -145,14 +150,6 @@ class CritterToaster extends I18n(PolymerElement) {
     }
 
     show(timeout) {
-        window.Core.toasts.forEach((toaster) => {
-            toaster.lower();
-        });
-        window.Core.toasts.push(this);
-        setTimeout(() => {
-            this.$.toaster.style.top = "20px";
-        }, 100);
-        this._top = 20;
         setTimeout(() => {
             var index = window.Core.toasts.indexOf(this);
             if (index > -1) {
@@ -164,11 +161,6 @@ class CritterToaster extends I18n(PolymerElement) {
                 this.getRootNode().removeChild(this);
             }, 1000);
         }, timeout);
-    }
-
-    lower() {
-        this._top += 45;
-        this.$.toaster.style.top = this._top + "px";
     }
 }
 

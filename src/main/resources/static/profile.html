@@ -27,13 +27,8 @@
     <title>Code Critters - Profile</title>
     <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type=module src="./critter_components/critter-header/critter-header.js">
-    </script>
-    <script type=module src="./critter_components/critter-change-profile/critter-change-profile.js">
-    </script>
-    <script type=module
-            src="./critter_components/critter-background/critter-background.js">
-    </script>
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
+    <script type=module src="critter_components/critter-change-profile/critter-change-profile.js"></script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
@@ -49,7 +44,7 @@
             }
 
             #foreground_container {
-                max-width: 900px;
+                width: 100%;
                 position: relative;
                 height: 100vh;
                 margin: auto;
@@ -62,14 +57,26 @@
                 width: 100px;
             }
 
-            critter-background {
-                z-index: 1;
-            }
-
-
             .content {
                 position: relative;
                 margin: 15px;
+            }
+
+            .col-sm-2 {
+                background-color: #f3f3f3;
+            }
+
+            .col-sm-8 {
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+                padding: 2%;
+                height: 100%;
+            }
+
+            hr {
+                color: #ffa600;
+                background-color: #ffa600;
+                height: 3px;
+                margin: 0;
             }
         </style>
 
@@ -78,27 +85,19 @@
 </head>
 <body>
 <div id="foreground_container">
-    <critter-header></critter-header>
-    <div class="content">
-        <critter-change-profile></critter-change-profile>
+    <div class="row">
+        <div class="col-sm-12">
+            <critter-header></critter-header>
+            <hr>
+        </div>
+    </div>
+    <div class="row content">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <critter-change-profile></critter-change-profile>
+        </div>
+        <div class="col-sm-2"></div>
     </div>
 </div>
 </body>
-<script>
-    renderBachground = () => {
-        let bg;
-        if (window.innerWidth >= 1150 && !document.querySelector("critter-background")) {
-            bg = document.createElement("critter-background");
-            bg.mainContainerWidth = 900;
-            document.querySelector("body").append(bg);
-        } else if (window.innerWidth < 1150 && (bg = document.querySelector("critter-background"))) {
-            bg.detach();
-            document.querySelector("body").removeChild(bg);
-        }
-    };
-
-    window.addEventListener("resize", renderBachground);
-    renderBachground();
-</script>
-
 </html>

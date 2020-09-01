@@ -24,16 +24,15 @@
 
 <head>
     <title>Code Critters</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type=module src="./critter_components/critter-level-selector/critter-level-selector.js">
-    </script>
-    <script type=module src="./critter_components/critter-header/critter-header.js">
-    </script>
-    <script type=module src="./critter_components/critter-background/critter-background.js">
-    </script>
-    <script type=module src="./critter_components/critter-translator/critter-translator-escaped.js">
-    </script>
+    <script type=module src="critter_components/critter-level-selector/critter-level-selector.js"></script>
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
+    <script type=module src="critter_components/critter-translator/critter-translator-escaped.js"></script>
+    <script type=module src="critter_components/critter-highscore/critter-highscore.js"></script>
+    <script type=module src="critter_components/critter-project-info/critter-project-info.js"></script>
+    <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
@@ -43,18 +42,7 @@
             body {
                 font-family: Arial;
                 font-size: 0.8em;
-                height: 100vh;
                 margin: 0;
-                background-color: #2f8136;
-            }
-            #foreground_container{
-                max-width: 900px;
-                position: relative;
-                height: 100vh;
-                margin: auto;
-                /*background-color: rgba(217, 248, 239, 0.4);*/
-                background-color: #F3F4F6;
-                z-index: 2;
             }
 
             .text{
@@ -62,15 +50,62 @@
                 font-size: 1.3em;
             }
 
-            critter-background{
-                z-index: 1;
+            critter-header {
+                width: 100%;
+                margin: 0;
             }
 
+            #foreground_container {
+                margin-top: 82px;
+            }
 
-            .content{
-                position: relative;
-                top: 0;
-                margin: 15px;
+            #header_row {
+                background-color: white;
+            }
+
+            #landing_text {
+                padding: 2%;
+                background-color: #f2f2f2;
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+            }
+
+            #level_display {
+                padding: 2%;
+                font-size: 1.2em;
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+            }
+
+            #highscore {
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+                background-color: #f2f2f2;
+                padding: 2%;
+            }
+
+            #project_info {
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+                padding: 2%;
+            }
+
+            .col-sm-2 {
+                background-color: #f3f3f3;
+            }
+
+            hr {
+                color: #ffa600;
+                background-color: #ffa600;
+                height: 3px;
+                margin: 0;
+            }
+
+            #copyright {
+                color: white;
+                background-color: rgb(57, 58, 61);
+                font-size: 1.2em;
+                padding: 2%;
+            }
+
+            h6 {
+                color: #ffa600;
             }
         </style>
 
@@ -78,32 +113,45 @@
 
 </head>
 <body>
-    <div id="foreground_container">
-        <critter-header></critter-header>
-        <!--TODO: LANDING PAGE-->
-        <div class="content">
-            <div class="container text">
-                <critter-translator-escaped key="landing_text"></critter-translator-escaped>
+    <div class="row fixed-top" id="header_row">
+        <div class="col-sm-12">
+            <critter-header></critter-header>
+            <hr>
+        </div>
+    </div>
+    <div class="row" id="foreground_container">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <div class="row" id="landing_text">
+                <div class="col-sm-3">
+                    <h3><b><critter-translator-escaped key="landing_header"></critter-translator-escaped></b></h3>
+                    <h6><b><critter-translator-escaped key="landing_subtitle"></critter-translator-escaped></b></h6>
+                </div>
+                <div class="col-sm-9 text">
+                    <critter-translator-escaped key="landing_text"></critter-translator-escaped>
+                </div>
+            </div>
+            <div class="row" id="level_display">
+                <critter-level-selector></critter-level-selector>
+            </div>
+            <div class="row" id="highscore">
+                <div class="col-sm-12">
+                    <critter-highscore></critter-highscore>
+                </div>
+            </div>
+            <div class="row text" id="project_info">
+                <div class="col-sm-12">
+                    <critter-project-info></critter-project-info>
+                </div>
             </div>
         </div>
-
+        <div class="col-sm-2"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12" id="copyright">
+            <critter-copyright></critter-copyright>
+        </div>
     </div>
 </body>
-<script>
-    renderBachground = () => {
-        let bg;
-        if(window.innerWidth >= 1150 && !document.querySelector("critter-background")){
-            bg = document.createElement("critter-background");
-            bg.mainContainerWidth = 900;
-            document.querySelector("body").append(bg);
-        } else if (window.innerWidth < 1150 && (bg = document.querySelector("critter-background"))) {
-            bg.detach();
-            document.querySelector("body").removeChild(bg);
-        }
-    };
-
-    window.addEventListener("resize", renderBachground);
-    renderBachground();
-</script>
-
 </html>

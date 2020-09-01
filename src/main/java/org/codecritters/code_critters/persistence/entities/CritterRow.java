@@ -31,7 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Row {
+public class CritterRow {
 
     @Id
     @GeneratedValue(generator = "uuid")
@@ -42,12 +42,12 @@ public class Row {
     private String name;
     private int position;
 
-    public Row(String name, int position) {
+    public CritterRow(String name, int position) {
         this.name = name;
         this.position = position;
     }
 
-    public Row() {
+    public CritterRow() {
     }
 
     public int getPosition() {

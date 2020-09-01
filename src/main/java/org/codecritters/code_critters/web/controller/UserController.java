@@ -59,7 +59,11 @@ public class UserController {
      */
     @PostMapping(path = "/register")
     public void registerUser(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
-        userService.registerUser(dto, this.getBaseURL(request));
+        try {
+            userService.registerUser(dto, this.getBaseURL(request));
+        } catch (Exception ignored){
+
+        }
     }
 
     /**
@@ -72,26 +76,28 @@ public class UserController {
      */
     @PostMapping(path = "/login")
     public Map<String, String> loginUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        UserDTO user = userService.loginUser(dto, cookie);
-
+        UserDTO user = new UserDTO();
         Map<String, String> data = new HashMap<>();
 
-        if (user == null) {
-            httpServletResponse.setStatus(404);
-            data.put("error", "no_user");
-        } else if (!user.getActive()) {
-            httpServletResponse.setStatus(404);
-            data.put("error", "activate_first");
-        } else {
-            data.put("username", user.getUsername());
-            data.put("email", user.getEmail());
-            data.put("role", user.getRole().toString());
-            data.put("language", user.getLanguage().toString());
-            SecurityContextHolder.clearContext();
-            HttpSession session = httpServletRequest.getSession(false);
-            if (session != null) {
-                session.invalidate();
+        try {
+            user = userService.loginUser(dto, cookie);
+            if (!user.getActive()) {
+                httpServletResponse.setStatus(404);
+                data.put("error", "activate_first");
+            } else {
+                data.put("username", user.getUsername());
+                data.put("email", user.getEmail());
+                data.put("role", user.getRole().toString());
+                data.put("language", user.getLanguage().toString());
+                SecurityContextHolder.clearContext();
+                HttpSession session = httpServletRequest.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
             }
+        } catch (Exception e){
+            httpServletResponse.setStatus(404);
+            data.put("error", e.getMessage());
         }
 
         return data;

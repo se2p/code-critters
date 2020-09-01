@@ -64,10 +64,10 @@ public class Level {
     private HashMap<String, Integer> spawn;
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "row.id")
-    private Row row;
+    private CritterRow row;
 
 
-    public Level(Row row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
+    public Level(CritterRow row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
         this.row = row;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
@@ -174,11 +174,11 @@ public class Level {
         this.xml = xml;
     }
 
-    public Row getRow() {
+    public CritterRow getRow() {
         return row;
     }
 
-    public void setRow(Row row) {
+    public void setRow(CritterRow row) {
         this.row = row;
     }
 }

@@ -53,7 +53,7 @@ class CritterPopup extends PolymerElement {
                 z-index: 1000;
                 display: var(--display-popup);
                 background-color: white;
-                border: 3px solid #039be5;
+                border: 3px solid #FFA600;
                 outline: 3px solid white;
             }
             

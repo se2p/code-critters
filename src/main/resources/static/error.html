@@ -27,11 +27,7 @@
     <title>Code Critters - Profile</title>
     <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <script type=module src="./critter_components/critter-header/critter-header.js">
-    </script>
-    <script type=module
-            src="./critter_components/critter-background/critter-background.js">
-    </script>
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
@@ -47,7 +43,7 @@
             }
 
             #foreground_container {
-                max-width: 900px;
+                width: 100%;
                 position: relative;
                 height: 100vh;
                 margin: auto;
@@ -64,6 +60,12 @@
                 z-index: 1;
             }
 
+            #foreground_container hr {
+                color: #FFA600;
+                background-color: #FFA600;
+                height: 3px;
+                margin: 0;
+            }
 
             .content {
                 position: relative;
@@ -77,27 +79,11 @@
 <body>
 <div id="foreground_container">
     <critter-header></critter-header>
+    <hr>
     <div class="content">
         <h1>Error</h1>
         The page you are looking for can not be found or you have not the right to access the page.
     </div>
 </div>
 </body>
-<script>
-    renderBachground = () => {
-        let bg;
-        if (window.innerWidth >= 1150 && !document.querySelector("critter-background")) {
-            bg = document.createElement("critter-background");
-            bg.mainContainerWidth = 900;
-            document.querySelector("body").append(bg);
-        } else if (window.innerWidth < 1150 && (bg = document.querySelector("critter-background"))) {
-            bg.detach();
-            document.querySelector("body").removeChild(bg);
-        }
-    };
-
-    window.addEventListener("resize", renderBachground);
-    renderBachground();
-</script>
-
 </html>

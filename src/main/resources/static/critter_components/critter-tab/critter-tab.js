@@ -56,7 +56,7 @@ class CritterTab extends PolymerElement {
     
           .tab:hover,
           .tab.selected{
-            border-bottom: 35px solid #00b0ff;
+            border-bottom.opacity: 0.7;
           }
     
           .tab {
@@ -65,7 +65,7 @@ class CritterTab extends PolymerElement {
             height: 0;
             color: whitesmoke;
             text-align: center;
-            border-bottom: 35px solid #039BE5;
+            border-bottom: 35px solid #FFA600;
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
             cursor: pointer !important;
