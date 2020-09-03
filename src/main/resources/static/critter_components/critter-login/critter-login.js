@@ -246,6 +246,8 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
                 this.showErrorToast("username_exists");
             } else if (e.message === "User with this email already exists!") {
                 this.showErrorToast("email_exists");
+            } else if (e.message === "The input has to be less than 50 characters!") {
+                this.showErrorToast("long_data");
             } else {
                 this.showErrorToast("fill_fields");
             }

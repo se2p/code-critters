@@ -24,7 +24,6 @@ package org.codecritters.code_critters.application.service;
 
 import org.codecritters.code_critters.application.exception.AlreadyExistsException;
 import org.codecritters.code_critters.application.exception.IllegalActionException;
-import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
@@ -60,34 +59,33 @@ public class UserService {
     }
 
     public void registerUser(UserDTO dto, String url) {
+        if(dto.getUsername() == null || dto.getEmail() == null || dto.getPassword() == null) {
+            throw new IllegalActionException("These fields cannot be empty", "fill_fields");
+        }
+
+        if (dto.getUsername().trim().equals("") || dto.getEmail().trim().equals("") || dto.getPassword().trim().equals("")) {
+            throw new IllegalActionException("These fields cannot be empty", "fill_fields");
+        }
+
+        if ((dto.getUsername().length() > 50) || (dto.getEmail().length() > 50) || (dto.getPassword().length() > 50)) {
+            throw new IllegalActionException("The input has to be less than 50 characters!", "long_data");
+        }
+
         if (userRepositiory.existsByUsername(dto.getUsername())) {
-            throw new AlreadyExistsException("User with this username already exists!");
+            throw new AlreadyExistsException("User with this username already exists!", "username_exists");
         }
 
         if(userRepositiory.existsByEmail(dto.getEmail())) {
-            throw new AlreadyExistsException("User with this email already exists!");
+            throw new AlreadyExistsException("User with this email already exists!", "email_exists");
         }
 
         User user = new User();
-        if (dto.getUsername() == null) {
-            throw new IncompleteDataException("Username missing");
-        }
         user.setUsername(dto.getUsername());
-
-        if (dto.getEmail() == null) {
-            throw new IncompleteDataException("Email missing");
-        }
         user.setEmail(dto.getEmail());
-
         if (dto.getLanguage() == null) {
             user.setLanguage(Language.en);
         }
         user.setLanguage(dto.getLanguage());
-
-        if (dto.getPassword() == null) {
-            throw new IncompleteDataException("Password missing");
-        }
-
         user = passwordService.hashPassword(dto.getPassword(), user);
         user.setRole(Role.user);
         user.setActive(false);
@@ -97,7 +95,7 @@ public class UserService {
 
         String link = url + "/users/activate/" + user.getSecret();
 
-        mailTemplateData.put("reciver", user.getEmail());
+        mailTemplateData.put("receiver", user.getEmail());
         mailTemplateData.put("subject", "welcome");
         mailTemplateData.put("user", user.getUsername());
         mailTemplateData.put("secret", link);
@@ -230,17 +228,30 @@ public class UserService {
     public void changeUser(UserDTO dto, String cookie, String url) {
         User user = userRepositiory.findByCookie(cookie);
 
-        if(dto.getOldPassword() != null && !dto.getOldPassword().equals("")){
+        if(dto.getUsername() == null || dto.getEmail() == null || dto.getUsername().trim().equals("") || dto.getEmail().trim().equals("")) {
+            throw new IllegalActionException("These fields cannot be empty", "fill_fields");
+        }
+
+        if ((dto.getUsername().length() > 50) || (dto.getEmail().length() > 50)) {
+            throw new IllegalActionException("The input has to be less than 50 characters!", "long_data");
+        }
+
+        if (dto.getPassword() != null) {
+            if (dto.getPassword().length() > 50) {
+                throw new IllegalActionException("The input has to be less than 50 characters!", "long_data");
+            }
+            if (dto.getPassword().trim().equals("")) {
+                throw new IllegalActionException("These fields cannot be empty", "fill_fields");
+            }
+        }
+
+        if(dto.getOldPassword() != null && !dto.getOldPassword().trim().equals("")){
             if(passwordService.verifyPassword(dto.getOldPassword(), user.getPassword(), user.getSalt())) {
                 user = passwordService.hashPassword(dto.getOldPassword(), user);
                 userRepositiory.save(user);
             } else {
                 throw new NotFoundException("Password incorrect", "invalid_password");
             }
-        }
-
-        if(dto.getUsername().trim().equals("") || dto.getEmail().trim().equals("")) {
-            throw new IllegalActionException("These fields cannot be empty", "fill_fields");
         }
 
         if(!dto.getUsername().equals(user.getUsername())){

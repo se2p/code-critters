@@ -59,11 +59,7 @@ public class UserController {
      */
     @PostMapping(path = "/register")
     public void registerUser(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
-        try {
-            userService.registerUser(dto, this.getBaseURL(request));
-        } catch (Exception ignored){
-
-        }
+        userService.registerUser(dto, this.getBaseURL(request));
     }
 
     /**

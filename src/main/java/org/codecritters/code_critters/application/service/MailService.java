@@ -73,7 +73,7 @@ public class MailService {
 
         MimeMessageHelper helper = new MimeMessageHelper(message);
         try {
-            helper.setTo(data.get("reciver"));
+            helper.setTo(data.get("receiver"));
             helper.setSubject(TranslationsService.translate(language, data.get("subject")));
             helper.setFrom(email, personal);
 
