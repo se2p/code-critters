@@ -63,7 +63,7 @@ public class Level {
     @Type(type = "org.codecritters.code_critters.persistence.customDataTypes.CoordinateDataType")
     private HashMap<String, Integer> spawn;
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "row.id")
+    @JoinColumn(name = "row_id")
     private CritterRow row;
 
 

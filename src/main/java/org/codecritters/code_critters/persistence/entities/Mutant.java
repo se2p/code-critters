@@ -35,7 +35,7 @@ public class Mutant {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     @ManyToOne
-    @JoinColumn(name = "level.id")
+    @JoinColumn(name = "level_id")
     private Level level;
     @NotEmpty
     @Column(columnDefinition = "text")

@@ -40,11 +40,11 @@ public class Result {
     private String cookie;
 
     @ManyToOne
-    @JoinColumn(name = "user.id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "level.id")
+    @JoinColumn(name = "level_id")
     private Level level;
 
     private Date updated;
