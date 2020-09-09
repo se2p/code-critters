@@ -8,11 +8,16 @@ import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.UserDTO;
 import org.codecritters.code_critters.web.enums.Language;
+import org.codecritters.code_critters.web.enums.Role;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -152,6 +157,7 @@ public class UserServiceTest {
     public void loginUserTest() {
         given(userRepositiory.findByUsernameOrEmail(user1.getUsername(), user1.getEmail())).willReturn(new User());
         given(passwordService.verifyPassword(any(), any(), any())).willReturn(true);
+        userService.loginUser(user1, cookie);
         verify(userRepositiory, times(1)).save(any());
     }
 
@@ -213,6 +219,145 @@ public class UserServiceTest {
                 () -> assertTrue(userService.activateUser(secret)),
                 () -> assertFalse(userService.activateUser("no secret"))
         );
+        verify(userRepositiory, times(1)).save(any());
+    }
+
+    @Test
+    public void getUserByCookieTest() {
+        given(userRepositiory.findByCookieAndLastUsedAfter(anyString(), any())).willReturn(new User());
+        assertNotNull(userService.getUserByCookie(cookie));
+        verify(userRepositiory, times(1)).save(any());
+    }
+
+    @Test
+    public void logoutUserTest() {
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        userService.logoutUser(cookie);
+        verify(userRepositiory, times(1)).save(any());
+    }
+
+    @Test
+    public void deleteUserExceptionTest() {
+        User lastAdmin = new User();
+        List<User> users = new ArrayList<User>();
+        users.add(lastAdmin);
+        given(userRepositiory.findByCookie(cookie)).willReturn(lastAdmin);
+        given(userRepositiory.findAllByRole(Role.admin)).willReturn(users);
+        Exception exception = assertThrows(IllegalActionException.class,
+                () -> userService.deleteUser(cookie)
+        );
+        assertEquals("Cannot delete last remaining admin", exception.getMessage());
+    }
+
+    @Test
+    public void deleteUserTest() {
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        given(userRepositiory.findAllByRole(Role.admin)).willReturn(new LinkedList<>());
+        userService.deleteUser(cookie);
+        verify(resultRepository, times(1)).deleteAllByUser(any());
+        verify(userRepositiory, times(1)).delete(any());
+    }
+
+    @Test
+    public void changeUserUsernameOrEmailWrongTest() {
+        UserDTO dto1 = new UserDTO(null, "email", "oldPassword", "password", Language.en);
+        UserDTO dto2 = new UserDTO("user", null, "oldPassword", "password", Language.en);
+        UserDTO dto3 = new UserDTO("", "email", "oldPassword", "password", Language.de);
+        UserDTO dto4 = new UserDTO("user", "", "oldPassword", "password", Language.de);
+        Exception usernameNull = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto1, cookie, url)
+        );
+        Exception emailNull = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto2, cookie, url)
+        );
+        Exception usernameEmpty = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto3, cookie, url)
+        );
+        Exception emailEmpty = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto4, cookie, url)
+        );
+        assertAll("Should all contain the same message",
+                () -> assertEquals("These fields cannot be empty", usernameNull.getMessage()),
+                () -> assertEquals("These fields cannot be empty", emailNull.getMessage()),
+                () -> assertEquals("These fields cannot be empty", usernameEmpty.getMessage()),
+                () -> assertEquals("These fields cannot be empty", emailEmpty.getMessage())
+        );
+    }
+
+    @Test
+    public void changeUserLongUsernameOrEmailTest() {
+        UserDTO dto1 = new UserDTO("suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuper long username", "email", "oldPassword", "password", Language.de);
+        UserDTO dto2 = new UserDTO("user", "suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuper long email", "oldPassword", "password", Language.en);
+        Exception longUsername = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto1, cookie, url)
+        );
+        Exception longEmail = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto2, cookie, url)
+        );
+        assertAll("Should all contain the same message",
+                () -> assertEquals("The input has to be less than 50 characters!", longUsername.getMessage()),
+                () -> assertEquals("The input has to be less than 50 characters!", longEmail.getMessage())
+        );
+    }
+
+    @Test
+    public void changeUserPasswordExceptionsTest() {
+        UserDTO dto1 = new UserDTO("user", "email", "suuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuper long password");
+        UserDTO dto2 = new UserDTO("user", "email", "");
+        Exception longPassword = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto1, cookie, url)
+        );
+        Exception PasswordEmpty = assertThrows(IllegalActionException.class,
+                () -> userService.changeUser(dto2, cookie, url)
+        );
+        assertAll("Should get two different messages",
+                () -> assertEquals("The input has to be less than 50 characters!", longPassword.getMessage()),
+                () -> assertEquals("These fields cannot be empty", PasswordEmpty.getMessage())
+        );
+    }
+
+    @Test
+    public void changeUserOldPasswordTest() {
+        UserDTO dto = new UserDTO("user", "email", "oldPassword", "password", Language.en);
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        given(passwordService.verifyPassword(anyString(), any(), any())).willReturn(true);
+        given(passwordService.hashPassword(anyString(), any())).willReturn(new User());
+        userService.changeUser(dto, cookie, url);
+        verify(userRepositiory, times(2)).save(any());
+    }
+
+    @Test
+    public void changeUserOldPasswordExceptionTest() {
+        UserDTO dto = new UserDTO("user", "email", "oldPassword", "password", Language.en);
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        given(passwordService.verifyPassword(anyString(), any(), any())).willReturn(false);
+        Exception exception = assertThrows(NotFoundException.class,
+                () -> userService.changeUser(dto, cookie, url)
+        );
+        assertEquals("Password incorrect", exception.getMessage());
+    }
+
+    @Test
+    public void changeUserChangeUsernameTest() {
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        given(userRepositiory.existsByUsername(user2.getUsername())).willReturn(true);
+        Exception exception = assertThrows(AlreadyExistsException.class,
+                () -> userService.changeUser(user2, cookie, url)
+        );
+        userService.changeUser(user1, cookie, url);
+        assertEquals("User with this username already exists!", exception.getMessage());
+        verify(userRepositiory, times(1)).save(any());
+    }
+
+    @Test
+    public void changeUserChangeEmailTest() {
+        given(userRepositiory.findByCookie(cookie)).willReturn(new User());
+        given(userRepositiory.existsByEmail(user2.getEmail())).willReturn(true);
+        Exception exception = assertThrows(AlreadyExistsException.class,
+                () -> userService.changeUser(user2, cookie, url)
+        );
+        userService.changeUser(user1, cookie, url);
+        assertEquals("User with this email already exists!", exception.getMessage());
         verify(userRepositiory, times(1)).save(any());
     }
 }

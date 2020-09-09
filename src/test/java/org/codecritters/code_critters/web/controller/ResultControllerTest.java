@@ -60,7 +60,8 @@ public class ResultControllerTest {
         String result = mapper.writeValueAsString(resultDto);
 
         mvc.perform(post("/result")
-                .content(result).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                .content(result)
+                .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
                 .param(csrfToken.getParameterName(), csrfToken.getToken())
                 .cookie(cookie)
                 .contentType(MediaType.APPLICATION_JSON)
