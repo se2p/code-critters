@@ -172,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `result` (
   `stars` int(11) NOT NULL,
   `updated` datetime DEFAULT NULL,
   `level_id` varchar(255) DEFAULT NULL,
+  `user_id` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKnl4waxlekjthh4h7p9igv4owx` (`level_id`),
   CONSTRAINT `FKnl4waxlekjthh4h7p9igv4owx` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`)

@@ -14,7 +14,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.home>/usr/lib/jvm/java-8-openjdk-amd64/bin/javac</java.home>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -244,7 +243,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<fork>true</fork>
-					<executable>${java.home}</executable>
+					<executable>%JAVA_HOME%\bin\javac.exe</executable>
 					<source>8</source>
 					<target>8</target>
 				</configuration>

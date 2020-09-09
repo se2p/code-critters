@@ -246,7 +246,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
                 <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
             </div>
-            <div id="blockly_container" class="col-sm-7">
+            <div class="col-sm-1"></div>
+            <div id="blockly_container" class="col-sm-6">
             <!--<div id="blockly_container" class="col-lg mt-3">-->
                 <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
                                  read-only>
