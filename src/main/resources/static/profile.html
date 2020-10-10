@@ -29,6 +29,8 @@
 
     <script type=module src="critter_components/critter-header/critter-header.js"></script>
     <script type=module src="critter_components/critter-change-profile/critter-change-profile.js"></script>
+    <script type=module src="critter_components/critter-translator/critter-translator-escaped.js"></script>
+    <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
@@ -57,6 +59,11 @@
                 width: 100px;
             }
 
+            .text{
+                text-align: left;
+                font-size: 1.3em;
+            }
+
             .content {
                 position: relative;
                 margin: 15px;
@@ -72,11 +79,26 @@
                 height: 100%;
             }
 
+            .col-sm-3, .col-sm-9 {
+                padding: 2%;
+            }
+
             hr {
                 color: #ffa600;
                 background-color: #ffa600;
                 height: 3px;
                 margin: 0;
+            }
+
+            h6 {
+                color: #ffa600;
+            }
+
+            #copyright {
+                color: white;
+                background-color: rgb(57, 58, 61);
+                font-size: 1.2em;
+                padding: 2%;
             }
         </style>
 
@@ -91,12 +113,29 @@
             <hr>
         </div>
     </div>
-    <div class="row content">
+    <div class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-8">
-            <critter-change-profile></critter-change-profile>
+            <div class="row">
+                <div class="col-sm-3">
+                    <h3><b><critter-translator-escaped key="privacy_notice"></critter-translator-escaped></b></h3>
+                    <h6><b><critter-translator-escaped key="privacy_info"></critter-translator-escaped></b></h6>
+                </div>
+                <div class="col-sm-9 text">
+                    <critter-translator-escaped key="privacy_text"></critter-translator-escaped>
+                </div>
+                <div class="col-sm-12">
+                    <critter-change-profile></critter-change-profile>
+                </div>
+            </div>
         </div>
         <div class="col-sm-2"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12" id="copyright">
+            <critter-copyright></critter-copyright>
+        </div>
     </div>
 </div>
 </body>

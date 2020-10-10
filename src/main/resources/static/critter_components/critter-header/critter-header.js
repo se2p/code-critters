@@ -59,10 +59,11 @@ class CritterHeader extends I18n(PolymerElement) {
                     font-size: 3em;
                     height: 100%;
                     color: black;
+                    vertical-align: middle !important;
                 }
                 
                 #image a:hover {
-                    color: #ffa600; !important;
+                    color: #ffa600 !important;
                     text-decoration: none;
                 }
                 

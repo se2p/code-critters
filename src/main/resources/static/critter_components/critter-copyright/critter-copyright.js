@@ -44,37 +44,24 @@ class CritterCopyright extends I18n(PolymerElement) {
                 h6 {
                     color: #ffa600;
                 }
+                
+                .row {
+                    text-align: center;
+                }
             </style>
             
             ${critterStyle}
             
             <div class="row">
-                <div class="col-sm-4">
-                    <h3>[[__('maintained_by')]]</h3>
+                <div class="col-sm-12">
+                    <p>Copyright &copy; 2020 Code Critters<br>
+                    Universität Passau, Innstraße 33, 94032 Passau<br>
+                    Lehrstuhl für Software Engineering II, Prof.Dr. Gordon Fraser<br>
+                    E-Mail: ?????</p>
                     <p>
-                        Universität Passau<br>
-                        Fakultät für Informatik und Mathematik<br>
-                        Innstraße 33<br>
-                        Lehrstuhl für Software Engineering II<br>
-                        94032 Passau
+                        <a href="https://www.uni-passau.de/impressum/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('legal')]]</a>
+                        <a href="https://www.uni-passau.de/datenschutzerklaerung/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('privacy')]]</a>
                     </p>
-                    <p>
-                        <h6><b>[[__('representative')]]</b></h6>
-                        <p>Gordon Fraser</p>
-                    </p>
-                </div>
-                <div class="col-sm-4">
-                    <h3>[[__('contact')]]</h3>
-                    <p>
-                        Tel.: +49 851 ???? <br>
-                        Fax: +49 851 ???? <br>
-                        E-Mail: ??@uni-passau.de
-                    </p>
-                    <p>Copyright &copy; 2020 Code Critters</p>
-                </div>
-                <div class="col-sm-4">
-                    <h3>[[__('legal_form')]]</h3>
-                    <p>[[__('legal_text')]]</p>
                 </div>
             </div>
         `

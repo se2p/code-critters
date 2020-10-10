@@ -78,8 +78,14 @@ class CritterChangeProfile extends I18n(PolymerElement) {
                 float: none;
            }
            
-            </style>
-            
+           #privacy_policy {
+                font-family: Arial;
+                font-size: 1.5em;
+                margin: 2em;
+           }
+           
+           </style>
+           <div class="row content">
            <critter-form id="form" method="POST" target="users/change" >
                 <critter-input label="username" name="username" value="[[user.username]]"></critter-input><br> 
                 <critter-input id="email" label="Email" name="email" value="[[user.email]]"></critter-input><br>
@@ -101,6 +107,7 @@ class CritterChangeProfile extends I18n(PolymerElement) {
             <br>
             <critter-button id="deleteButton">[[__("delete_profile")]]</critter-button>
             </critter-dialog>
+            </div>
         `;
     }
 

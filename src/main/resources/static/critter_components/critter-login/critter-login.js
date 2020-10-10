@@ -90,9 +90,9 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             margin: auto;
            }
             
-            </style>
+           </style>
             
-             <critter-data-store></critter-data-store>
+            <critter-data-store></critter-data-store>
 
             
             <div id="username_bar">

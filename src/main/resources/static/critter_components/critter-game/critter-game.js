@@ -87,14 +87,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             #send_button,
             #speedUp_button,
+            #reload_button,
             #coordinate_container{
-                margin-left: 20px;
-                float: left;
-            }
-            
-            #reload_button{
-            margin-left: 100px;
-                float: left;
+                padding: 2%;
+                margin: 2%;
             }
             
             #game_containers {
@@ -102,28 +98,13 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             }
 
             #coordinate_container{
-                min-height: 40px;
-                left: 230px;
-                position: relative;
-                align-items: center;
-                display: flex;
-                width: 165px;
                 visibility: hidden;
             }
-            #killed_container{
-                float: left;
-                min-height: 40px;
-                margin-left: 50px;
+            
+            #finished_container, #killed_container{
                 align-items: center;
-                display: flex;
-            }
-            #finished_container{
-                float: left;
-                min-height: 40px;
-                margin-left: 260px;
-                align-items: center;
-                display: flex;
-                clear: both;
+                padding: 2%;
+                margin: 2%;
             }
 
             #send_button {
@@ -230,23 +211,40 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             </div>
         </div>
         <div class="row" id="game_containers">
-            <div id="board_container" class="col-sm-5" style="max-width: fit-content">
+            <div id="board_container" class="col-sm-6" style="max-width: fit-content">
             <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
-                <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
-                </critter-gameboard>
-                <div id="critter_container" style$="width: {{ _boardWidth }}px; height:{{ _boardHeight }}px">
+                <div class="row">
+                    <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
+                    </critter-gameboard>
+                    <div id="critter_container" style$="max-width: {{ _boardWidth }}px; max-height:{{ _boardHeight }}px">
+                    </div>
+                    <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
+                    </critter-test-popup>
                 </div>
-                <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
-                </critter-test-popup>
                 <br>
-                <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
-                <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
-                <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
-                <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
-                <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
-                <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
+                    </div>
+                    <div class="col-sm-2">
+                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
+                    </div>
+                    <div class="col-sm-2">
+                        <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm-1"></div>
             <div id="blockly_container" class="col-sm-6">
             <!--<div id="blockly_container" class="col-lg mt-3">-->
                 <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
@@ -280,7 +278,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             _popupHeight: {
                 type: Number,
-                computed: '_compoutePopupHeight(_globalData.height, _blockSize)'
+                computed: '_computePopupHeight(_globalData.height, _blockSize)'
             },
 
             _blockSize: {
@@ -530,7 +528,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         return width * size;
     }
 
-    _compoutePopupHeight(height, size){
+    _computePopupHeight(height, size){
         return ((height * 0.5) * size) - 29;
     }
 
@@ -582,8 +580,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this.score -= 25 * (this._globalData.countMines());
         // this.score = (this.score < 0 ? 0 : this.score);
         this.$.score_dialog.open();
+        if(this._globalData.countMines() > 2) {
+            this.score = -25 * (this._globalData.countMines() - 2); //TODO free mines
+        }
         this.score = (this._finishedHumans + this._killedCritters) * 50 +
-            (-25 * (this._globalData.countMines())) + //TODO subtract free mines
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
         this.showScore();
         let stars = 0;
@@ -603,9 +603,13 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
         let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
         dialogScore.overallScore = this.score;
+        if(this._globalData.countMines() > 2) {
+            await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines() - 2), this._globalData.countMines());
+        } else {
+            await dialogScore.insertData("mines_line", 0, this._globalData.countMines());
+        }
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
-        await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines()), this._globalData.countMines());
         await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
     }
 

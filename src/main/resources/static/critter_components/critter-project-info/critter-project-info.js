@@ -61,24 +61,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                     position: relative;
                 }
                 
-                button {
-                    border: none;
-                    outline: 0;
-                    display: inline-block;
-                    padding: 8px;
-                    color: white;
-                    background-color: rgb(57, 58, 61);
-                    text-align: center;
-                    cursor: pointer;
-                    width: 100%;
-                    font-size: 18px;
-                }
-
-                button:hover {
-                    opacity: 0.7;
-                    background-color: #ffa600;
-                }
-                
                 #project_text {
                     margin: 2%;
                     padding: 2%;
@@ -105,7 +87,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                             <h1>Gordon Fraser</h1>
                             <p class="card-title">[[__('chair_se2')]]</p>
                             <p>[[__('uni_passau')]]</p>
-                            <p><button>[[__('contact')]]</button></p>
                     </div>
                     </div>
                         <div class="col-sm-4">
@@ -114,7 +95,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                             <h1>Gordon Fraser</h1>
                             <p class="card-title">[[__('shape')]]</p>
                             <p>[[__('nether_world')]]</p>
-                            <p><button>[[__('contact')]]</button></p>
                         </div>
                     </div>
                     <div class="col-sm-4">
@@ -123,7 +103,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                             <h1>Gordon Fraser</h1>
                             <p class="card-title">[[__('smurf')]]</p>
                             <p>[[__('smurf_home')]]</p>
-                            <p><button>[[__('contact')]]</button></p>
                         </div>
                     </div>
                 </div>
