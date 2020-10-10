@@ -7,10 +7,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_USER: "critter-user"
-      MYSQL_PASSWORD: "#s0me4ery3avePa88w0rd!"
-      MYSQL_DATABASE: "critter-db"
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "critteruser"
+      MYSQL_PASSWORD: "password"
+      MYSQL_DATABASE: "codecritters"
   mailhog:
     container_name: "critter-mailhog"
     image: mailhog/mailhog:v1.0.0
