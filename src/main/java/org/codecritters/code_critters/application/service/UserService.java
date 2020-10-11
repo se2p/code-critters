@@ -272,7 +272,7 @@ public class UserService {
 
                 String link = url + "/users/activate/" + user.getSecret();
 
-                mailTemplateData.put("reciver", user.getEmail());
+                mailTemplateData.put("receiver", user.getEmail());
                 mailTemplateData.put("subject", "Confirm Email");
                 mailTemplateData.put("user", user.getUsername());
                 mailTemplateData.put("secret", link);
