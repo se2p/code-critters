@@ -34,6 +34,7 @@ import '../critter-test-popup/critter-test-popup.js';
 import '../critter-timeout/critter-timeout-manager.js';
 import '../critter-score/critter-score.js';
 import '../critter-header/critter-header.js';
+import './critter-game-image.js'
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
@@ -91,6 +92,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             #coordinate_container{
                 padding: 2%;
                 margin: 2%;
+                float: left;
             }
             
             #game_containers {
@@ -101,9 +103,13 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 visibility: hidden;
             }
             
-            #finished_container, #killed_container{
-                align-items: center;
-                padding: 2%;
+            #finished_container *, #killed_container *{
+                padding: 1%;
+                margin: 0;
+                float: left;
+            }
+            
+            #finished_container, #killed_container {
                 margin: 2%;
             }
 
@@ -122,6 +128,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 width: fit-content;
                 margin: auto;
             }
+            
             #star_container iron-icon{
                 width: 100px;
                 height: 100px;
@@ -177,6 +184,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 height: 3px;
                 margin: 0;
             }
+            
+            .row #buttons, .row #heads {
+                margin-bottom: 2%;
+                margin-top: 2%
+            }
         </style>
 
         
@@ -222,26 +234,22 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                     </critter-test-popup>
                 </div>
                 <br>
-                <div class="row">
-                    <div class="col-sm-2">
+                <div class="row" id="buttons">
+                    <div class="col-sm-6">
                         <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
-                    </div>
-                    <div class="col-sm-2">
                         <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
-                    </div>
-                    <div class="col-sm-2">
                         <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
                     </div>
                     <div class="col-sm-6">
                         <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div id="finished_container">[[_finishedHumans]] [[__('of')]]&nbsp;<span id="humansNumber"></span>&nbsp;[[__('humans_finished')]]</div>
+                <div class="row" id="heads">
+                    <div class="col-sm-4">
+                        <div id="finished_container"></div>
                     </div>
-                    <div class="col-sm-6">
-                        <div id="killed_container">[[_killedCritters]] [[__('of')]]&nbsp;<span id="critterNumber"></span> &nbsp;[[__('critters_detected')]]</div>
+                    <div class="col-sm-8">
+                        <div id="killed_container"></div>
                     </div>
                 </div>
             </div>
@@ -416,6 +424,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this.$.gameboard.removeAllMines();
         this.$.send_button.shape = "play";
         this.$.speedUp_button.disabled = true;
+        this._onCritterNumberChanged();
     }
 
 
@@ -557,6 +566,21 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this._updateScore(e.detail.human ? -100 : 50);
         if (!e.detail.human) {
             this._killedCritters++;
+            let killed = this._killedCritters;
+            let alive = this._globalData.numberOfCritters - this._killedCritters;
+            this.$.killed_container.innerHTML = "";
+            while (killed > 0) {
+                let image = document.createElement("critter-game-image");
+                image.name = "mutant_gray.png";
+                this.$.killed_container.appendChild(image);
+                killed--;
+            }
+            while (alive > 0) {
+                let image = document.createElement("critter-game-image");
+                image.name = "mutant_head.png";
+                this.$.killed_container.appendChild(image);
+                alive--;
+            }
         }
         this._onCritterDone()
     }
@@ -565,6 +589,21 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this._updateScore(e.detail.human ? 50 : -100);
         if (e.detail.human) {
             this._finishedHumans++;
+            let finished = this._finishedHumans;
+            let notFinished = this._globalData.numberOfHumans - this._finishedHumans;
+            this.$.finished_container.innerHTML = "";
+            while (finished > 0) {
+                let image = document.createElement("critter-game-image");
+                image.name = "critter_head.png";
+                this.$.finished_container.appendChild(image);
+                finished--;
+            }
+            while (notFinished > 0) {
+                let image = document.createElement("critter-game-image");
+                image.name = "critter_gray.png";
+                this.$.finished_container.appendChild(image);
+                notFinished--;
+            }
         }
         this._onCritterDone()
     }
@@ -620,8 +659,22 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     _onCritterNumberChanged() {
-        this.$.critterNumber.innerHTML = this._globalData.numberOfCritters;
-        this.$.humansNumber.innerHTML = this._globalData.numberOfHumans;
+        this.$.killed_container.innerHTML = "";
+        let mutants = this._globalData.numberOfCritters;
+        while(mutants > 0) {
+            let image = document.createElement("critter-game-image");
+            image.name = "mutant_head.png";
+            this.$.killed_container.appendChild(image);
+            mutants--;
+        }
+        this.$.finished_container.innerHTML = "";
+        let humans = this._globalData.numberOfHumans;
+        while(humans > 0) {
+            let image = document.createElement("critter-game-image");
+            image.name = "critter_gray.png";
+            this.$.finished_container.appendChild(image);
+            humans--;
+        }
     }
 
     _storeResult(stars) {
