@@ -223,13 +223,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             </div>
         </div>
         <div class="row" id="game_containers">
-            <div id="board_container" class="col-sm-6" style="max-width: fit-content">
+            <div id="board_container" class="col-sm-6">
             <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
                 <div class="row">
-                    <critter-gameboard id="gameboard" show-grid="{{showGrid}}">
-                    </critter-gameboard>
-                    <div id="critter_container" style$="max-width: {{ _boardWidth }}px; max-height:{{ _boardHeight }}px">
-                    </div>
+                    <critter-gameboard id="gameboard" show-grid="{{showGrid}}"></critter-gameboard>
+                    <div id="critter_container"></div>
                     <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
                     </critter-test-popup>
                 </div>

@@ -40,19 +40,17 @@
             body {
                 font-family: Arial;
                 font-size: 0.8em;
-                height: 100vh;
                 margin: 0;
-                background-color: #2f8136;
+                height: 100vh;
             }
 
-            #foreground_container {
+            critter-header {
                 width: 100%;
-                position: relative;
-                height: 100vh;
-                margin: auto;
-                /*background-color: rgba(217, 248, 239, 0.4);*/
-                background-color: #F3F4F6;
-                z-index: 2;
+                margin: 0;
+            }
+
+            #privacy_info, #profile_info {
+                padding: 2%;
             }
 
             critter-button {
@@ -64,23 +62,13 @@
                 font-size: 1.3em;
             }
 
-            .content {
-                position: relative;
-                margin: 15px;
-            }
-
             .col-sm-2 {
                 background-color: #f3f3f3;
             }
 
             .col-sm-8 {
                 box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
-                padding: 2%;
                 height: 100%;
-            }
-
-            .col-sm-3, .col-sm-9 {
-                padding: 2%;
             }
 
             hr {
@@ -106,17 +94,16 @@
 
 </head>
 <body>
-<div id="foreground_container">
-    <div class="row">
+    <div class="row" id="header_row">
         <div class="col-sm-12">
             <critter-header></critter-header>
             <hr>
         </div>
     </div>
-    <div class="row">
+    <div id="foreground_container" class="row">
         <div class="col-sm-2"></div>
         <div class="col-sm-8">
-            <div class="row">
+            <div class="row" id="privacy_info">
                 <div class="col-sm-3">
                     <h3><b><critter-translator-escaped key="privacy_notice"></critter-translator-escaped></b></h3>
                     <h6><b><critter-translator-escaped key="privacy_info"></critter-translator-escaped></b></h6>
@@ -124,6 +111,8 @@
                 <div class="col-sm-9 text">
                     <critter-translator-escaped key="privacy_text"></critter-translator-escaped>
                 </div>
+            </div>
+            <div class="row" id="profile_info">
                 <div class="col-sm-12">
                     <critter-change-profile></critter-change-profile>
                 </div>
@@ -137,6 +126,5 @@
             <critter-copyright></critter-copyright>
         </div>
     </div>
-</div>
 </body>
 </html>

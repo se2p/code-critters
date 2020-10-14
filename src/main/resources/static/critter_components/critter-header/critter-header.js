@@ -50,14 +50,35 @@ class CritterHeader extends I18n(PolymerElement) {
                     height: 0;
                 }
                 
+                @media only screen and (max-width: 480px) {
+                    #image span {
+                        font-size: 1.5em;
+                    }
+                    
+                    #flags, #login_container, #image {
+                        width: 33%;
+                        padding: 2%;
+                        margin: 0;
+                    }
+                    
+                    img {
+                        display: none;
+                    }
+                }
+                
+                @media only screen and (min-width: 481px) {
+                    #image span {
+                        font-size: 3em;
+                        height: 100%;
+                    }
+                }
+                
                 #image {
                     text-align: center;
                 }
                 
                 #image span{
                     text-decoration: none;
-                    font-size: 3em;
-                    height: 100%;
                     color: black;
                     vertical-align: middle !important;
                 }

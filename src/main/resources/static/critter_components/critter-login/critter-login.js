@@ -96,7 +96,6 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
             
             <div id="username_bar">
-             <iron-icon id="icon" icon="social:person"></iron-icon>
               <div id="showProfile" class="username center" hidden$="[[showLogin]]">[[username]]</div>
               <div id="logout" class="center" hidden$="[[showLogin]]">[[__("logout")]]</div>
               <div id="login" class="center" hidden$="[[!showLogin]]">[[__("login")]]</div>
