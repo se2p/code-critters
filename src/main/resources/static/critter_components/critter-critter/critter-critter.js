@@ -45,15 +45,367 @@ class CritterCritter extends Level(PolymerElement) {
                 --critter-display: block;
                 --tooltip-display: none;
             }
+            
+            @media only screen and (max-width: 600px) {
+                #critter_container {
+                    position: absolute;
+                    width: 20px;
+                    height: 20px;
+                    transition-timing-function: linear;
+                    visibility: hidden;
+                    z-index: 5;
+                    display:  var(--critter-display);
+                }
+                
+                #critter,
+                #ccritter,
+                #hcritter{
+                    width: 20px;
+                    height: 20px;
+                    animation-duration: 1s;
+                    animation-timing-function: steps(9);
+                    animation-iteration-count: infinite;
+                    animation-direction: reverse;
+                    position: absolute;
+                }
 
-            #critter_container {
-                position: absolute;
-                width: 40px;
-                height: 40px;
-                transition-timing-function: linear;
-                visibility: hidden;
-                z-index: 5;
-                display:  var(--critter-display);
+                .critter {
+                    background-image: url(image/critter50/critter.png)
+                }
+
+                .human {
+                    background-image: url(image/critter50/human.png)
+                }
+
+                .critter-white {
+                    background-image: url(image/critter50/cloth_white.png)
+                }
+
+                .critter-green {
+                    background-image: url(image/critter50/cloth_green.png);
+                }
+
+                .critter-blue {
+                    background-image: url(image/critter50/cloth_blue.png);
+                }
+
+                .critter-cyan {
+                    background-image: url(image/critter50/cloth_cyan.png);
+                }
+
+                .critter-black {
+                    background-image: url(image/critter50/cloth_black.png);
+                }
+
+                .critter-yellow {
+                    background-image: url(image/critter50/cloth_yellow.png);
+                }
+
+                .critter-orange {
+                    background-image: url(image/critter50/cloth_orange.png);
+                }
+
+                .critter-pink {
+                    background-image: url(image/critter50/cloth_pink.png);
+                }
+
+                .critter-red {
+                    background-image: url(image/critter50/cloth_red.png);
+                }
+
+                .hair-red {
+                    background-image: url(image/critter50/hair_red.png);
+                }
+
+                .hair-black {
+                    background-image: url(image/critter50/hair_black.png);
+                }
+
+                .hair-blond {
+                    background-image: url(image/critter50/hair_blond.png);
+                }
+
+                .hair-brown {
+                    background-image: url(image/critter50/hair_brown.png);
+                }
+
+                .hair-gray {
+                    background-image: url(image/critter50/hair_gray.png);
+                }
+                
+                .critter-east{
+                    animation-name: walk_east;
+                    background-position: 0 20px;
+                    -webkit-animation: walk_east 1s steps(9) infinite reverse;
+                    animation: walk_east 1s steps(9) infinite reverse;
+                }
+
+                .critter-west{
+                    animation-name: walk_west;
+                    background-position: 0 60px;
+                    -webkit-animation: walk_west 1s steps(9) infinite reverse;
+                    animation: walk_west 1s steps(9) infinite reverse;
+                }
+
+                .critter-south{
+                    animation-name: walk_south;
+                    background-position: 0 40px;
+                    -webkit-animation: walk_south 1s steps(9) infinite reverse;
+                    animation: walk_south 1s steps(9) infinite reverse;
+                }
+                
+                @keyframes walk_east {
+                    from {
+                        background-position: 0 20px;
+                    }
+                    to {
+                        background-position: 187px 20px;
+                    }
+                }
+
+                @keyframes walk_north {
+                    from {
+                        background-position: 0 0;
+                    }
+                    to {
+                        background-position: 187px 0;
+                    }
+                }
+
+                @keyframes walk_south {
+                    from {
+                        background-position: 0 40px;
+                    }
+                    to {
+                        background-position: 187px 40px;
+                    }
+                }
+
+                @keyframes walk_west {
+                    from {
+                        background-position: 0 60px;
+                    }
+                    to {
+                        background-position: 187px 60px;
+                    }
+                }
+
+                @-webkit-keyframes walk_east {
+                    from {
+                        background-position: 0 20px;
+                    }
+                    to {
+                        background-position: 187px 20px;
+                    }
+                }
+
+                @-webkit-keyframes walk_north {
+                    from {
+                        background-position: 0 0;
+                    }
+                    to {
+                        background-position: 187px 0;
+                    }
+                }
+
+                @-webkit-keyframes walk_south {
+                    from {
+                        background-position: 0 40px;
+                    }
+                    to {
+                        background-position: 187px 40px;
+                    }
+                }
+
+                @-webkit-keyframes walk_west {
+                    from {
+                        background-position: 0 60px;
+                    }
+                    to {
+                        background-position: 187px 60px;
+                    }
+                }
+            }
+            
+            @media only screen and (min-width: 601px) {
+                #critter_container {
+                    position: absolute;
+                    width: 40px;
+                    height: 40px;
+                    transition-timing-function: linear;
+                    visibility: hidden;
+                    z-index: 5;
+                    display:  var(--critter-display);
+                }
+                
+                #critter,
+                #ccritter,
+                #hcritter{
+                    width: 40px;
+                    height: 40px;
+                    animation-duration: 1s;
+                    animation-timing-function: steps(9);
+                    animation-iteration-count: infinite;
+                    animation-direction: reverse;
+                    position: absolute;
+                }
+
+                .critter {
+                    background-image: url(image/critter/critter.png)
+                }
+
+                .human {
+                    background-image: url(image/critter/human.png)
+                }
+
+                .critter-white {
+                    background-image: url(image/critter/cloth_white.png)
+                }
+
+                .critter-green {
+                    background-image: url(image/critter/cloth_green.png);
+                }
+
+                .critter-blue {
+                    background-image: url(image/critter/cloth_blue.png);
+                }
+
+                .critter-cyan {
+                    background-image: url(image/critter/cloth_cyan.png);
+                }
+
+                .critter-black {
+                    background-image: url(image/critter/cloth_black.png);
+                }
+
+                .critter-yellow {
+                    background-image: url(image/critter/cloth_yellow.png);
+                }
+
+                .critter-orange {
+                    background-image: url(image/critter/cloth_orange.png);
+                }
+
+                .critter-pink {
+                    background-image: url(image/critter/cloth_pink.png);
+                }
+
+                .critter-red {
+                    background-image: url(image/critter/cloth_red.png);
+                }
+
+                .hair-red {
+                    background-image: url(image/critter/hair_red.png);
+                }
+
+                .hair-black {
+                    background-image: url(image/critter/hair_black.png);
+                }
+
+                .hair-blond {
+                    background-image: url(image/critter/hair_blond.png);
+                }
+
+                .hair-brown {
+                    background-image: url(image/critter/hair_brown.png);
+                }
+
+                .hair-gray {
+                    background-image: url(image/critter/hair_gray.png);
+                }
+                
+                .critter-east{
+                    animation-name: walk_east;
+                    background-position: 0 40px;
+                    -webkit-animation: walk_east 1s steps(9) infinite reverse;
+                    animation: walk_east 1s steps(9) infinite reverse;
+                }
+
+                .critter-west{
+                    animation-name: walk_west;
+                    background-position: 0 120px;
+                    -webkit-animation: walk_west 1s steps(9) infinite reverse;
+                    animation: walk_west 1s steps(9) infinite reverse;
+                }
+
+                .critter-south{
+                    animation-name: walk_south;
+                    background-position: 0 80px;
+                    -webkit-animation: walk_south 1s steps(9) infinite reverse;
+                    animation: walk_south 1s steps(9) infinite reverse;
+                }
+                
+                @keyframes walk_east {
+                    from {
+                        background-position: 0 40px;
+                    }
+                    to {
+                        background-position: 374px 40px;
+                    }
+                }
+
+                @keyframes walk_north {
+                    from {
+                        background-position: 0 0;
+                    }
+                    to {
+                        background-position: 374px 0;
+                    }
+                }
+
+                @keyframes walk_south {
+                    from {
+                        background-position: 0 80px;
+                    }
+                    to {
+                        background-position: 374px 80px;
+                    }
+                }
+
+                @keyframes walk_west {
+                    from {
+                        background-position: 0 120px;
+                    }
+                    to {
+                        background-position: 374px 120px;
+                    }
+                }
+
+                @-webkit-keyframes walk_east {
+                    from {
+                        background-position: 0 40px;
+                    }
+                    to {
+                        background-position: 374px 40px;
+                    }
+                }
+
+                @-webkit-keyframes walk_north {
+                    from {
+                        background-position: 0 0;
+                    }
+                    to {
+                        background-position: 374px 0;
+                    }
+                }
+
+                @-webkit-keyframes walk_south {
+                    from {
+                        background-position: 0 80px;
+                    }
+                    to {
+                        background-position: 374px 80px;
+                    }
+                }
+
+                @-webkit-keyframes walk_west {
+                    from {
+                        background-position: 0 120px;
+                    }
+                    to {
+                        background-position: 374px 120px;
+                    }
+                }
             }
 
             #critter_container.speedy{
@@ -65,114 +417,16 @@ class CritterCritter extends Level(PolymerElement) {
                 font-size: 0.8em;
                 width: 130px;
                 background-color: #f9edbe;
-                    position: relative;
-                    left: 35px;
-                    top: 35px;
+                position: relative;
+                left: 35px;
+                top: 35px;
                 display: var(--tooltip-display);
-            }
-
-
-            #critter,
-            #ccritter,
-            #hcritter{
-                width: 40px;
-                height: 40px;
-                animation-duration: 1s;
-                animation-timing-function: steps(9);
-                animation-iteration-count: infinite;
-                animation-direction: reverse;
-                position: absolute;
-            }
-
-            .critter {
-                background-image: url(image/critter.png)
-            }
-
-            .human {
-                background-image: url(image/human.png)
-            }
-
-            .critter-white {
-                background-image: url(image/cloth_white.png)
-            }
-
-            .critter-green {
-                background-image: url(image/cloth_green.png);
-            }
-
-            .critter-blue {
-                background-image: url(image/cloth_blue.png);
-            }
-
-            .critter-cyan {
-                background-image: url(image/cloth_cyan.png);
-            }
-
-            .critter-black {
-                background-image: url(image/cloth_black.png);
-            }
-
-            .critter-yellow {
-                background-image: url(image/cloth_yellow.png);
-            }
-
-            .critter-orange {
-                background-image: url(image/cloth_orange.png);
-            }
-
-            .critter-pink {
-                background-image: url(image/cloth_pink.png);
-            }
-
-            .critter-red {
-                background-image: url(image/cloth_red.png);
-            }
-
-            .hair-red {
-                background-image: url(image/hair_red.png);
-            }
-
-            .hair-black {
-                background-image: url(image/hair_black.png);
-            }
-
-            .hair-blond {
-                background-image: url(image/hair_blond.png);
-            }
-
-            .hair-brown {
-                background-image: url(image/hair_brown.png);
-            }
-
-            .hair-gray {
-                background-image: url(image/hair_gray.png);
             }
 
             .critter-north{
                 animation-name: walk_north;
                 -webkit-animation: walk_north 1s steps(9) infinite reverse;
                 animation: walk_north 1s steps(9) infinite reverse;
-            }
-
-            .critter-east{
-                animation-name: walk_east;
-                background-position: 0 40px;
-                -webkit-animation: walk_east 1s steps(9) infinite reverse;
-                animation: walk_east 1s steps(9) infinite reverse;
-            }
-
-            .critter-west{
-                animation-name: walk_west;
-                background-position: 0 120px;
-                -webkit-animation: walk_west 1s steps(9) infinite reverse;
-                animation: walk_west 1s steps(9) infinite reverse;
-            }
-
-            .critter-south{
-                animation-name: walk_south;
-                background-position: 0 80px;
-                -webkit-animation: walk_south 1s steps(9) infinite reverse;
-                animation: walk_south 1s steps(9) infinite reverse;
             }
 
             .critter-stay{
@@ -186,79 +440,6 @@ class CritterCritter extends Level(PolymerElement) {
                 -webkit-animation-duration: 0.5s !important;
                 animation-duration: 0.5s !important;
             }
-
-            @keyframes walk_east {
-                 from {
-                    background-position: 0 40px;
-                }
-                to {
-                    background-position: 374px 40px;
-                }
-            }
-
-            @keyframes walk_north {
-                from {
-                    background-position: 0 0;
-                }
-                to {
-                    background-position: 374px 0;
-                }
-            }
-
-            @keyframes walk_south {
-                from {
-                    background-position: 0 80px;
-                }
-                to {
-                    background-position: 374px 80px;
-                }
-            }
-
-            @keyframes walk_west {
-                from {
-                    background-position: 0 120px;
-                }
-                to {
-                    background-position: 374px 120px;
-                }
-            }
-
-            @-webkit-keyframes walk_east {
-                from {
-                    background-position: 0 40px;
-                }
-                to {
-                    background-position: 374px 40px;
-                }
-            }
-
-            @-webkit-keyframes walk_north {
-                from {
-                    background-position: 0 0;
-                }
-                to {
-                    background-position: 374px 0;
-                }
-            }
-
-            @-webkit-keyframes walk_south {
-                from {
-                    background-position: 0 80px;
-                }
-                to {
-                    background-position: 374px 80px;
-                }
-            }
-
-            @-webkit-keyframes walk_west {
-                from {
-                    background-position: 0 120px;
-                }
-                to {
-                    background-position: 374px 120px;
-                }
-            }
-
         </style>
         <div id="critter_container" class$="{{_speedyString}}">
             <div id="critter"
@@ -504,8 +685,13 @@ class CritterCritter extends Level(PolymerElement) {
     /** updates the styling**/
     _changePosition() {
         if (this.position && this.position.x !== -1 && this.position.y !== -1) {
-            this.$.critter_container.style.top = (this.position.y * 40) + "px";
-            this.$.critter_container.style.left = (this.position.x * 40) + "px";
+            if(window.matchMedia("(max-width: 600px)").matches) {
+                this.$.critter_container.style.top = (this.position.y * 20) + "px";
+                this.$.critter_container.style.left = (this.position.x * 20) + "px";
+            } else {
+                this.$.critter_container.style.top = (this.position.y * 40) + "px";
+                this.$.critter_container.style.left = (this.position.x * 40) + "px";
+            }
         }
     }
 
@@ -639,8 +825,13 @@ class CritterCritter extends Level(PolymerElement) {
             this.animate = true;
             this.paused = false;
             this.$.critter_container.style.transitionDuration = "3s";
-            this.$.critter_container.style.top = (this.position.y * 40) + "px";
-            this.$.critter_container.style.left = (this.position.x * 40) + "px";
+            if(window.matchMedia("(max-width: 600px)").matches) {
+                this.$.critter_container.style.top = (this.position.y * 20) + "px";
+                this.$.critter_container.style.left = (this.position.x * 20) + "px";
+            } else {
+                this.$.critter_container.style.top = (this.position.y * 40) + "px";
+                this.$.critter_container.style.left = (this.position.x * 40) + "px";
+            }
         }
     }
 }

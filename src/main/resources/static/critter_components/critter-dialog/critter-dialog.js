@@ -57,7 +57,7 @@ class CritterDialog extends PolymerElement {
             }
     
             #dialog{
-                width: 300px;
+                width: fit-content;
                 height: fit-content;
                 padding: 10px;
                 background-color: white;

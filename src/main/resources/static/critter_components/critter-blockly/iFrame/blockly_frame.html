@@ -84,19 +84,34 @@
 
   var renderBlockly = function(){
     this.blocklyDiv.innerHTML = '';
-    this.workspace = Blockly.inject('blocklyDiv',
-      {toolbox: this.showToolbox ? this.toolbox : null,
-        zoom:
-          {controls: showControls,
-            wheel: showControls,
-            startScale: 0.8,
-            maxScale: 2,
-            minScale: 0.3,
-            scaleSpeed: 1.2},
-        trashcan: showTrashcan,
-          readOnly: readOnly,
-        scrollbars:  true
-      });
+      this.workspace = Blockly.inject('blocklyDiv',
+              {toolbox: this.showToolbox ? this.toolbox : null,
+                zoom:
+                        {controls: showControls,
+                          wheel: showControls,
+                          startScale: 0.8,
+                          maxScale: 2,
+                          minScale: 0.3,
+                          scaleSpeed: 1.2},
+                trashcan: showTrashcan,
+                readOnly: readOnly,
+                scrollbars:  true
+              });
+    if(window.matchMedia("(max-width: 600px)").matches) {
+      this.blocklyDiv.innerHTML = '';
+      this.workspace = Blockly.inject('blocklyDiv',
+              {toolbox: this.showToolbox ? this.toolbox : null,
+                zoom:
+                        {controls: showControls,
+                          wheel: showControls,
+                          startScale: 0.5,
+                          maxScale: 1,
+                          minScale: 0.3,
+                          scaleSpeed: 1.2},
+                readOnly: readOnly,
+                scrollbars:  true
+              });
+    }
     if(blocklyCode) {
       var xml = Blockly.Xml.textToDom(blocklyCode);
       Blockly.Xml.domToWorkspace(xml, this.workspace);

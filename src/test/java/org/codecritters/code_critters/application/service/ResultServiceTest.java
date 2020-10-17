@@ -71,7 +71,6 @@ public class ResultServiceTest {
     public void createResultNoUserAndNoResultTest() {
         given(levels.findByName(result1.getLevel())).willReturn(any());
         given(users.findByCookie(cookie)).willReturn(null);
-        given(results.getResultByLevelAndUser(any(), any())).willReturn(null);
         resultService.createResult(result1, cookie);
         verify(levels, times(1)).findByName(result1.getLevel());
         verify(users, times(1)).findByCookie(cookie);

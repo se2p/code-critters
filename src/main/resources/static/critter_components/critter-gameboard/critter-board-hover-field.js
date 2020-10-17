@@ -41,12 +41,221 @@ class CritterGameboardHoverField extends PolymerElement {
                 :host {
                     display: block;
                 }
+                
+                @media only screen and (max-width: 600px) {
+                    #field {
+                        width: 20px;
+                        height: 20px;
+                        float: left;
+                        cursor: pointer;
+                    }
+                    
+                    .defTower:hover::after {
+                        content: " ";
+                        background-image: url(image/buildings50.png);
+                        background-position: -26px -13px;
+                        width: 20px;
+                        height: 32px;
+                        display: block;
+                        position: relative;
+                        bottom: 12px;
+                        right: 0;
+                    }
     
-                #field {
-                    width: 40px;
-                    height: 40px;
-                    float: left;
-                    cursor: pointer;
+                    .tower:hover::after {
+                        content: " ";
+                        background-image: url(image/buildings50.png);
+                        background-position: -48px 0;
+                        width: 20px;
+                        height: 45px;
+                        display: block;
+                        position: relative;
+                        bottom: 24px;
+                        right: 1px;
+                        z-index: 3;
+                    }
+    
+                    .spawn:hover::after{
+                        content: " ";
+                        background-image: url(image/buildings50.png);
+                        background-position: 0 -18px;
+                        width: 25px;
+                        height: 25px;
+                        display: block;
+                        position: relative;
+                        bottom: 6px;
+                        right: 3px;
+                        z-index: 3;
+                    }
+    
+                    .mine:hover::after {
+                        content: " ";
+                        background-image: url(image/mine50.png);
+                        background-position: 0 0;
+                        width: 13px;
+                        height: 13px;
+                        display: block;
+                        position: relative;
+                        top: 4px;
+                        left: 4px;
+                    }
+    
+                    .wood:hover{
+                        background-image: url(image/texture.png);
+                        background-position: -480px -240px;
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .grass:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -42px -28px;
+                        background-size: 520%;
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .ice:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -125px -111px;
+                        background-size: 520%;
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .water:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -125px -28px;
+                        background-size: 520%;
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .dirt:hover {
+                        background-image: url(image/texture.png);
+                        background-position: 0 -27px;
+                        background-size: 507%;
+                        width: 20px;
+                        height: 20px;
+                        display: block;
+                        position: relative;
+                    }
+                }
+                
+                @media only screen and (min-width: 601px) {
+                    #field {
+                        width: 40px;
+                        height: 40px;
+                        float: left;
+                        cursor: pointer;
+                    }
+                    
+                    .defTower:hover::after {
+                        content: " ";
+                        background-image: url(image/buildings.png);
+                        background-position: -52px -26px;
+                        width: 40px;
+                        height: 64px;
+                        display: block;
+                        position: relative;
+                        bottom: 24px;
+                        right: 0;
+                    }
+    
+                    .tower:hover::after {
+                        content: " ";
+                        background-image: url(image/buildings.png);
+                        background-position: -96px 0;
+                        width: 40px;
+                        height: 90px;
+                        display: block;
+                        position: relative;
+                        bottom: 47px;
+                        right: 2px;
+                        z-index: 3;
+                    }
+    
+                    .spawn:hover::after{
+                        content: " ";
+                        background-image: url(image/buildings.png);
+                        background-position: 0 -36px;
+                        width: 50px;
+                        height: 50px;
+                        display: block;
+                        position: relative;
+                        bottom: 11px;
+                        right: 5px;
+                        z-index: 3;
+                    }
+    
+                    .mine:hover::after {
+                        content: " ";
+                        background-image: url(image/mine.png);
+                        background-position: 0 0;
+                        width: 25px;
+                        height: 25px;
+                        display: block;
+                        position: relative;
+                        top: 7px;
+                        left: 7px;
+                    }
+    
+                    .wood:hover{
+                        background-image: url(image/texture.png);
+                        background-position: -480px -240px;
+                        width: 40px;
+                        height: 40px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .grass:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -42px -28px;
+                        background-size: 520%;
+                        width: 40px;
+                        height: 40px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .ice:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -125px -111px;
+                        background-size: 520%;
+                        width: 40px;
+                        height: 40px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .water:hover {
+                        background-image: url(image/texture.png);
+                        background-position: -125px -28px;
+                        background-size: 520%;
+                        width: 40px;
+                        height: 40px;
+                        display: block;
+                        position: relative;
+                    }
+    
+                    .dirt:hover {
+                        background-image: url(image/texture.png);
+                        background-position: 0 -27px;
+                        background-size: 507%;
+                        width: 40px;
+                        height: 40px;
+                        display: block;
+                        position: relative;
+                    }
                 }
     
                 .good:hover{
@@ -56,105 +265,6 @@ class CritterGameboardHoverField extends PolymerElement {
                 .bad:hover{
                     background-color: rgba(128, 0, 0, 0.65);
                  }
-    
-                .defTower:hover::after {
-                    content: " ";
-                    background-image: url(image/buildings.png);
-                    background-position: -52px -26px;
-                    width: 40px;
-                    height: 64px;
-                    display: block;
-                    position: relative;
-                    bottom: 24px;
-                    right: 0;
-                }
-    
-                .tower:hover::after {
-                    content: " ";
-                    background-image: url(image/buildings.png);
-                    background-position: -96px 0;
-                    width: 40px;
-                    height: 90px;
-                    display: block;
-                    position: relative;
-                    bottom: 47px;
-                    right: 2px;
-                    z-index: 3;
-                }
-    
-                .spawn:hover::after{
-                    content: " ";
-                    background-image: url(image/buildings.png);
-                    background-position: 0 -36px;
-                    width: 50px;
-                    height: 50px;
-                    display: block;
-                    position: relative;
-                    bottom: 11px;
-                    right: 5px;
-                    z-index: 3;
-                }
-    
-                .mine:hover::after {
-                    content: " ";
-                    background-image: url(image/mine.png);
-                    background-position: 0 0;
-                    width: 25px;
-                    height: 25px;
-                    display: block;
-                    position: relative;
-                    top: 7px;
-                    left: 7px;
-                }
-    
-                .wood:hover{
-                    background-image: url(image/texture.png);
-                    background-position: -480px -240px;
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                    position: relative;
-                }
-    
-                .grass:hover {
-                    background-image: url(image/texture.png);
-                    background-position: -42px -28px;
-                    background-size: 520%;
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                    position: relative;
-                }
-    
-                .ice:hover {
-                    background-image: url(image/texture.png);
-                    background-position: -125px -111px;
-                    background-size: 520%;
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                    position: relative;
-                }
-    
-                .water:hover {
-                    background-image: url(image/texture.png);
-                    background-position: -125px -28px;
-                    background-size: 520%;
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                    position: relative;
-                }
-    
-                .dirt:hover {
-                    background-image: url(image/texture.png);
-                    background-position: 0 -27px;
-                    background-size: 507%;
-                    width: 40px;
-                    height: 40px;
-                    display: block;
-                    position: relative;
-                }
             </style>
             <div id="field" class$="[[state]] [[element]]"></div>
         `;

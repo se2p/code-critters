@@ -55,50 +55,74 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
                 top: 0;
                 pointer-events: none;
             }
-                    
-             #popup_blockly{
-                width: calc(100% - 50px);
-                float: left;
+            
+            @media only screen and (max-width: 600px) {
+                #popup_blockly{
+                    width: calc(100%);
+                    float: left;
+                }
+                
+                #popup_buttons *{
+                    float: left;
+                    width: 40px;
+                    display: block;
+                }
+                
+                critter-button{
+                    display: block;
+                    --critter-button-color-disabled: transparent;
+                    --critter-button-color: trasnparent;
+                    --critter-button-text-color: #666;
+                    --critter-button-text-color-disabled: whitesmoke;
+                    transition: 100ms
+                }
             }
             
-            #popup_buttons{
-                float: left;
-                width: 40px;
-                margin: auto;
-                margin-left: 10px;
-            }
+            @media only screen and (min-width: 601px) {
+                #popup_blockly{
+                    width: calc(100% - 50px);
+                    float: left;
+                }
+                
+                #popup_buttons {
+                    float: left;
+                    width: 40px;
+                    margin: auto;
+                    margin-left: 10px;
+                }
+                
+                #close_button{
+                    margin-bottom: 20px;
+                }
             
-            critter-button{
-                width: 40px;
-                height: 40px;
-                margin-bottom: 5px;
-                --critter-button-color-disabled: transparent;
-                --critter-button-color: trasnparent;
-                --critter-button-text-color: #666;
-                --critter-button-text-color-disabled: whitesmoke;
-                transition: 100ms
-            }
+                #save_button{
+                    margin-bottom: 0;
+                }
             
-            critter-button:hover iron-icon{
-                padding-bottom: 5px;
-            }
+                #save_button{
+                    margin-top: 5px;
+                }
+                
+                critter-button{
+                    width: 40px;
+                    height: 40px;
+                    margin-bottom: 5px;
+                    --critter-button-color-disabled: transparent;
+                    --critter-button-color: trasnparent;
+                    --critter-button-text-color: #666;
+                    --critter-button-text-color-disabled: whitesmoke;
+                    transition: 100ms
+                }
+                
+                critter-button:hover iron-icon{
+                    padding-bottom: 5px;
+                }
             
-            critter-button iron-icon{
-                --iron-icon-height: 35px;
-                --iron-icon-width: 35px;
-                margin: auto;
-            }
-            
-            #close_button{
-                margin-bottom: 20px;
-            }
-            
-            #save_button{
-                margin-bottom: 0;
-            }
-            
-            #save_button{
-                margin-top: 5px;
+                critter-button iron-icon{
+                    --iron-icon-height: 35px;
+                    --iron-icon-width: 35px;
+                    margin: auto;
+                }
             }
             
             #close_button:hover,

@@ -68,6 +68,38 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             :host {
                 display: block;
             }
+            
+            @media only screen and (max-width: 1350px) and (min-width: 1081px) {
+                #board_container {
+                    max-width: 67%;
+                }
+                
+                #blockly_container {
+                    max-width: 33%;
+                }
+                
+                .full_blockly{
+                    width: 95%;
+                    margin-right: 5%;
+                    float: left;
+                }
+            }
+            
+            @media only screen and (max-width: 1080px) {
+                #board_container {
+                    max-width: 100%;
+                    width: 100%;
+                }
+                
+                #blockly_container {
+                    max-width: 100vw;
+                    width: 100vw;
+                }
+                
+                .full_blockly{
+                    width: 90vw;
+                }
+            }
 
             #critter_container {
                 position: absolute;
@@ -78,12 +110,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             #critter_container critter-critter {
                 pointer-events: all;
-            }
-
-            .full_blockly{
-                width: 95%;
-                margin-right: 5%;
-                float: left;
             }
 
             #send_button,
@@ -289,7 +315,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             _blockSize: {
                 type: Number,
-                value: 40
+                computed: '_computeBlockSize()'
             },
 
             _critterList: {
@@ -374,6 +400,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
             this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
             this.$.board_container.addEventListener("mouseout", () => this._renderCoordinates(false));
+            window.addEventListener("resize", (event) => this._handleResize(event));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
@@ -525,6 +552,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         return height * 0.5 * size - 5;
     }
 
+    _computeBlockSize() {
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            return 20;
+        } else {
+            return 40;
+        }
+    }
+
     /** computes the heights of critter-board**/
     _computeBoardHeight(height, size) {
         return height * size;
@@ -541,6 +576,19 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
     _renderCoordinates(render) {
         this.$.coordinate_container.style.visibility = (render ? "visible" : "hidden");
+    }
+
+    _handleResize(event) {
+        if((window.matchMedia("(max-width: 600px)").matches)) {
+            if(this.$.gameboard.clientWidth > 600) {
+                window.location.href = window.location.href;
+            }
+        }
+        if((window.matchMedia("(min-width: 601px)").matches)) {
+            if(this.$.gameboard.clientWidth < 600) {
+                window.location.href = window.location.href;
+            }
+        }
     }
 
     /** handels the hover event and displays the coordinates **/

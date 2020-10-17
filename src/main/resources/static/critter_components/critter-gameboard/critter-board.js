@@ -42,26 +42,112 @@ class CritterGameboard extends Level(PolymerElement) {
     static get template() {
         return html`
         <style>
-            :host {
-                display: block;
-                --board-width: 40px;
-                --board-height: 40px;
-                --show-grid: hidden;
-                width: calc(var(--board-width) + 25px);
-            }
+            @media only screen and (max-width: 600px) {
+                :host {
+                    display: block;
+                    --board-width: 20px;
+                    --board-height: 20px;
+                    --show-grid: hidden;
+                    width: calc(var(--board-width) + 12px);
+                }
 
-            #verticalGrid {
-                margin-right: 5px;
-                width: 16px;
-                min-height: 40px;
-                visibility: var(--show-grid);
-            }
+                #verticalGrid {
+                    margin-right: 2px;
+                    width: 25px;
+                    min-height: 20px;
+                    visibility: var(--show-grid);
+                }
+            
+                #verticalGrid div {
+                    height: 20px;
+                    display: table;
+                }
 
-            #horizontalGrid {
-                margin-left: 21px;
-                margin-top: 5px;
-                height: 21px;
-                visibility: var(--show-grid);
+                #horizontalGrid {
+                    margin-left: 12px;
+                    margin-top: 2px;
+                    height: 10px;
+                    visibility: var(--show-grid);
+                }
+            
+                #horizontalGrid div {
+                    float: left;
+                    width: 20px;
+                    text-align: center;
+                }
+            
+                #board {
+                    display: inline-block;
+                    position: relative;
+                    top: calc(var(--board-height) * -1 - 12px);
+                    left: 21px;
+                    width: var(--board-width);
+                    height: 0;
+                }
+
+                #overlay {
+                    display: inline-block;
+                    position: relative;
+                    float: left;
+                    bottom: calc(var(--board-height) + 15px);
+                    right: -21px;
+                    height: 0;
+                    width: var(--board-width);
+                }
+            }
+            
+            @media only screen and (min-width: 601px) {
+                :host {
+                    display: block;
+                    --board-width: 40px;
+                    --board-height: 40px;
+                    --show-grid: hidden;
+                    width: calc(var(--board-width) + 25px);
+                }
+
+                #verticalGrid {
+                    margin-right: 5px;
+                    width: 16px;
+                    min-height: 40px;
+                    visibility: var(--show-grid);
+                }
+            
+                #verticalGrid div {
+                    height: 40px;
+                    display: table;
+                }
+
+                #horizontalGrid {
+                    margin-left: 21px;
+                    margin-top: 5px;
+                    height: 21px;
+                    visibility: var(--show-grid);
+                }
+            
+                #horizontalGrid div {
+                    float: left;
+                    width: 40px;
+                    text-align: center;
+                }
+            
+                #board {
+                    display: inline-block;
+                    position: relative;
+                    top: calc(var(--board-height) * -1 - 12px);
+                    left: 21px;
+                    width: var(--board-width);
+                    height: 0;
+                }
+
+                #overlay {
+                    display: inline-block;
+                    position: relative;
+                    float: left;
+                    bottom: calc(var(--board-height) + 15px);
+                    right: -21px;
+                    height: 0;
+                    width: var(--board-width);
+                }
             }
 
             #horizontalGrid div,
@@ -69,39 +155,9 @@ class CritterGameboard extends Level(PolymerElement) {
                 margin: auto;
             }
 
-            #horizontalGrid div {
-                float: left;
-                width: 40px;
-                text-align: center;
-            }
-
             #verticalGrid div span {
                 vertical-align: middle;
                 display: table-cell;
-            }
-
-            #verticalGrid div {
-                height: 40px;
-                display: table;
-            }
-
-            #board {
-                display: inline-block;
-                position: relative;
-                top: calc(var(--board-height) * -1 - 12px);
-                left: 21px;
-                width: var(--board-width);
-                height: 0;
-            }
-
-            #overlay {
-                display: inline-block;
-                position: relative;
-                float: left;
-                bottom: calc(var(--board-height) + 15px);
-                right: -21px;
-                height: 0;
-                width: var(--board-width);
             }
             
             canvas{
@@ -170,10 +226,17 @@ class CritterGameboard extends Level(PolymerElement) {
             return;
         }
 
-        this.updateStyles({
-            '--board-width': (this._globalData.width * 40) + "px",
-            '--board-height': (this._globalData.width * 40) + "px"
-        });
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            this.updateStyles({
+                '--board-width': (this._globalData.width * 20) + "px",
+                '--board-height': (this._globalData.width * 20) + "px"
+            });
+        } else {
+            this.updateStyles({
+                '--board-width': (this._globalData.width * 40) + "px",
+                '--board-height': (this._globalData.width * 40) + "px"
+            });
+        }
 
         let gameboard = this.$.board;
         let gameboardOverlay = this.$.overlay;
@@ -1110,24 +1173,43 @@ class CritterGameboard extends Level(PolymerElement) {
 
     async computeImg() {
         let canvas = this.$.cnavasBuffer;
-        canvas.width = this._globalData.width * 10;
-        canvas.height = this._globalData.height * 10;
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            canvas.width = this._globalData.width * 5;
+            canvas.height = this._globalData.height * 5;
+        } else {
+            canvas.width = this._globalData.width * 10;
+            canvas.height = this._globalData.height * 10;
+        }
         let context = canvas.getContext('2d');
 
         for (let i = 0; i < this._globalData.width; ++i) {
             for (let j = this._globalData.height - 1; j >= 0; --j) {
                 let field = this.shadowRoot.querySelector('#field-' + j + "-" + i);
                 let value = await field.computeImg(j, i);
-                if(field.class.includes("tower")){
-                    context.drawImage(value.img, 0 , 0, 40, 90, value.x * 10, (value.y * 10) - 12.5, 10, 22.5);
-                } else if (field.class.includes("spawn")){
-                    context.drawImage(value.img, 0 , 0, 50, 50, value.x * 10, (value.y * 10) - 2.5, 12.5, 12.5);
+                if(window.matchMedia("(max-width: 600px)").matches) {
+                    if(field.class.includes("tower")){
+                        context.drawImage(value.img, 0 , 0, 20, 45, value.x * 5, (value.y * 5) - 7, 5, 11.5);
+                    } else if (field.class.includes("spawn")){
+                        context.drawImage(value.img, 0 , 0, 25, 25, value.x * 5, (value.y * 5) - 1.25, 7, 7);
+                    } else {
+                        context.drawImage(value.img, 0 , 0, 20, 20, value.x * 5, value.y * 5, 5, 5);
+                    }
                 } else {
-                    context.drawImage(value.img, 0 , 0, 40, 40, value.x * 10, value.y * 10, 10, 10);
+                    if(field.class.includes("tower")){
+                        context.drawImage(value.img, 0 , 0, 40, 90, value.x * 10, (value.y * 10) - 12.5, 10, 22.5);
+                    } else if (field.class.includes("spawn")){
+                        context.drawImage(value.img, 0 , 0, 50, 50, value.x * 10, (value.y * 10) - 2.5, 12.5, 12.5);
+                    } else {
+                        context.drawImage(value.img, 0 , 0, 40, 40, value.x * 10, value.y * 10, 10, 10);
+                    }
                 }
             }
         }
-        let img = new Image( this._globalData.width * 10,  this._globalData.height * 10);
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            let img = new Image( this._globalData.width * 5,  this._globalData.height * 5);
+        } else {
+            let img = new Image( this._globalData.width * 10,  this._globalData.height * 10);
+        }
         img.src = canvas.toDataURL("image/jpeg")
         return await new Promise(resolve => {
             canvas.toBlob((blob) => {

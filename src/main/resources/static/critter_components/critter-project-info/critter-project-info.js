@@ -41,6 +41,60 @@ class CritterProjectInfo extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
+                @media only screen and (min-width: 1081px) {
+                    .profile_img {
+                        max-height: 200px;
+                        max-width: 200px;
+                        border-radius: 100px;
+                    }
+                    
+                    .card-title {
+                        font-size: 18px;   
+                    }
+                }
+                
+                @media only screen and (max-width: 1080px) and (min-width: 801px) {
+                    .profile_img {
+                        max-height: 150px;
+                        max-width: 150px;
+                        border-radius: 75px;
+                    }
+                    
+                    .card-title {
+                        font-size: 18px;   
+                    }
+                }
+                
+                @media only screen and (max-width: 800px) and (min-width: 576px) {
+                    .profile_img {
+                        max-height: 100px;
+                        max-width: 100px;
+                        border-radius: 50px;
+                    }
+                    
+                    .card-title {
+                        font-size: 15px;   
+                    }
+                }
+                
+                @media only screen and (max-width: 575px) {
+                    .profile_img {
+                        max-height: 200px;
+                        max-width: 200px;
+                        border-radius: 100px;
+                    }
+                    
+                    .card-title {
+                        font-size: 18px;   
+                    }
+                }
+                
+                .profile_img{
+                    margin: auto;
+                    overflow: hidden;
+                    position: relative;
+                }
+            
                 .card{
                     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
                     text-align: center;
@@ -49,16 +103,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
 
                 .card-title {
                     color: #ffa600;
-                    font-size: 18px;
-                }
-
-                .profile_img {
-                    max-height: 200px;
-                    max-width: 200px;
-                    border-radius: 100px;
-                    margin: auto;
-                    overflow: hidden;
-                    position: relative;
                 }
                 
                 #project_text {
@@ -84,7 +128,7 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                 <div class="col-sm-4">
                     <div class="card">
                         <img src="[[importPath]]images/unicorn.png" class="profile_img" alt="Gordon Fraser">
-                            <h1>Gordon Fraser</h1>
+                            <h3>Gordon Fraser</h3>
                             <p class="card-title">[[__('chair_se2')]]</p>
                             <p>[[__('uni_passau')]]</p>
                     </div>
@@ -92,7 +136,7 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                         <div class="col-sm-4">
                             <div class="card">
                             <img src="[[importPath]]images/unterwelt.png" class="profile_img" alt="Gestalt der Unterwelt">
-                            <h1>Gordon Fraser</h1>
+                            <h3>Gordon Fraser</h3>
                             <p class="card-title">[[__('shape')]]</p>
                             <p>[[__('nether_world')]]</p>
                         </div>
@@ -100,7 +144,7 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                     <div class="col-sm-4">
                         <div class="card">
                             <img src="[[importPath]]images/schlumpf.png" class="profile_img" alt="Schlumpf">
-                            <h1>Gordon Fraser</h1>
+                            <h3>Gordon Fraser</h3>
                             <p class="card-title">[[__('smurf')]]</p>
                             <p>[[__('smurf_home')]]</p>
                         </div>
