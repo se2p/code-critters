@@ -41,54 +41,156 @@ class CritterElementSelector extends PolymerElement {
     static get template() {
         return html`
             <style>
-              :host {
-                display: block;
-              }
+                :host {
+                    display: block;
+                }
+                
+                @media only screen and (max-width: 423px) {
+                    #element-container {
+                        background-color: aliceblue;
+                        width: 320px;
+                        height: fit-content;
+                        overflow-y: scroll;
+                    }
+                    
+                    #element-container *{
+                        float: left;
+                    }
         
-              #element-container {
-                background-color: aliceblue;
-                width: 300px;
-                overflow-y: scroll;
-              }
+                    .element{
+                        margin: 2%;
+                        margin-top: 30px;
+                        width: 35px;
+                        height: fit-content;
+                        cursor: pointer;
+                    }
+                    
+                    .element span {
+                        margin: 2%;
+                        height: fit-content;
+                    }
+                    
+                    .element tower {
+                        margin-top: 90px;
+                    }
+                    
+                    .heading{
+                        display: none;
+                    }
         
-              .element{
-                margin: 20px 0;
-                width: 100%;
-                height: 40px;
-                cursor: pointer;
-              }
+                    .heading1{
+                        display: none;
+                    }
+                }
+                
+                @media only screen and (max-width: 600px) and (min-width: 424px){
+                    .element{
+                        margin: 20px 0;
+                        width: 100%;
+                        height: 20px;
+                        cursor: pointer;
+                    }
+                    
+                    #element-container {
+                        background-color: aliceblue;
+                        width: 100%;
+                        height: 320px;
+                        overflow-y: scroll;
+                    }
+                    
+                    .element span{
+                        margin-left: 5px;
+                        height: 20px;
+                        justify-content: center;
+                        align-items: center;
+                        display: flex;
+                    }
+                }
+              
+                @media only screen and (max-width: 984px) and (min-width: 601px){
+                    #element-container {
+                        background-color: aliceblue;
+                        width: 640px;
+                        height: fit-content;
+                        overflow-y: scroll;
+                    }
+                    
+                    #element-container *{
+                        float: left;
+                    }
         
-              .heading{
-                margin: 20px 0;
-                width: 100%;
-                height: 40px;
-                font-size: 1.2em;
-                cursor: default;
-              }
+                    .element {
+                        margin: 2%;
+                        margin-top: 45px;
+                        width: 50px;
+                        height: fit-content;
+                        cursor: pointer;
+                    }
+                    
+                    .element span {
+                        margin: 2%;
+                        display: flex;
+                    }
+                    
+                    .heading{
+                        display: none;
+                    }
         
-              .heading1{
-                margin-bottom: 40px;
-              }
+                    .heading1{
+                        display: none;
+                    }
+                }
+              
+                @media only screen and (min-width: 985px) {
+                    #element-container {
+                        background-color: aliceblue;
+                        width: 300px;
+                        height: 640px;
+                        overflow-y: scroll;
+                    }
         
-              .element:hover{
-                background-color: #00b0ff;
-              }
+                    .element{
+                        margin: 20px 0;
+                        width: 100%;
+                        height: 40px;
+                        cursor: pointer;
+                    }
         
-              .element *{
-                float: left;
-                pointer-events: none;
-              }
+                    .element span{
+                        margin-left: 20px;
+                        height: 40px;
+                        justify-content: center;
+                        align-items: center;
+                        display: flex;
+                    }
+                    
+                    .heading{
+                        margin: 20px 0;
+                        width: 100%;
+                        height: 40px;
+                        font-size: 1.5em;
+                        cursor: default;
+                    }
         
-              .element span{
-                margin-left: 20px;
-                height: 40px;
-                justify-content: center;
-                align-items: center;
-                display: flex;
-              }
+                    .heading1{
+                        margin-bottom: 40px;
+                    }
+                }
+                
+                .element span {
+                    font-size: 1.2em;
+                }
+                
+                .element *{
+                    float: left;
+                    pointer-events: none;
+                }
         
+                .element:hover{
+                    background-color: whitesmoke;
+                }
             </style>
-            <div id="element-container" style$="height: [[height]]px">
+            <div id="element-container">
               <div class="heading0 heading">
                 <span>Textures</span>
               </div>

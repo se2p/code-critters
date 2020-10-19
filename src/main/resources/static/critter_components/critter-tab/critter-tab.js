@@ -48,7 +48,7 @@ class CritterTab extends PolymerElement {
           #tab_bar {
             width: 100%;
             min-height: 35px;
-            background-color: #bbcce2;
+            background-color: #F3F4F6;
             margin-bottom: 5px;
             white-space: nowrap;
             overflow-y: scroll;

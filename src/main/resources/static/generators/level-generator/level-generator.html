@@ -30,8 +30,10 @@
         window.Polymer = window.Polymer || {};
         window.Polymer.dom = 'shadow';
     </script>
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
     <script type=module src="./critter_components/critter-level-creator/critter-level-creator.js">
     </script>
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 </head>
 <body>
 
@@ -39,9 +41,33 @@
     body {
         background: #F3F4F6;
         font-family: Arial;
+        font-size: 0.8em;
+        margin: 0;
+    }
+
+    critter-header {
+        width: 100%;
+        margin: 0;
+    }
+
+    hr {
+        color: #ffa600;
+        background-color: #ffa600;
+        height: 3px;
+        margin: 0;
+    }
+
+    critter-level-creator {
+        margin-top: 5px;
     }
 </style>
 
+    <div class="row">
+        <div class="col-sm-12" id="header">
+            <critter-header></critter-header>
+            <hr>
+        </div>
+    </div>
     <critter-level-creator id="board" width="16" height="16"></critter-level-creator>
 
 <script>

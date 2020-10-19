@@ -458,6 +458,19 @@ Blockly.Blocks['shirt_picker'] = {
             [{'src': 'images/cloth_black.png', 'width': 25, 'height': 25, 'alt': 'black'}, 'black'],
             [{'src': 'images/cloth_pink.png', 'width': 25, 'height': 25, 'alt': 'pink'}, 'pink']
         ];
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            options = [
+                [{'src': 'images/cloth_red50.png', 'width': 15, 'height': 15, 'alt': 'red'}, 'red'],
+                [{'src': 'images/cloth_blue50.png', 'width': 15, 'height': 15, 'alt': 'blue'}, 'blue'],
+                [{'src': 'images/cloth_cyan50.png', 'width': 15, 'height': 15, 'alt': 'cyan'}, 'cyan'],
+                [{'src': 'images/cloth_green50.png', 'width': 15, 'height': 15, 'alt': 'green'}, 'green'],
+                [{'src': 'images/cloth_orange50.png', 'width': 15, 'height': 15, 'alt': 'orange'}, 'orange'],
+                [{'src': 'images/cloth_yellow50.png', 'width': 15, 'height': 15, 'alt': 'yellow'}, 'yellow'],
+                [{'src': 'images/cloth_white50.png', 'width': 15, 'height': 15, 'alt': 'white'}, 'white'],
+                [{'src': 'images/cloth_black50.png', 'width': 15, 'height': 15, 'alt': 'black'}, 'black'],
+                [{'src': 'images/cloth_pink50.png', 'width': 15, 'height': 15, 'alt': 'pink'}, 'pink']
+            ];
+        }
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown(options), "color");
         this.setOutput(true, null);
@@ -482,6 +495,15 @@ Blockly.Blocks['hair_picker'] = {
             [{'src': 'images/hair_gray.png', 'width': 25, 'height': 25, 'alt': 'gray'}, 'gray'],
             [{'src': 'images/hair_red.png', 'width': 25, 'height': 25, 'alt': 'red'}, 'red']
         ];
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            options = [
+                [{'src': 'images/hair_blond50.png', 'width': 15, 'height': 15, 'alt': 'blond'}, 'blond'],
+                [{'src': 'images/hair_black50.png', 'width': 15, 'height': 15, 'alt': 'black'}, 'black'],
+                [{'src': 'images/hair_brown50.png', 'width': 15, 'height': 15, 'alt': 'brown'}, 'brown'],
+                [{'src': 'images/hair_gray50.png', 'width': 15, 'height': 15, 'alt': 'gray'}, 'gray'],
+                [{'src': 'images/hair_red50.png', 'width': 15, 'height': 15, 'alt': 'red'}, 'red']
+            ];
+        }
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown(options), "color");
         this.setOutput(true, null);

@@ -101,8 +101,8 @@ class CritterGameboardHoverField extends PolymerElement {
                     }
     
                     .wood:hover{
-                        background-image: url(image/texture.png);
-                        background-position: -480px -240px;
+                        background-image: url(image/texture50.png);
+                        background-position: -240px -120px;
                         width: 20px;
                         height: 20px;
                         display: block;
@@ -110,8 +110,8 @@ class CritterGameboardHoverField extends PolymerElement {
                     }
     
                     .grass:hover {
-                        background-image: url(image/texture.png);
-                        background-position: -42px -28px;
+                        background-image: url(image/texture50.png);
+                        background-position: -21px -14px;
                         background-size: 520%;
                         width: 20px;
                         height: 20px;
@@ -120,8 +120,8 @@ class CritterGameboardHoverField extends PolymerElement {
                     }
     
                     .ice:hover {
-                        background-image: url(image/texture.png);
-                        background-position: -125px -111px;
+                        background-image: url(image/texture50.png);
+                        background-position: -63px -56px;
                         background-size: 520%;
                         width: 20px;
                         height: 20px;
@@ -130,8 +130,8 @@ class CritterGameboardHoverField extends PolymerElement {
                     }
     
                     .water:hover {
-                        background-image: url(image/texture.png);
-                        background-position: -125px -28px;
+                        background-image: url(image/texture50.png);
+                        background-position: -63px -14px;
                         background-size: 520%;
                         width: 20px;
                         height: 20px;
@@ -140,8 +140,8 @@ class CritterGameboardHoverField extends PolymerElement {
                     }
     
                     .dirt:hover {
-                        background-image: url(image/texture.png);
-                        background-position: 0 -27px;
+                        background-image: url(image/texture50.png);
+                        background-position: 0 -14px;
                         background-size: 507%;
                         width: 20px;
                         height: 20px;

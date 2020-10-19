@@ -65,6 +65,18 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     --overlay-margin-top: 40px;
                 }
 
+                @media only screen and (max-width: 600px) and (min-width: 424px) {
+                    #coordinate_container {
+                        left: 300px;
+                    }
+                }
+                
+                @media only screen and (min-width: 985px) {
+                    #coordinate_container {
+                        left: 670px;
+                    }
+                }
+
                 .tab {
                     display: none;
                 }
@@ -105,16 +117,15 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     margin-bottom: 40px;
                 }
 
-
                 #coordinate_container{
                     min-height: 40px;
-                    left: 200px;
                     position: relative;
                     align-items: center;
                     margin-left: 20px;
                     float: left;
+                    display: block;
+                    clear: both;
                 }
-
             </style>
         </custom-style>
 
@@ -139,12 +150,12 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
             <critter-mutant-creator id="mutant_creator" height$="{{ _boardHeight}}" number-of-mutants="{{_globalData.numberOfMutants}}" ></critter-mutant-creator>
         </div>
         <br>
+        <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
         <div class="table">
             <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
         </div>
         <critter-selector values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
         <critter-button id="save_button">Save</critter-button>
-        <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
         `;
     }
 
@@ -186,7 +197,7 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
 
             _blockSize: {
                 type: Number,
-                value: 40
+                computed: '_computeBlockSize()'
             },
 
             _critterList: {
@@ -226,6 +237,7 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("valueChanged", (event) => this._validateLevelName(event));
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
+            window.addEventListener("resize", (event) => this._handleResize(event));
             this._initLevel();
             this._initNames();
             this._initRows();
@@ -414,6 +426,14 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         return req;
     }
 
+    _computeBlockSize() {
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            return 20;
+        } else {
+            return 40;
+        }
+    }
+
     /** computes the heights of critter-board**/
     _computeBoardHeight(height, size) {
         return height * size;
@@ -437,6 +457,19 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         }
         if (detail.new === 3) {
             this._globalData.xml = this.$.blockly_cut.getXML();
+        }
+    }
+
+    _handleResize(event) {
+        if((window.matchMedia("(max-width: 600px)").matches)) {
+            if(this.$.gameboard.clientWidth > 600) {
+                window.location.href = window.location.href;
+            }
+        }
+        if((window.matchMedia("(min-width: 601px)").matches)) {
+            if(this.$.gameboard.clientWidth < 600) {
+                window.location.href = window.location.href;
+            }
         }
     }
 
