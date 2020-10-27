@@ -59,7 +59,10 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
     </style>
     <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
     <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
-      <span>Mutant Code</span>
+      <span>
+        <p>Mutant Code</p>
+        <p style="color:#FFA600">Updating the CUT or changing the language will cause the mutant code to be overwritten!</p>
+      </span>
     </critter-blockly>
      `;
     }
@@ -120,9 +123,14 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
                 this.tabs.splice(-1, 1);
             }
             this.$.tabs._tabsChanged();
+            this._setDisplayTab("block", detail.new);
+        } else {
+            this._setDisplayTab("block", detail.new);
+            let element = this.shadowRoot.querySelector('.tab-' + detail.new);
+            let code = element.getXML();
+            element._toolboxChanged();
+            element.setCode(code);
         }
-        this._setDisplayTab("block", detail.new)
-
     }
 
     _setDisplayTab(value, number) {
@@ -139,7 +147,7 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
         newTab.controls = true;
         newTab.cut = true;
         newTab.xml = true;
-        newTab.innerHTML = "<span>Mutant Code</span>";
+        newTab.innerHTML = "<span><p>Mutant Code</p><p style=\"color:#FFA600\">Updating the CUT or changing the language will cause the mutant code to be overwritten!</p></span>";
         this.shadowRoot.append(newTab);
     }
 

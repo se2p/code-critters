@@ -455,7 +455,17 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         } else if (detail.new === 0) {
             this.shadowRoot.querySelector('#coordinate_container').style.display = "block";
         }
-        if (detail.new === 3) {
+        if(detail.new === 1) {
+            let code = this.$.blockly_cut.getXML();
+            this.$.blockly_cut._toolboxChanged();
+            this.$.blockly_cut.setCode(code);
+        }
+        if(detail.new === 2) {
+            let code = this.$.blockly_test.getXML();
+            this.$.blockly_test._toolboxChanged();
+            this.$.blockly_test.setCode(code);
+        }
+        if(detail.new === 3) {
             this._globalData.xml = this.$.blockly_cut.getXML();
         }
     }
