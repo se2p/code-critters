@@ -49,6 +49,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 display: block;
             }
             
+            /* Defines the field width and height as well as the background images for a gameboard with 20x20px fields. */
             @media only screen and (max-width: 600px) {
                 #field {
                     background-image: url(image/texture50.png);
@@ -633,6 +634,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     pointer-events: none;
                 }
                 
+                /* Animation for the mine explosion. */
                 .mine.explosion{
                     animation-name: explode;
                     animation-duration: 1s;
@@ -642,6 +644,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     animation: explode 1s steps(11) 1;
                 }
                 
+                /* Specifying the background position in the mine.png for the animation. */
                 @keyframes explode {
                     0% {
                         background-position: 0 0;
@@ -667,6 +670,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 }
             }
             
+            /* Defines the field width and height as well as the background images for a gameboard with 40x40px fields. */
             @media only screen and (min-width: 601px) {
                 #field {
                     background-image: url(image/texture.png);
@@ -1251,6 +1255,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     pointer-events: none;
                 }
                 
+                /* Animation for the mine explosion. */
                 .mine.explosion{
                     animation-name: explode;
                     animation-duration: 1s;
@@ -1260,6 +1265,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     animation: explode 1s steps(11) 1;
                 }
                 
+                /* Specifying the background position in the mine.png for the animation. */
                 @keyframes explode {
                     0% {
                         background-position: 0 0;
@@ -1633,7 +1639,12 @@ class CritterGameboardField extends Generator(PolymerElement) {
         };
     }
 
-    /** computes the string value for weather ther is a mine or not **/
+    /**
+     * Computes the string value for whether the field contains a mine or not.
+     * @param mine The given value.
+     * @returns {string} The computed string.
+     * @private
+     */
     _isMine(mine) {
         return (mine ? "mine" : "");
     }

@@ -46,6 +46,7 @@ class CritterCritter extends Level(PolymerElement) {
                 --tooltip-display: none;
             }
             
+            /* Defines the width and height of the Critters, their clothes, and hair as well as the images to be used for small 20x20px critter-board-fields. */
             @media only screen and (max-width: 600px) {
                 #critter_container {
                     position: absolute;
@@ -133,6 +134,7 @@ class CritterCritter extends Level(PolymerElement) {
                     background-image: url(image/critter50/hair_gray.png);
                 }
                 
+                /* Defines the animation of Critters walking in different directions. */
                 .critter-east{
                     animation-name: walk_east;
                     background-position: 0 20px;
@@ -154,6 +156,7 @@ class CritterCritter extends Level(PolymerElement) {
                     animation: walk_south 1s steps(9) infinite reverse;
                 }
                 
+                /* The following code specifies the background position of the images to be used for the Critter walking animation. */
                 @keyframes walk_east {
                     from {
                         background-position: 0 20px;
@@ -227,6 +230,7 @@ class CritterCritter extends Level(PolymerElement) {
                 }
             }
             
+            /* Defines the width and height of the Critters, their clothes, and hair as well as the images to be used for big 40x40px critter-board-fields. */
             @media only screen and (min-width: 601px) {
                 #critter_container {
                     position: absolute;
@@ -314,6 +318,7 @@ class CritterCritter extends Level(PolymerElement) {
                     background-image: url(image/critter/hair_gray.png);
                 }
                 
+                /* Defines the animation of Critters walking in different directions. */
                 .critter-east{
                     animation-name: walk_east;
                     background-position: 0 40px;
@@ -335,6 +340,7 @@ class CritterCritter extends Level(PolymerElement) {
                     animation: walk_south 1s steps(9) infinite reverse;
                 }
                 
+                /* The following code specifies the background position of the images to be used for the Critter walking animation. */
                 @keyframes walk_east {
                     from {
                         background-position: 0 40px;
@@ -434,6 +440,7 @@ class CritterCritter extends Level(PolymerElement) {
                 -webkit-animation: none !important;
             }
 
+            /* Used to speed up the Critter walking animation. */
             #critter.speedy,
             #hcritter.speedy,
             #ccritter.speedy{

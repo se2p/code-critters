@@ -36,8 +36,7 @@ public class UserDTO {
     private Language language;
     private Role role;
 
-
-    //needed for user change
+    /** The parameters needed for changing user information. */
     public UserDTO(String username, String email, String oldPassword, String password, Language language) {
         this.username = username;
         this.email = email;
@@ -46,7 +45,7 @@ public class UserDTO {
         this.language = language;
     }
 
-    //needed for registration
+    /** The parameters needed for the user registration. */
     public UserDTO(String username, String email, String password, Language language) {
         this.username = username;
         this.email = email;
@@ -54,14 +53,14 @@ public class UserDTO {
         this.language = language;
     }
 
-    //needed for login
+    /** The parameters needed for the user login. */
     public UserDTO(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;
     }
 
-    //needed for password reset
+    /** Used for password resets. */
     public UserDTO(String password) {
         this.password = password;
     }

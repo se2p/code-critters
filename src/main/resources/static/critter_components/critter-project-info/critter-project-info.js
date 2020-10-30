@@ -2,7 +2,7 @@
  * #%L
  * Code Critters
  * %%
- * Copyright (C) 2019 Michael Gruber
+ * Copyright (C) 2020 Laura Caspari
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -41,6 +41,8 @@ class CritterProjectInfo extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
+            
+                /* The media queries adjust the size of the images displayed in the information cards depending on screen size. */
                 @media only screen and (min-width: 1081px) {
                     .profile_img {
                         max-height: 200px;
@@ -132,32 +134,33 @@ class CritterProjectInfo extends I18n(PolymerElement) {
                             <p class="card-title">[[__('chair_se2')]]</p>
                             <p>[[__('uni_passau')]]</p>
                     </div>
-                    </div>
-                        <div class="col-sm-4">
-                            <div class="card">
-                            <img src="[[importPath]]images/unterwelt.png" class="profile_img" alt="Gestalt der Unterwelt">
-                            <h3>Gordon Fraser</h3>
-                            <p class="card-title">[[__('shape')]]</p>
-                            <p>[[__('nether_world')]]</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card">
-                            <img src="[[importPath]]images/schlumpf.png" class="profile_img" alt="Schlumpf">
-                            <h3>Gordon Fraser</h3>
-                            <p class="card-title">[[__('smurf')]]</p>
-                            <p>[[__('smurf_home')]]</p>
-                        </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <img src="[[importPath]]images/unterwelt.png" class="profile_img" alt="Gestalt der Unterwelt">
+                        <h3>Gordon Fraser</h3>
+                        <p class="card-title">[[__('shape')]]</p>
+                        <p>[[__('nether_world')]]</p>
                     </div>
                 </div>
-                <div class="row" id="project_text">
-                    <div class="col-sm-4">
-                        <hr>
-                        <h3><b>[[__('about')]]</b></h3>
-                        <h6><b>Code Critters</b></h6>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <img src="[[importPath]]images/schlumpf.png" class="profile_img" alt="Schlumpf">
+                        <h3>Gordon Fraser</h3>
+                        <p class="card-title">[[__('smurf')]]</p>
+                        <p>[[__('smurf_home')]]</p>
                     </div>
-                    <div class="col-sm-8 text">[[__('project_text')]]</div>
                 </div>
+            </div>
+            <!--Short information segment about the Code Critters project.-->
+            <div class="row" id="project_text">
+                <div class="col-sm-4">
+                    <hr>
+                    <h3><b>[[__('about')]]</b></h3>
+                    <h6><b>Code Critters</b></h6>
+                </div>
+                <div class="col-sm-8 text">[[__('project_text')]]</div>
+            </div>
         `
     }
 

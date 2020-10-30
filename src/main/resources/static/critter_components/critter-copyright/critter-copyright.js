@@ -2,7 +2,7 @@
  * #%L
  * Code Critters
  * %%
- * Copyright (C) 2019 Michael Gruber
+ * Copyright (C) 2020 Laura Caspari
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@ import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 /*
 # critter-copyright
 
-Copyright notice for Code Critters
+The copyright notice for Code Critters displayed at the bottom of the main page.
 
 ## Example
 ```html
@@ -56,10 +56,12 @@ class CritterCopyright extends I18n(PolymerElement) {
                 <div class="col-sm-12">
                     <p>Copyright &copy; 2020 Code Critters<br>
                     Universität Passau, Innstraße 33, 94032 Passau<br>
-                    Lehrstuhl für Software Engineering II, Prof.Dr. Gordon Fraser<br>
+                    Lehrstuhl für Software Engineering II, Prof. Dr. Gordon Fraser<br>
                     E-Mail: ?????</p>
                     <p>
+                        <!--Link to the university's general legal notice-->
                         <a href="https://www.uni-passau.de/impressum/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('legal')]]</a>
+                        <!--Link to the university's general privacy statement-->
                         <a href="https://www.uni-passau.de/datenschutzerklaerung/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('privacy')]]</a>
                     </p>
                 </div>

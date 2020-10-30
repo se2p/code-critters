@@ -29,6 +29,13 @@ public class ScoreDTO {
     private int levels;
     private int position;
 
+    /**
+     * Used to retrieve score information to be displayed in the highscore table.
+     * @param user The user achieving the score.
+     * @param score The scores summed up over all levels played.
+     * @param levels The number of levels played.
+     * @param position The overall position in the user ranking based on the achieved score.
+     */
     public ScoreDTO(String user, int score, int levels, int position) {
         this.user = user;
         this.score = score;

@@ -55,16 +55,18 @@ public class LevelController {
     }
 
     /**
-     * Returns the entire level data
+     * Returns the entire level data for a given level.
+     * @param level The level for which the data should be retrieved.
+     * @return A map containing all of the level data.
      */
     @GetMapping(path = "/get")
     public HashMap getLevelData(@RequestParam String level) {
         LevelDTO dto = levelService.getLevel(level);
         String toolbox;
         try {
-            // get your file as InputStream
+            // gets the user toolbox as an InputStream
             InputStream is = this.getClass().getResourceAsStream("/data/user_toolbox.tb");
-            // copy it to response's OutputStream
+            // copies it to the response's OutputStream
             StringWriter writer = new StringWriter();
             toolbox = IOUtils.toString(is, "UTF-8");
             is.close();
@@ -92,11 +94,21 @@ public class LevelController {
 
     }
 
+    /**
+     * Returns the mutants for the given level.
+     * @param level The level for which the mutant data is to be retrieved.
+     * @return A list of mutants.
+     */
     @GetMapping(path = "/mutants")
     public List getMutants(@RequestParam String level) {
         return levelService.getMutants(level);
     }
 
+    /**
+     * Returns a list containing level names, the achieved score and stars grouped by CritterRows.
+     * @param cookie The current user cookie.
+     * @return A list of LevelResultTypes.
+     */
     @GetMapping(path = "/levels")
     public List getLevels(@CookieValue("id") String cookie) {
         return levelService.getLevelsGrouped(cookie);

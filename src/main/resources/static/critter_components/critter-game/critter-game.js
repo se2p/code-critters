@@ -69,6 +69,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 display: block;
             }
             
+            /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the fixed-size gameboard. */
             @media only screen and (max-width: 1350px) and (min-width: 1081px) {
                 #board_container {
                     max-width: 67%;
@@ -85,6 +86,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 }
             }
             
+            /* Causes the blockly_container to be positioned below the gameboard. */
             @media only screen and (max-width: 1080px) {
                 #board_container {
                     max-width: 100%;
@@ -552,6 +554,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         return height * 0.5 * size - 5;
     }
 
+    /**
+     * Returns the height of a critter-board-field depending on the screen size.
+     * @returns {number} The field's height.
+     * @private
+     */
     _computeBlockSize() {
         if(window.matchMedia("(max-width: 600px)").matches) {
             return 20;
@@ -560,16 +567,35 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
     }
 
-    /** computes the heights of critter-board**/
+    /**
+     * Computes the height of the critter-gameboard given the height and size.
+     * @param height The gameboard's height is the number of critter-board-fields along its y-axis.
+     * @param size The height of a critter-board-field in pixels.
+     * @returns {number} The gameboard's height in pixels.
+     * @private
+     */
     _computeBoardHeight(height, size) {
         return height * size;
     }
 
-    /** computes the width of critter-board**/
+    /**
+     * Computes the height of the critter-gameboard given the width and size.
+     * @param width The gameboard's width is the number of critter-board-fields along its x-axis.
+     * @param size The height of a critter-board-field in pixels.
+     * @returns {number} The gameboard's width in pixels.
+     * @private
+     */
     _computeBoardWidth(width, size) {
         return width * size;
     }
 
+    /**
+     * Computes the height of the mine-popud dialog.
+     * @param height The gameboard's height in board-fields.
+     * @param size The height of a critter-board-field in pixels.
+     * @returns {number} The popup's height in pixels.
+     * @private
+     */
     _computePopupHeight(height, size){
         return ((height * 0.5) * size) - 29;
     }
@@ -578,6 +604,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this.$.coordinate_container.style.visibility = (render ? "visible" : "hidden");
     }
 
+    /**
+     * Triggers a page reload to resize the gameboard and adapt it to the current screen size.
+     * @param event
+     * @private
+     */
     _handleResize(event) {
         if((window.matchMedia("(max-width: 600px)").matches)) {
             if(this.$.gameboard.clientWidth > 600) {
@@ -591,23 +622,41 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
     }
 
-    /** handels the hover event and displays the coordinates **/
+    /**
+     * Displays the coordinates when the user hovers over gameboard-fields.
+     * @param event The hover event triggering the function.
+     * @private
+     */
     _handleHoverField(event) {
         let detail = event.detail;
         this._hoverX = detail.x + 1;
         this._hoverY = this._globalData.width - detail.y;
     }
 
-    /** handels the clickField event and creates the element **/
+    /**
+     * Displays the mine-popup, when the user clicks on a gameboard-field.
+     * @param event The click event triggering the function.
+     * @private
+     */
     _onFieldClicked(event) {
         let detail = event.detail;
         this.$.mine_popup.show(detail);
     }
 
+    /**
+     * Adds a given number to the current score.
+     * @param x The number to be added.
+     * @private
+     */
     _updateScore(x) {
         this.score += x;
     }
 
+    /**
+     * If the killed Critter is a mutant, killedCritters is updated along with the killed_container displaying alive and dead mutants.
+     * @param e
+     * @private
+     */
     _onCritterKilled(e) {
         // this._updateScore(e.detail.human ? -100 : 50);
         if (!e.detail.human) {
@@ -631,6 +680,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._onCritterDone()
     }
 
+    /**
+     * If the Critter that finished is human, finishedHumans is updated along with the finished_container displaying alive and dead humans.
+     * @param e
+     * @private
+     */
     _onCritterFinished(e) {
         // this._updateScore(e.detail.human ? 50 : -100);
         if (e.detail.human) {
@@ -704,6 +758,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this.stars = number;
     }
 
+    /**
+     * Initializes the killed_container and finished_container with a picture for each alive mutant and human respectively.
+     * @private
+     */
     _onCritterNumberChanged() {
         this.$.killed_container.innerHTML = "";
         let mutants = this._globalData.numberOfCritters;

@@ -51,11 +51,10 @@ public class UserController {
     }
 
     /**
-     * Registers a new user
-     *
-     * @param dto     Contains the users data
-     * @param request Request containing the data for computing base URL
-     * @throws MalformedURLException If the request URL is not well formatted
+     * Used for the registration of a new user.
+     * @param dto The UserDTO containing the user data.
+     * @param request The request containing the data for computing the base URL.
+     * @throws MalformedURLException Thrown if the request URL is not well formatted.
      */
     @PostMapping(path = "/register")
     public void registerUser(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
@@ -63,12 +62,12 @@ public class UserController {
     }
 
     /**
-     * Login a user
-     *
-     * @param dto                 User data
-     * @param cookie              current user cookie
-     * @param httpServletResponse Response to the client
-     * @return Map containing users data
+     * Used for user login.
+     * @param dto The UserDTO containing the user data.
+     * @param cookie The current user cookie.
+     * @param httpServletRequest The request to the server.
+     * @param httpServletResponse The response to the client.
+     * @return Returns the user data, if the login information was correct, or an error notice, if not.
      */
     @PostMapping(path = "/login")
     public Map<String, String> loginUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -99,6 +98,12 @@ public class UserController {
         return data;
     }
 
+    /**
+     * Deals with the user logout. Can only be called when a user is actually logged in. Invalidates the current session
+     * and clears the cookie information.
+     * @param cookie The current user cookie.
+     * @param httpServletRequest The request to the server.
+     */
     @PostMapping(path = "/logout")
     @Secured("ROLE_USER")
     public void logoutUser(@CookieValue("id") String cookie, HttpServletRequest httpServletRequest) {
@@ -110,6 +115,11 @@ public class UserController {
         }
     }
 
+    /**
+     * Used to delete a user. Can only be called when the user is logged in. Invalidates the current session.
+     * @param cookie The current user cookie.
+     * @param httpServletRequest The request to the server.
+     */
     @DeleteMapping(path = "/delete")
     @Secured("ROLE_USER")
     public void deleteUser(@CookieValue("id") String cookie, HttpServletRequest httpServletRequest) {
@@ -121,23 +131,36 @@ public class UserController {
         }
     }
 
+    /**
+     * Used to update user information.
+     * @param dto The UserDTO containing the user data.
+     * @param cookie The current user cookie.
+     * @param request The request to the server.
+     * @throws MalformedURLException Thrown if the request URL is not well formatted.
+     */
     @PostMapping(path = "/change")
     public void changeUser(@RequestBody UserDTO dto, @CookieValue("id") String cookie, HttpServletRequest request) throws MalformedURLException {
         userService.changeUser(dto, cookie, this.getBaseURL(request));
     }
 
+    /**
+     * First step to reset a forgotten password.
+     * @param dto The UserDTO containing the user data.
+     * @param request The request to the server.
+     * @throws MalformedURLException Thrown if the request URL is not well formatted.
+     */
     @PostMapping(path = "/forgot")
     public void forgotPassword(@RequestBody UserDTO dto, HttpServletRequest request) throws MalformedURLException {
         userService.forgotPassword(dto, this.getBaseURL(request));
     }
 
     /**
-     * Activates a user
-     *
-     * @param secret              string, that referes to a user
-     * @param httpServletResponse html response for rewrite URL
-     * @param request             request data for computing URL
-     * @throws MalformedURLException If the request URL is not well formated
+     * Used to activate a registered user. The user is sent a secret by mail on which they have to click to activate
+     * their profile.
+     * @param secret The secret referring to a specific user.
+     * @param httpServletResponse The response to rewrite the URL.
+     * @param request The request data for computing the URL.
+     * @throws MalformedURLException Thrown if the request URL is not well formatted.
      */
     @GetMapping(path = "/activate/{secret}")
     public void activateUser(@PathVariable(value = "secret") String secret, HttpServletResponse httpServletResponse, HttpServletRequest request) throws MalformedURLException {
@@ -148,17 +171,20 @@ public class UserController {
         httpServletResponse.setStatus(302);
     }
 
-
+    /**
+     * Used to reset a user's password.
+     * @param dto The UserDTO containing the user information.
+     * @param secret The secret referring to a specific user.
+     */
     @PostMapping(path = "/reset/{secret}")
     public void resetPassword(@RequestBody UserDTO dto, @PathVariable(value = "secret") String secret) {
         userService.resetPassword(secret, dto);
     }
 
     /**
-     * Return the user data to the application
-     *
-     * @param cookie the users cookie
-     * @return Map containing the users Data
+     * Returns the user data to the application when a user is logged in.
+     * @param cookie The current user cookie.
+     * @return Returns a map containing the user data if a user was found, or throws an exception.
      */
     @GetMapping(path = "/me")
     @Secured("ROLE_USER")
@@ -177,11 +203,10 @@ public class UserController {
     }
 
     /**
-     * Computes the requests base URL
-     *
-     * @param request Request containing the data
-     * @return base URL computed from the request
-     * @throws MalformedURLException If the request URL is not well formatted
+     * Computes the base URL of a given request.
+     * @param request The request containing the data.
+     * @return The computed base URL.
+     * @throws MalformedURLException Thrown if the request URL is not well formatted.
      */
     private String getBaseURL(HttpServletRequest request) throws MalformedURLException {
         URL requestURL = new URL(request.getRequestURL().toString());

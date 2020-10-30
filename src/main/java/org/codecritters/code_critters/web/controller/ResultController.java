@@ -45,16 +45,30 @@ public class ResultController {
         this.resultService = resultService;
     }
 
+    /**
+     * Stores a user's result in the database.
+     * @param dto The UserDTO containing the user data.
+     * @param cookie The current user cookie.
+     */
     @PostMapping(path = "/result")
     public void storeResult(@RequestBody ResultDTO dto, @CookieValue("id") String cookie) {
         resultService.createResult(dto, cookie);
     }
 
+    /**
+     * Returns the score data of the ten users with the highest score.
+     * @return The list of ScoreDTOs.
+     */
     @GetMapping(path = "/highscore/data")
     public ScoreDTO[] getHighscore() {
         return resultService.getHighscore();
     }
 
+    /**
+     * Returns the current user's score data.
+     * @param cookie The current user cookie identifying the user.
+     * @return The user's score data.
+     */
     @GetMapping(path = "/highscore/me")
     @Secured("ROLE_USER")
     public ScoreDTO getMyScore(@CookieValue("id") String cookie) {

@@ -65,13 +65,17 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     --overlay-margin-top: 40px;
                 }
 
-                @media only screen and (max-width: 600px) and (min-width: 424px) {
+                /* Positions the coordinate container when the critter-element-selector is on the right-hand side of the gameboard.
+                The min- and max-width values are the same as those in the corresponding media query of the critter-element-selector. */
+                @media only screen and (max-width: 600px) and (min-width: 441px) {
                     #coordinate_container {
                         left: 300px;
                     }
                 }
                 
-                @media only screen and (min-width: 985px) {
+                /* Positions the coordinate container when the critter-element-selector is on the right-hand side of the gameboard.
+                The min-width value is the same as the one in the corresponding media query of the critter-element-selector. */
+                @media only screen and (min-width: 1001px) {
                     #coordinate_container {
                         left: 670px;
                     }
@@ -426,6 +430,11 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         return req;
     }
 
+    /**
+     * Returns the height of a critter-board-field depending on the screen size.
+     * @returns {number} The field's height.
+     * @private
+     */
     _computeBlockSize() {
         if(window.matchMedia("(max-width: 600px)").matches) {
             return 20;
@@ -434,18 +443,34 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         }
     }
 
-    /** computes the heights of critter-board**/
+    /**
+     * Computes the height of the critter-gameboard given the height and size.
+     * @param height The gameboard's height is the number of critter-board-fields along the y-axis.
+     * @param size The height of a critter-board-field in pixels.
+     * @returns {number} The gameboard's height in pixels.
+     * @private
+     */
     _computeBoardHeight(height, size) {
         return height * size;
     }
 
-    /** handels the hover event and displays the coordinates **/
+    /**
+     * Displays the coordinates when the user hovers over gameboard-fields.
+     * @param event The hover event triggering the function.
+     * @private
+     */
     _handleHoverField(event) {
         let detail = event.detail;
         this._hoverX = detail.x + 1;
         this._hoverY = this._globalData.width - detail.y;
     }
 
+    /**
+     * Handles the display of the individual tabs and the coordinate container. Coordinates are only displayed when the
+     * current tab is the gameboard.
+     * @param event
+     * @private
+     */
     _onTabChanged(event) {
         let detail = event.detail;
         this.shadowRoot.querySelector('.tab-' + detail.old).style.display = "none";
@@ -470,6 +495,11 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         }
     }
 
+    /**
+     * Triggers a page reload to resize the gameboard and adapt it to the current screen size.
+     * @param event
+     * @private
+     */
     _handleResize(event) {
         if((window.matchMedia("(max-width: 600px)").matches)) {
             if(this.$.gameboard.clientWidth > 600) {

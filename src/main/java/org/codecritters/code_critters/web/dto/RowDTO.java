@@ -27,6 +27,11 @@ public class RowDTO {
     private String id;
     private String name;
 
+    /**
+     * Specifies the row to which a level belongs.
+     * @param id The row's id.
+     * @param name The row's name.
+     */
     public RowDTO(String id, String name) {
         this.id = id;
         this.name = name;

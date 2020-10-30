@@ -45,7 +45,8 @@ class CritterElementSelector extends PolymerElement {
                     display: block;
                 }
                 
-                @media only screen and (max-width: 423px) {
+                /* The following media queries change the styling and position of the element-container depending on screen width. */
+                @media only screen and (max-width: 440px) {
                     #element-container {
                         background-color: aliceblue;
                         width: 320px;
@@ -83,7 +84,8 @@ class CritterElementSelector extends PolymerElement {
                     }
                 }
                 
-                @media only screen and (max-width: 600px) and (min-width: 424px){
+                /* The min- and max-width values correspond to the ones in the critter-level-creator. */
+                @media only screen and (max-width: 600px) and (min-width: 441px){
                     .element{
                         margin: 20px 0;
                         width: 100%;
@@ -107,7 +109,7 @@ class CritterElementSelector extends PolymerElement {
                     }
                 }
               
-                @media only screen and (max-width: 984px) and (min-width: 601px){
+                @media only screen and (max-width: 1000px) and (min-width: 601px){
                     #element-container {
                         background-color: aliceblue;
                         width: 640px;
@@ -141,7 +143,8 @@ class CritterElementSelector extends PolymerElement {
                     }
                 }
               
-                @media only screen and (min-width: 985px) {
+                /* The min-width value corresponds to the one in the critter-level-creator. */
+                @media only screen and (min-width: 1001px) {
                     #element-container {
                         background-color: aliceblue;
                         width: 300px;
