@@ -59,5 +59,8 @@
   "shape": "Shape from the Nether World",
   "nether_world": "The Nether World",
   "smurf": "Smurf",
-  "smurf_home": "Smurftown"
+  "smurf_home": "Smurftown",
+  "tutorials": "Tutorial",
+  "beginner": "Beginner",
+  "advanced": "Advanced"
 }

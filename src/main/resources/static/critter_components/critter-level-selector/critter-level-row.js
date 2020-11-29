@@ -23,21 +23,23 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 
 import '/lib/@polymer/iron-ajax/iron-ajax.js';
-import './critter-level-preview.js'
+import './critter-level-preview.js';
+import '../critter-translator/critter-translator-escaped.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 /*
 # critter-insert
 
-A Simple Button
+Inserts a level row containing a preview of all levels belonging to that row.
 
 ## Example
 ```html
-<critter-level-selector></critter-level-selector>
+<critter-level-row></critter-level-row>
 ```
 
 @demo
 */
 
-class CritterLevelRow extends PolymerElement {
+class CritterLevelRow extends I18n(PolymerElement) {
 
     static get template() {
         return html`
@@ -69,10 +71,12 @@ class CritterLevelRow extends PolymerElement {
                 <div class="col-sm-4">
                     <span id="heading">
                         <hr align="right">
-                        <h3><b>[[name]]</b></h3>
+                        <!-- The name of the level row -->
+                        <h3><b id="category">[[name]]</b></h3>
                     </span>
                 </div>
                 <div class="col-sm-8">
+                    <!-- Contains the preview images of levels belonging to this row with achieved stars -->
                     <div id="level_row"></div>
                 </div>
             </div>
@@ -105,6 +109,10 @@ class CritterLevelRow extends PolymerElement {
         ]
     }
 
+    /**
+     * Adds a level preview with images of the levels and achieved stars for each level row and a translator to display
+     * the name of each row in the current language.
+     */
     addElements() {
         this.$.level_row.innerHtml = "";
         this.levels.forEach((level) => {
@@ -113,6 +121,10 @@ class CritterLevelRow extends PolymerElement {
             preview.stars = level.stars;
             this.$.level_row.append(preview);
         })
+        this.$.category.innerHTML = "";
+        let translation = document.createElement("critter-translator-escaped");
+        translation.setAttribute("key", this.name.toLowerCase());
+        this.$.category.append(translation);
     }
 }
 

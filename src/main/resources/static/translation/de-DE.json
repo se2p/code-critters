@@ -60,5 +60,8 @@
   "shape": "Gestalt der Unterwelt",
   "nether_world": "Die Unterwelt",
   "smurf": "Schlumpf",
-  "smurf_home": "Schlumpfhausen"
+  "smurf_home": "Schlumpfhausen",
+  "tutorials": "Tutorial",
+  "beginner": "Anfänger",
+  "advanced": "Fortgeschritten"
 }
