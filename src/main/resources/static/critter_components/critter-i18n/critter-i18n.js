@@ -55,7 +55,7 @@ class CritterI18n extends PolymerElement {
     
     
         <div id="flag_container">
-             <img src="/translation/flags/de-A.jpg" on-click="_selectLanguage" lang="de-DE">
+             <img src="/translation/flags/de-DE.png" on-click="_selectLanguage" lang="de-DE">
              <img src="/translation/flags/en-GB.png" on-click="_selectLanguage" lang="en-US">
         </div>
         `;

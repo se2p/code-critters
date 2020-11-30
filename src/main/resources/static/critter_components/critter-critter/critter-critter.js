@@ -22,6 +22,7 @@
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 /*
 # critter-critter
@@ -36,7 +37,7 @@ Displays a critter.
 @demo
 */
 
-class CritterCritter extends Level(PolymerElement) {
+class CritterCritter extends I18n(Level(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -462,13 +463,15 @@ class CritterCritter extends Level(PolymerElement) {
                  {{_speedyString}} {{_playAnimation}}">
             </div>
             <div id="tooltip">
-                <span><h3>Attributes:</h3></span>
-                <span>Color: [[color]]</span><br>
-                <span>Size: [[size]]</span><br>
-                <span>canWalkOnWater: [[canWalkOnWater]]</span><br>
-                <span>canWalkOnSnow: [[canWalkOnSnow]]</span><br>
-                <span>direction: [[direction]]</span><br>
-                <span><h3>Variables:</h3></span>
+                <span><h3>[[__('attributes')]]</h3></span>
+                <span>[[__('color')]]: [[__(color)]]</span><br>
+                <span>[[__('size')]]: [[size]]</span><br>
+                <!--
+                <span>[[__('walk_on_water')]]: [[__('false')]]</span><br>
+                <span>[[__('walk_on_snow')]]: [[__(canWalkOnSnow)]]</span><br>
+                -->
+                <span>[[__('direction')]]: [[__(direction)]]</span><br>
+                <span><h3>[[__('variables')]]</h3></span>
             </div>
         </div>
         `;
