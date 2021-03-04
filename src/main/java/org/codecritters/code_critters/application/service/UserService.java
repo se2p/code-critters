@@ -122,7 +122,7 @@ public class UserService {
     }
 
     public void forgotPassword(UserDTO dto, String url) {
-        User user = userRepositiory.findByUsernameAndEmail(dto.getUsername(), dto.getEmail());
+        User user = userRepositiory.findByUsernameOrEmail(dto.getUsername(), dto.getEmail());
         if (user != null) {
             user.setSecret(generateSecret());
             user.setResetPassword(true);
@@ -132,7 +132,7 @@ public class UserService {
 
             String link = url + "/resetPassword?secret=" + user.getSecret();
 
-            mailTemplateData.put("reciver", user.getEmail());
+            mailTemplateData.put("receiver", user.getEmail());
             mailTemplateData.put("subject", "reset_pw");
             mailTemplateData.put("user", user.getUsername());
             mailTemplateData.put("secret", link);

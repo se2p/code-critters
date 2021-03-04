@@ -85,5 +85,7 @@
   "walk_on_water": "Kann auf Wasser gehen",
   "walk_on_snow": "Kann auf Schnee gehen",
   "true": "wahr",
-  "false": "falsch"
+  "false": "falsch",
+  "forgot_password": "Passwort vergessen",
+  "reset_password": "Überprüfe deine Mails, um dein Passwort zurückzusetzen."
 }

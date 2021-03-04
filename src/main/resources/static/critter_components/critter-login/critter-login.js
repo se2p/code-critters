@@ -88,6 +88,11 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
                 .controls critter-button{
                     margin: auto;
                 }
+                
+                #forgot_password {
+                    text-decoration: none;
+                    color: #ffa600;
+                }
             </style>
             
             <critter-data-store></critter-data-store>
@@ -102,13 +107,14 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             </div>
             
             <critter-dialog id="login_dialog">
-            <critter-form id="login_form" method="POST" target="[[loginTarget]]" >
-                <critter-input label="username" name="username"></critter-input><br>
-                <critter-input label="password" name="password" type="password"></critter-input><br>
-                <div class="controls" slot="controls">
-                    <critter-button submit>[[__("login")]]</critter-button>
-                </div>
-            </critter-form>
+                <critter-form id="login_form" method="POST" target="[[loginTarget]]" >
+                    <critter-input label="username" name="username"></critter-input><br>
+                    <critter-input label="password" name="password" type="password"></critter-input><br>
+                    <a href="forgotPassword.html" id="forgot_password">[[__("forgot_password")]]</a><br>
+                    <div class="controls" slot="controls">
+                        <critter-button submit>[[__("login")]]</critter-button>
+                    </div>
+                </critter-form>
             </critter-dialog>
             
             <critter-dialog id="register_dialog">

@@ -84,5 +84,7 @@
   "walk_on_water": "Can walk on water",
   "walk_on_snow": "Can walk on snow",
   "true": "true",
-  "false": "false"
+  "false": "false",
+  "forgot_password": "Forgot password",
+  "reset_password": "Please check your email to reset your password."
 }

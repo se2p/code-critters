@@ -13,7 +13,7 @@ services:
       MYSQL_DATABASE: "codecritters"
   mailhog:
     container_name: "critter-mailhog"
-    image: mailhog/mailhog:v1.0.0
+    image: mailhog/mailhog:latest
     ports:
       - "8025:8025"
       - "1025:1025"
