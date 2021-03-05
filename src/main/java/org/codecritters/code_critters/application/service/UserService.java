@@ -240,14 +240,18 @@ public class UserService {
             if (dto.getPassword().length() > 50) {
                 throw new IllegalActionException("The input has to be less than 50 characters!", "long_data");
             }
-            if (dto.getPassword().trim().equals("")) {
+            if (dto.getPassword().trim().equals("") || dto.getOldPassword() == null || dto.getOldPassword().trim().equals("")) {
                 throw new IllegalActionException("These fields cannot be empty", "fill_fields");
             }
         }
 
         if(dto.getOldPassword() != null && !dto.getOldPassword().trim().equals("")){
             if(passwordService.verifyPassword(dto.getOldPassword(), user.getPassword(), user.getSalt())) {
-                user = passwordService.hashPassword(dto.getOldPassword(), user);
+                if (dto.getPassword() != null) {
+                    user = passwordService.hashPassword(dto.getPassword(), user);
+                } else {
+                    user = passwordService.hashPassword(dto.getOldPassword(), user);
+                }
                 userRepositiory.save(user);
             } else {
                 throw new NotFoundException("Password incorrect", "invalid_password");

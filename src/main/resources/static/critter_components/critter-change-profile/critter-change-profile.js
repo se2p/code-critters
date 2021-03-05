@@ -190,7 +190,22 @@ class CritterChangeProfile extends I18n(PolymerElement) {
     }
 
     _onError(e) {
-        this.showErrorToast(e.msg_key);
+        if (e.error === "These fields cannot be empty") {
+            this.showErrorToast("fill_fields");
+        } else if (e.error === "The input has to be less than 50 characters!") {
+            this.showErrorToast("long_data");
+        } else if (e.error === "Password incorrect") {
+            this.showErrorToast("invalid_password");
+        } else if (e.error === "User with this username already exists!") {
+            this.showErrorToast("username_exists");
+        } else if (e.error === "User with this email already exists!") {
+            this.showErrorToast("email_exists");
+        } else if (e.error === "Bad Request") {
+            this.showErrorToast("bad_request")
+        } else {
+            console.log(e.error);
+            this.showErrorToast(e.msg_key);
+        }
     }
 
 }

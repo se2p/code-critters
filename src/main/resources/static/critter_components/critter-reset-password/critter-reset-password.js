@@ -94,7 +94,7 @@ class CritterResetPassword extends I18n(PolymerElement) {
     }
 
     _onError() {
-        console.log("Error");
+        this.showErrorToast("bad_request")
         window.location.replace("/?resetSuccess=false");
     }
 

@@ -87,5 +87,6 @@
   "true": "wahr",
   "false": "falsch",
   "forgot_password": "Passwort vergessen",
-  "reset_password": "Überprüfe deine Mails, um dein Passwort zurückzusetzen."
+  "reset_password": "Überprüfe deine Mails, um dein Passwort zurückzusetzen.",
+  "bad_request": "Daten nicht übertragen. Bitte fülle alle benötigten Felder aus."
 }

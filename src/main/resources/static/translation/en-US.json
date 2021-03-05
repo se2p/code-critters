@@ -86,5 +86,6 @@
   "true": "true",
   "false": "false",
   "forgot_password": "Forgot password",
-  "reset_password": "Please check your email to reset your password."
+  "reset_password": "Please check your email to reset your password.",
+  "bad_request": "Error submitting data. Please fill out all required fields."
 }
