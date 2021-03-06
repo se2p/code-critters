@@ -429,6 +429,18 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
                 top: 35px;
                 display: var(--tooltip-display);
             }
+            
+            #variables {
+                display: var(--variables-display);
+            }
+            
+            #water, #waterBreak {
+                display: var(--water-display);
+            }
+            
+            #snow, #snowBreak {
+                display: var(--snow-display);
+            }
 
             .critter-north{
                 animation-name: walk_north;
@@ -466,12 +478,10 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
                 <span><h3>[[__('attributes')]]</h3></span>
                 <span>[[__('color')]]: [[__(color)]]</span><br>
                 <span>[[__('size')]]: [[size]]</span><br>
-                <!--
-                <span>[[__('walk_on_water')]]: [[__('false')]]</span><br>
-                <span>[[__('walk_on_snow')]]: [[__(canWalkOnSnow)]]</span><br>
-                -->
                 <span>[[__('direction')]]: [[__(direction)]]</span><br>
-                <span><h3>[[__('variables')]]</h3></span>
+                <span id="water">[[__('walk_on_water')]]: [[__('false')]]</span><br id="waterBreak">
+                <span id="snow">[[__('walk_on_snow')]]: [[__(canWalkOnSnow)]]</span><br id="snowBreak">
+                <span id="variables"><h3>[[__('variables')]]</h3></span>
             </div>
         </div>
         `;
@@ -599,7 +609,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
             _paused: {
                 type: Boolean,
                 value: false
-            }
+            },
         };
     }
 
@@ -781,6 +791,28 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         this.updateStyles({
             '--tooltip-display': 'block'
         });
+
+        if (Object.entries(this.variables).length === 0) {
+            this.updateStyles({
+                '--variables-display': 'none'
+            });
+        } else {
+            this.updateStyles({
+                '--variables-display': 'block'
+            });
+        }
+
+        if (!this._globalData.containsWater) {
+            this.updateStyles({
+                '--water-display': 'none'
+            });
+        }
+
+        if (!this._globalData.containsSnow) {
+            this.updateStyles({
+                '--snow-display': 'none'
+            })
+        }
     }
 
     _onHoverOut() {

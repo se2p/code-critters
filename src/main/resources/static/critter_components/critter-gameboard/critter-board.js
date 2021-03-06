@@ -196,6 +196,16 @@ class CritterGameboard extends Level(PolymerElement) {
             _audioList: {
                 type: Array,
                 value: []
+            },
+
+            containsWater: {
+                type: Boolean,
+                value: false
+            },
+
+            containsSnow: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -374,6 +384,7 @@ class CritterGameboard extends Level(PolymerElement) {
                 break;
             case "water":
                 className.push("water");
+                this._globalData.containsWater = true;
 
                 let tempName2 = this._computeClassNames(i, j, "water");
                 if (tempName2.length !== 0) {
@@ -384,6 +395,7 @@ class CritterGameboard extends Level(PolymerElement) {
                 break;
             case "ice":
                 className.push("ice");
+                this._globalData.containsSnow = true;
 
                 let tempName3 = this._computeClassNames(i, j, "ice");
                 if (tempName3.length !== 0) {
