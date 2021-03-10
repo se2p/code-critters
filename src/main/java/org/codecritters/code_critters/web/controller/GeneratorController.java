@@ -23,6 +23,7 @@ package org.codecritters.code_critters.web.controller;
  */
 
 import org.codecritters.code_critters.application.exception.AlreadyExistsException;
+import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.application.service.LevelService;
 import org.codecritters.code_critters.application.service.MutantsService;
 import org.codecritters.code_critters.web.dto.LevelDTO;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -81,7 +83,7 @@ public class GeneratorController {
     }
 
     /**
-     * Creates a new level
+     * Saves the created image of the new level.
      */
     @PostMapping(path = "/level/image")
     @Secured("ROLE_ADMIN")
@@ -90,7 +92,7 @@ public class GeneratorController {
     }
 
     /**
-     * Creates a new image
+     * Creates a new level.
      */
     @PostMapping(path = "/level/create")
     @Secured("ROLE_ADMIN")
@@ -99,6 +101,23 @@ public class GeneratorController {
             levelService.createLevel(dto);
         } catch (AlreadyExistsException e) {
             response.setStatus(460);
+        }
+    }
+
+    /**
+     * Deletes the level with the given name along with its mutants and scores.
+     *
+     * @param name The name of the level to be deleted.
+     * @param response The servlet response.
+     */
+    @Transactional
+    @PostMapping(path = "/level/delete")
+    @Secured("ROLE_ADMIN")
+    public void deleteLevel(@RequestBody String name, HttpServletResponse response) {
+        try {
+            levelService.deleteLevel(name);
+        } catch (NotFoundException e) {
+            response.setStatus(404);
         }
     }
 

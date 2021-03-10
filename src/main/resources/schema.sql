@@ -24,8 +24,9 @@ CREATE TABLE IF NOT EXISTS `level` (
                          `xml` TEXT NULL DEFAULT NULL,
                          `row_id` VARCHAR(255) NULL DEFAULT NULL,
                          PRIMARY KEY (`id`),
+                         UNIQUE INDEX `levelName` (`name`),
                          INDEX `FKiyx8r274befk3mij0vy9lcnth` (`row_id`),
-                         CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`)
+                         CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`) ON DELETE CASCADE
 )
     COLLATE='latin1_swedish_ci'
     ENGINE=InnoDB
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `mutant` (
                           `init` TEXT NULL DEFAULT NULL,
                           PRIMARY KEY (`id`),
                           INDEX `FKo7siv1iluspgexnnkbod3aty9` (`level_id`),
-                          CONSTRAINT `FKo7siv1iluspgexnnkbod3aty9` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`)
+                          CONSTRAINT `FKo7siv1iluspgexnnkbod3aty9` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE CASCADE
 )
     COLLATE='latin1_swedish_ci'
     ENGINE=InnoDB
@@ -77,8 +78,8 @@ CREATE TABLE IF NOT EXISTS `result` (
                           PRIMARY KEY (`id`),
                           INDEX `FKnl4waxlekjthh4h7p9igv4owx` (`level_id`),
                           INDEX `Schlüssel 3` (`user_id`),
-                          CONSTRAINT `FK_result_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
-                          CONSTRAINT `FKnl4waxlekjthh4h7p9igv4owx` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`)
+                          CONSTRAINT `FK_result_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+                          CONSTRAINT `FKnl4waxlekjthh4h7p9igv4owx` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE CASCADE
 )
     COLLATE='latin1_swedish_ci'
     ENGINE=InnoDB

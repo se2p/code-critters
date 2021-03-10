@@ -64,7 +64,7 @@ public class ResultRepositoryTest {
     private final Result result4 = new Result(950, "cookie4", level1, 3, null);
 
     @Before
-    public void saveResults() throws ParseException, InterruptedException {
+    public void saveResults() throws InterruptedException {
         HashMap<String, Integer> spawn = new HashMap<>();
         spawn.put("x", 1);
         spawn.put("y", 8);
@@ -144,6 +144,16 @@ public class ResultRepositoryTest {
                 () -> assertEquals(2, levelResults.size()),
                 () -> assertEquals(result3.getScore(), score1),
                 () -> assertNull(levelResults.get(1).getScore())
+        );
+    }
+
+    @Test
+    public void deleteAllByLevel() {
+        repository.deleteAllByLevel(level1);
+        assertAll("LevelRepository method should have deleted two results 1 and 3 but keep 2",
+                () -> assertNull(repository.getResultByLevelAndCookie(level1, "cookie3")),
+                () -> assertNull(repository.getResultByLevelAndCookie(level1, "cookie1")),
+                () -> assertEquals(result2.getScore(), repository.getResultByLevelAndCookie(level2, "cookie3").getScore())
         );
     }
 }

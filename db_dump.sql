@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `level` (
   `id` varchar(255) NOT NULL,
   `cut` text NOT NULL,
   `level` longtext NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL UNIQUE,
   `number_of_critters` int(11) DEFAULT 10,
   `number_of_humans` int(11) DEFAULT 5,
   `spawn` varchar(255) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `level` (
   `row_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKiyx8r274befk3mij0vy9lcnth` (`row_id`),
-  CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`)
+  CONSTRAINT `FKiyx8r274befk3mij0vy9lcnth` FOREIGN KEY (`row_id`) REFERENCES `critter_row` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle codecritters.level: ~10 rows (ungefähr)
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `mutant` (
   `init` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKo7siv1iluspgexnnkbod3aty9` (`level_id`),
-  CONSTRAINT `FKo7siv1iluspgexnnkbod3aty9` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`)
+  CONSTRAINT `FKo7siv1iluspgexnnkbod3aty9` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle codecritters.mutant: ~93 rows (ungefähr)
@@ -175,7 +175,8 @@ CREATE TABLE IF NOT EXISTS `result` (
   `user_id` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKnl4waxlekjthh4h7p9igv4owx` (`level_id`),
-  CONSTRAINT `FKnl4waxlekjthh4h7p9igv4owx` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`)
+  CONSTRAINT `FK_result_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FKnl4waxlekjthh4h7p9igv4owx` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle codecritters.result: ~2 rows (ungefähr)

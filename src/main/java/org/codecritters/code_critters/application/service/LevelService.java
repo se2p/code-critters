@@ -29,6 +29,7 @@ import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
 import org.codecritters.code_critters.persistence.repository.MutantRepository;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.RowRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.LevelDTO;
@@ -50,20 +51,37 @@ public class LevelService {
     private final MutantRepository mutantRepository;
     private final RowRepository rowRepository;
     private final UserRepositiory userRepositiory;
+    private final ResultRepository resultRepository;
 
     @Autowired
-    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository, UserRepositiory userRepositiory) {
+    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository,
+                        UserRepositiory userRepositiory, ResultRepository resultRepository) {
         this.levelRepository = levelRepository;
         this.mutantRepository = mutantRepository;
         this.rowRepository = rowRepository;
         this.userRepositiory = userRepositiory;
+        this.resultRepository = resultRepository;
     }
 
     public void createLevel(LevelDTO dto) {
+        if (levelRepository.findByName(dto.getName()) != null) {
+            throw new AlreadyExistsException("Tried to insert a level name that already exists");
+        }
+
         try {
             levelRepository.save(createLevelDAO(dto));
         } catch (ConstraintViolationException e) {
-            throw new AlreadyExistsException("Tried to insert a level name that already exists", e);
+            throw new AlreadyExistsException("Tried to insert a level that already exists", e);
+        }
+    }
+
+    public void deleteLevel(String name) {
+        Level level = levelRepository.findByName(name);
+
+        if (level == null) {
+            throw new NotFoundException("There's no level with name: " + name);
+        } else {
+            levelRepository.deleteById(level.getId());
         }
     }
 
@@ -89,6 +107,14 @@ public class LevelService {
             throw new NotFoundException("There's no level with name: " + name);
         }
         return cut;
+    }
+
+    public CritterRow getRow(String id) {
+        CritterRow row = rowRepository.findCritterRowById(id);
+        if (row == null) {
+            throw new NotFoundException("There's no row with id: " + id);
+        }
+        return row;
     }
 
     public boolean existsLevel(String name) {
@@ -140,6 +166,9 @@ public class LevelService {
         }
         if (dto.getSpawn() != null) {
             level.setSpawn(dto.getSpawn());
+        }
+        if (dto.getRow() != null) {
+            level.setRow(getRow(dto.getRow()));
         }
         level.setNumberOfCritters(dto.getNumberOfCritters());
         level.setNumberOfHumans(dto.getNumberOfHumans());

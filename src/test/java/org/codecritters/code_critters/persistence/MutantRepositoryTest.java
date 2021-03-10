@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(
@@ -71,5 +72,11 @@ public class MutantRepositoryTest {
                 () -> assertEquals(1, mutants.size()),
                 () -> assertEquals("[mutantCode, init]", Arrays.toString(mutants.get(0)))
         );
+    }
+
+    @Test
+    public void deleteAllByLevel() {
+        repository.deleteAllByLevel(level);
+        assertEquals(0, repository.getCodeByLevel(level).size());
     }
 }

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -109,5 +110,11 @@ public class LevelRepositoryTest {
                 () -> assertTrue(levelNames.contains(level1.getName())),
                 () -> assertTrue(levelNames.contains(level2.getName()))
         );
+    }
+
+    @Test
+    public void deleteById() {
+        repository.deleteById(level1.getId());
+        assertNull(repository.findByName(level1.getName()));
     }
 }

@@ -34,4 +34,6 @@ public interface RowRepository extends CrudRepository<CritterRow, String> {
 
     @Query("SELECT r FROM CritterRow as r ORDER BY r.position ASC")
     Collection<CritterRow> getRows();
+
+    CritterRow findCritterRowById(String id);
 }

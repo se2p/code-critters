@@ -6,6 +6,7 @@ import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
 import org.codecritters.code_critters.persistence.repository.MutantRepository;
+import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.RowRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.LevelDTO;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LevelServiceTest {
@@ -46,6 +48,9 @@ public class LevelServiceTest {
 
     @Mock
     private UserRepositiory userRepository;
+
+    @Mock
+    private ResultRepository resultRepository;
 
     private LevelDTO levelDTO;
     private final String level2 = "level_2";
@@ -67,18 +72,27 @@ public class LevelServiceTest {
 
     @Test
     public void createLevelTest() {
+        when(rowRepository.findCritterRowById(any())).thenReturn(new CritterRow());
         levelService.createLevel(levelDTO);
         verify(levelRepository, times(1)).save(any());
     }
 
     @Test
     public void createLevelExceptionTest() {
+        when(rowRepository.findCritterRowById(any())).thenReturn(new CritterRow());
         given(levelRepository.save(any())).willThrow(ConstraintViolationException.class);
         Exception exception = assertThrows(AlreadyExistsException.class,
                 () -> levelService.createLevel(levelDTO)
         );
-        assertEquals("Should throw an exception", "Tried to insert a level name that already exists", exception.getMessage());
+        assertEquals("Should throw an exception", "Tried to insert a level that already exists",
+                exception.getMessage());
         verify(levelRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void createLevelNameAlreadyExistsTest() {
+        when(levelRepository.findByName(levelDTO.getName())).thenReturn(new Level());
+        assertThrows(AlreadyExistsException.class, () -> levelService.createLevel(levelDTO));
     }
 
     @Test
@@ -237,5 +251,23 @@ public class LevelServiceTest {
                 () -> assertEquals("Beginner", rowDTOs.get(1).getName())
         );
         verify(rowRepository, times(1)).getRows();
+    }
+
+    @Test
+    public void deleteLevelTest() {
+        Level level = new Level(new CritterRow(), levelDTO.getName(), levelDTO.getNumberOfCritters(),
+                levelDTO.getNumberOfHumans(), levelDTO.getCUT(), levelDTO.getTest(), levelDTO.getXml(),
+                levelDTO.getInit(), levelDTO.getLevel());
+        level.setId("id");
+        when(levelRepository.findByName(levelDTO.getName())).thenReturn(level);
+        levelService.deleteLevel(levelDTO.getName());
+        verify(mutantRepository).deleteAllByLevel(level);
+        verify(resultRepository).deleteAllByLevel(level);
+        verify(levelRepository).deleteById(level.getId());
+    }
+
+    @Test
+    public void deleteLevelNotFoundExceptionTest() {
+        assertThrows(NotFoundException.class, () -> levelService.deleteLevel(levelDTO.getName()));
     }
 }

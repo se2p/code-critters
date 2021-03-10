@@ -45,4 +45,16 @@ public class RowRepositoryTest {
                 () -> assertTrue(collection.contains(row2))
         );
     }
+
+    @Test
+    public void findCritterRowById() {
+        repository.save(row1);
+        repository.save(row2);
+        CritterRow row = repository.findCritterRowById(row1.getId());
+        assertAll("Check, if all attributes are the same",
+                () -> assertEquals(row.getId(), row1.getId()),
+                () -> assertEquals(row.getName(), row1.getName()),
+                () -> assertEquals(row.getPosition(), row1.getPosition())
+        );
+    }
 }
