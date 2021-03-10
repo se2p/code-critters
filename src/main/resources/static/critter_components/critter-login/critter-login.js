@@ -110,7 +110,7 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
                 <critter-form id="login_form" method="POST" target="[[loginTarget]]" >
                     <critter-input label="username" name="username"></critter-input><br>
                     <critter-input label="password" name="password" type="password"></critter-input><br>
-                    <a href="forgotPassword.html" id="forgot_password">[[__("forgot_password")]]</a><br>
+                    <a href="forgotPassword" id="forgot_password">[[__("forgot_password")]]</a><br>
                     <div class="controls" slot="controls">
                         <critter-button submit>[[__("login")]]</critter-button>
                     </div>

@@ -94,13 +94,19 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                 }
 
                 #save_button,
+                #level_button,
                 critter-selector {
                     margin-left: 20px;
                     float: left;
                 }
                 
-                #save_button {
+                #save_button,
+                #level_button {
                     margin-top: 20px;
+                }
+                
+                #level_button {
+                    text-decoration: none;
                 }
 
                 #gameboard,
@@ -138,7 +144,7 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         <critter-loading id="loading"></critter-loading>
         <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
         <div class="tab-0 tab">
-            <critter-gameboard id="gameboard"  selected-element="{{selectedElement}}" show-grid="false"></critter-gameboard>
+            <critter-gameboard id="gameboard" selected-element="{{selectedElement}}" show-grid="false"></critter-gameboard>
             <critter-element-selector id="element_selector"  selected-element="{{selectedElement}}" height$="{{ _boardHeight}}">
             </critter-element-selector>
         </div>
@@ -158,8 +164,11 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         <div class="table">
             <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
         </div>
-        <critter-selector values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
-        <critter-button id="save_button">Save</critter-button>
+        <div>
+            <critter-selector values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
+            <critter-button id="save_button">Save</critter-button>
+            <a href="manage-levels" id="level_button"><critter-button>Show Levels</critter-button></a>
+        </div>
         `;
     }
 
@@ -402,8 +411,8 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
             level: this._globalData.level,
             tower: this._globalData.tower,
             spawn: this._globalData.spawn,
-            numberOfCritters: this._globalData.numberOfCritters,
-            numberOfHumans: this._globalData.numberOfHumans,
+            numberOfCritters: 15,
+            numberOfHumans: 5,
             cut: cut,
             init: init,
             test: this.$.blockly_test.getXML(),
@@ -412,12 +421,17 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         };
 
         req.addEventListener('response', async () => {
-            this.$.mutant_creator.saveMutants(this.levelName);
+            try {
+                this.$.mutant_creator.saveMutants(this.levelName);
+            } catch (Error) {
+                this.$.loading.hide();
+                return;
+            }
             await this._saveImg();
             this.$.loading.hide();
         });
 
-        req.addEventListener('static.error', e => {
+        req.addEventListener('error', e => {
             this.showErrorToast("Could not save level");
             this.$.loading.hide();
         });

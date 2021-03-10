@@ -177,10 +177,10 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
             toaster.show(this._toasterTime);
         });
 
-        req.addEventListener('static.error', e => {
+        req.addEventListener('error', e => {
             let toaster = document.createElement("critter-toaster");
-            toaster.type = "static.error";
-            toaster.msg = "Could not save mtants";
+            toaster.type = "error";
+            toaster.msg = "Could not save mutants";
             this.shadowRoot.append(toaster);
             toaster.show(this._toasterTime);
         });
@@ -199,7 +199,12 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
                 break;
             }
 
-            let code = this.shadowRoot.querySelector('.init.tab-' + i).getJavaScript();
+            let code;
+            if (this.shadowRoot.querySelector('.tab.code.tab-' + i) === null) {
+                this.showErrorToast("Mutant has no init");
+                throw new Error("Mutant has no init!");
+            }
+            code = this.shadowRoot.querySelector('.tab.code.tab-' + i).getJavaScript();
 
             let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
             let matchesInit = code.match(regExpInit) || [];
@@ -213,7 +218,7 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
             }
 
             if(matchesInit.length > 1){
-                this.showErrorToast("Too many Initializations in mutant");
+                this.showErrorToast("Too many initializations in mutant");
                 return;
             }
 

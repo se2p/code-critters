@@ -87,5 +87,11 @@
   "false": "false",
   "forgot_password": "Forgot password",
   "reset_password": "Please check your email to reset your password.",
-  "bad_request": "Error submitting data. Please fill out all required fields."
+  "bad_request": "Error submitting data. Please fill out all required fields.",
+  "level_name": "Name",
+  "category": "Category",
+  "delete": "Delete",
+  "edit": "Edit",
+  "delete_level": "Are you sure you want to delete the following level?",
+  "warning": "This change cannot be reverted."
 }

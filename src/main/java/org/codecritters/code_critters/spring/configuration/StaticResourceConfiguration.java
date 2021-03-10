@@ -35,6 +35,8 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
         registry.addViewController("/game").setViewName("forward:/game.html");
         registry.addViewController("/profile").setViewName("forward:/profile.html");
         registry.addViewController("/resetPassword").setViewName("forward:/resetPassword.html");
+        registry.addViewController("/forgotPassword").setViewName("forward:/forgotPassword.html");
+        registry.addViewController("/manage-levels").setViewName("forward:/manageLevels.html");
         registry.addViewController("/xml-generator").setViewName("forward:/generators/xml-generator/xml-generator.html");
         registry.addViewController("/level-generator").setViewName("forward:/generators/level-generator/level-generator.html");
         registry.addViewController("/customBlocks.js").setViewName("forward:/critter_components/critter-blockly/iFrame/customBlocks.js");

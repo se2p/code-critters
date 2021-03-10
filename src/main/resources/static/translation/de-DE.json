@@ -88,5 +88,11 @@
   "false": "falsch",
   "forgot_password": "Passwort vergessen",
   "reset_password": "Überprüfe deine Mails, um dein Passwort zurückzusetzen.",
-  "bad_request": "Daten nicht übertragen. Bitte fülle alle benötigten Felder aus."
+  "bad_request": "Daten nicht übertragen. Bitte fülle alle benötigten Felder aus.",
+  "level_name": "Name",
+  "category": "Kategorie",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "delete_level": "Bist du sicher, dass du das folgende Level löschen möchtest?",
+  "warning": "Der Vorgang kann nicht rückgängig gemacht werden."
 }

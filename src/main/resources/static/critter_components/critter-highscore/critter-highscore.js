@@ -52,20 +52,20 @@ class CritterHighscore extends I18n(PolymerElement) {
             }
             
             .table{
-            display: table;
-            width: 100%;
-            border-collapse: collapse;
-            margin: auto;
+                display: table;
+                width: 100%;
+                border-collapse: collapse;
+                margin: auto;
             }
             
             .row{
-            display: table-row;
-            font-size: 1.3em;
+                display: table-row;
+                font-size: 1.3em;
             }
             
             .cell {
-            display: table-cell;
-            text-align: center;
+                display: table-cell;
+                text-align: center;
             }
             
             .heading_row{
@@ -85,30 +85,30 @@ class CritterHighscore extends I18n(PolymerElement) {
             <critter-data-store></critter-data-store>
             
             <div class="table">
-            <div class="row heading_row">                        
-                        <div class="cell heading_cell">{{__("position")}}</div>
-                        <div class="cell heading_cell">{{__("username")}}</div>
-                        <div class="cell heading_cell">{{__("played_levels")}}</div>
-                        <div class="cell heading_cell">{{__("score")}}</div>
-                    </div>
-                  <template is="dom-repeat" items="{{highscore}}">
+                <div class="row heading_row">
+                    <div class="cell heading_cell">{{__("position")}}</div>
+                    <div class="cell heading_cell">{{__("username")}}</div>
+                    <div class="cell heading_cell">{{__("played_levels")}}</div>
+                    <div class="cell heading_cell">{{__("score")}}</div>
+                </div>
+                <template is="dom-repeat" items="{{highscore}}">
                     <div class$="[[_getRowClass(item, myScore)]]">
                         <div class="cell">{{item.position}}</div>
                         <div class="cell">{{item.user}}</div>
                         <div class="cell">{{item.levels}}</div>
                         <div class="cell">{{item.score}}</div>
                     </div>
-                  </template>
+                </template>
                 
-                  <template is="dom-if" if="{{!_computeInHighscore(myScore)}}">                      
-                        <div class="space row"></div>
-                         <div class="row myResult">
-                            <div class="cell">{{myScore.position}}</div>
-                            <div class="cell">{{myScore.user}}</div>
-                            <div class="cell">{{myScore.levels}}</div>
-                            <div class="cell">{{myScore.score}}</div>
-                         </div>
-                    </template>
+                <template is="dom-if" if="{{!_computeInHighscore(myScore)}}">
+                    <div class="space row"></div>
+                    <div class="row myResult">
+                        <div class="cell">{{myScore.position}}</div>
+                        <div class="cell">{{myScore.user}}</div>
+                        <div class="cell">{{myScore.levels}}</div>
+                        <div class="cell">{{myScore.score}}</div>
+                    </div>
+                </template>
             </div>
             
           
@@ -157,6 +157,7 @@ class CritterHighscore extends I18n(PolymerElement) {
             let data = e.detail.__data.response;
             this.highscore = data;
         });
+        console.log(this.highscore);
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
@@ -182,6 +183,8 @@ class CritterHighscore extends I18n(PolymerElement) {
         } else {
             this.myScore = undefined;
         }
+
+        console.log(this.myScore);
     }
 
     _computeInHighscore(myScore) {

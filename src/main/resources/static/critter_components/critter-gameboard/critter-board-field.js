@@ -165,7 +165,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     background-position: -20px -220px;
                 }
 
-                .ice-horizontal::before,
+                .ice-horizontal::before,e5c16ba6-e1d9-4133-87d0-60207c7fd4ba
                 .ice-vertical::before{
                     background-position: -20px -200px;
                 }
@@ -1663,61 +1663,39 @@ class CritterGameboardField extends Generator(PolymerElement) {
         let canvas = this.$.cnavasBuffer;
 
         if(this.class.includes("tower")){
-            if(window.matchMedia("(max-width: 600px)").matches) {
-                canvas.height = 45;
-                this.$.field.style.marginTop = "25px";
-            } else {
-                canvas.height = 90;
-                this.$.field.style.marginTop = "50px";
-            }
+            canvas.height = 90;
+            this.$.field.style.marginTop = "50px";
             let context = canvas.getContext('2d');
             let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage( renderResult.image, -8, -8);
             this.$.field.style.marginTop = null;
-            if(window.matchMedia("(max-width: 600px)").matches) {
-                let img = new Image(20, 45);
-            } else {
-                let img = new Image(40, 90);
-            }
+            let img = new Image(40, 90);
             img.src = canvas.toDataURL();
             return {x: x, y: y, img: img};
         }
 
         if(this.class.includes("spawn")){
-            if(window.matchMedia("(max-width: 600px)").matches) {
-                canvas.height = 25;
-                canvas.width = 25;
-                this.$.field.style.marginTop = "5px";
-            } else {
-                canvas.height = 50;
-                canvas.width = 50;
-                this.$.field.style.marginTop = "10px";
-            }
+            canvas.height = 50;
+            canvas.width = 50;
+            this.$.field.style.marginTop = "10px";
             let context = canvas.getContext('2d');
             let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage( renderResult.image, -8, -8);
             this.$.field.style.marginTop = null;
-            if(window.matchMedia("(max-width: 600px)").matches) {
-                let img = new Image(25, 25);
-            } else {
-                let img = new Image(50, 50);
-            }
+            let img = new Image(50, 50);
             img.src = canvas.toDataURL();
             return {x: x, y: y, img: img};
         }
 
         let context = canvas.getContext('2d');
-        let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
-        context.drawImage( renderResult.image, -8, -8);
-        if(window.matchMedia("(max-width: 600px)").matches) {
-            let img = new Image(20, 20);
-        } else {
-            let img = new Image(40, 40);
-        }
+        let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.getElementById('field').innerHTML, canvas);
+        context.drawImage(renderResult.image, -8, -8);
+        let img = new Image(40, 40);
         img.src = canvas.toDataURL();
         this.imgBuffer.set(this.class, img);
+
         return {x: x, y: y, img: img};
     }
 

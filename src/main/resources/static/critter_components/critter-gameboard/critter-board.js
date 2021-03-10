@@ -327,7 +327,6 @@ class CritterGameboard extends Level(PolymerElement) {
                     this._globalData.spawn = element;
                     break;
                 default:
-                    console.error("Could not handle selectedElement " + this.selectedElement);
                     break;
             }
         }
@@ -1185,43 +1184,25 @@ class CritterGameboard extends Level(PolymerElement) {
 
     async computeImg() {
         let canvas = this.$.cnavasBuffer;
-        if(window.matchMedia("(max-width: 600px)").matches) {
-            canvas.width = this._globalData.width * 5;
-            canvas.height = this._globalData.height * 5;
-        } else {
-            canvas.width = this._globalData.width * 10;
-            canvas.height = this._globalData.height * 10;
-        }
+        canvas.width = this._globalData.width * 10;
+        canvas.height = this._globalData.height * 10;
         let context = canvas.getContext('2d');
 
         for (let i = 0; i < this._globalData.width; ++i) {
             for (let j = this._globalData.height - 1; j >= 0; --j) {
                 let field = this.shadowRoot.querySelector('#field-' + j + "-" + i);
                 let value = await field.computeImg(j, i);
-                if(window.matchMedia("(max-width: 600px)").matches) {
-                    if(field.class.includes("tower")){
-                        context.drawImage(value.img, 0 , 0, 20, 45, value.x * 5, (value.y * 5) - 7, 5, 11.5);
-                    } else if (field.class.includes("spawn")){
-                        context.drawImage(value.img, 0 , 0, 25, 25, value.x * 5, (value.y * 5) - 1.25, 7, 7);
-                    } else {
-                        context.drawImage(value.img, 0 , 0, 20, 20, value.x * 5, value.y * 5, 5, 5);
-                    }
+                if(field.class.includes("tower")){
+                    context.drawImage(value.img, 0 , 0, 40, 90, value.x * 10, (value.y * 10) - 12.5, 10, 22.5);
+                } else if (field.class.includes("spawn")){
+                    context.drawImage(value.img, 0 , 0, 50, 50, value.x * 10, (value.y * 10) - 2.5, 12.5, 12.5);
                 } else {
-                    if(field.class.includes("tower")){
-                        context.drawImage(value.img, 0 , 0, 40, 90, value.x * 10, (value.y * 10) - 12.5, 10, 22.5);
-                    } else if (field.class.includes("spawn")){
-                        context.drawImage(value.img, 0 , 0, 50, 50, value.x * 10, (value.y * 10) - 2.5, 12.5, 12.5);
-                    } else {
-                        context.drawImage(value.img, 0 , 0, 40, 40, value.x * 10, value.y * 10, 10, 10);
-                    }
+                    context.drawImage(value.img, 0 , 0, 40, 40, value.x * 10, value.y * 10, 10, 10);
                 }
             }
         }
-        if(window.matchMedia("(max-width: 600px)").matches) {
-            let img = new Image( this._globalData.width * 5,  this._globalData.height * 5);
-        } else {
-            let img = new Image( this._globalData.width * 10,  this._globalData.height * 10);
-        }
+
+        let img = new Image( this._globalData.width * 10,  this._globalData.height * 10);
         img.src = canvas.toDataURL("image/jpeg")
         return await new Promise(resolve => {
             canvas.toBlob((blob) => {

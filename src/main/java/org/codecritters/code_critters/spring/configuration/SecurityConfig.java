@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/level-generator", "/xml-generator").hasRole("ADMIN")
+                .antMatchers("/level-generator", "/xml-generator", "/manage-levels").hasRole("ADMIN")
                 .antMatchers("/profile").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
