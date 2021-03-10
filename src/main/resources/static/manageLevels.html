@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Code Critters - Level Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
+    <script type=module src="critter_components/critter-level-manager/critter-level-manager.js"></script>
+    <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
+
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+
+    <custom-style>
+        <style>
+            body {
+                font-family: Arial;
+                font-size: 0.8em;
+                margin: 0;
+                height: 100vh;
+            }
+
+            .text{
+                text-align: left;
+                font-size: 1.3em;
+            }
+
+            critter-header {
+                width: 100%;
+                margin: 0;
+                height: 10vh;
+            }
+
+            #header_row {
+                background-color: white;
+            }
+
+            #content {
+                height: 70vh;
+                overflow-y: scroll;
+            }
+
+            #foreground_container {
+                padding: 2%;
+            }
+
+            .col-sm-2 {
+                background-color: #f3f3f3;
+            }
+
+            hr {
+                color: #ffa600;
+                background-color: #ffa600;
+                height: 3px;
+                margin: 0;
+            }
+
+            #copyright {
+                color: white;
+                background-color: rgb(57, 58, 61);
+                font-size: 1.2em;
+                height: 20vh;
+            }
+
+            #copyright_content {
+                padding: 2%;
+            }
+
+            h6 {
+                color: #ffa600;
+            }
+        </style>
+    </custom-style>
+</head>
+<body>
+<div class="row" id="header_row">
+    <div class="col-sm-12">
+        <critter-header></critter-header>
+        <hr>
+    </div>
+</div>
+<div class="row" id="content">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8" id="foreground_container">
+        <critter-level-manager></critter-level-manager>
+    </div>
+    <div class="col-sm-2"></div>
+</div>
+<div class="row fixed-bottom">
+    <div class="col-sm-12" id="copyright">
+        <hr>
+        <critter-copyright id="copyright_content"></critter-copyright>
+    </div>
+</div>
+</body>
+</html>
