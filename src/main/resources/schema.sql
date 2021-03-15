@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `level` (
 CREATE TABLE IF NOT EXISTS `mutant` (
                           `id` VARCHAR(255) NOT NULL,
                           `code` TEXT NOT NULL,
+                          `xml` TEXT NOT NULL,
                           `level_id` VARCHAR(255) NULL DEFAULT NULL,
                           `init` TEXT NULL DEFAULT NULL,
                           PRIMARY KEY (`id`),

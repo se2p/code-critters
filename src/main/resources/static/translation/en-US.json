@@ -33,7 +33,7 @@
   "profile": "Profile",
   "highscore": "Highscore",
   "delete_profile": "Delete Profile",
-  "break": "Break",
+  "break": "Abort",
   "really_delete_account": "Do you really want to delete your account? This process cannot be reversed.",
   "change_password": "Change Password",
   "invalid_password": "Invalid Old Password",
@@ -93,5 +93,8 @@
   "delete": "Delete",
   "edit": "Edit",
   "delete_level": "Are you sure you want to delete the following level?",
-  "warning": "This change cannot be reverted."
+  "warning": "This change cannot be reverted.",
+  "show_levels": "Show Levels",
+  "update": "Update",
+  "change_row": "Change Row"
 }

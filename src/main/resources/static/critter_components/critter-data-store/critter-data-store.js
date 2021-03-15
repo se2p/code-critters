@@ -56,6 +56,11 @@ class CritterDataStore extends PolymerElement {
                 observer: '_updateLevelData'
             },
 
+            levelId: {
+                type: String,
+                value: ''
+            },
+
             level: {
                 type: Array,
                 notify: true
@@ -133,6 +138,12 @@ class CritterDataStore extends PolymerElement {
             cookie: {
                 type: String,
                 value: ''
+            },
+
+            row: {
+                type: String,
+                value: '',
+                notify: true
             }
         }
     }
@@ -143,6 +154,7 @@ class CritterDataStore extends PolymerElement {
             '_sizeChanged(width, height)',
             '_critterNumberChanged(numberOfCritters, numberOfHumans)',
             '_userChanged(user,*)',
+            '_rowChanged(row)'
         ]
     }
 
@@ -173,12 +185,18 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_testCodeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
+    /*
     _xmlCodeChanged() {
         this.dispatchEvent(new CustomEvent('_xmlCodeChanged', {detail: {}, bubbles: true, composed: true}));
     }
+     */
 
     _toolboxChanged() {
         this.dispatchEvent(new CustomEvent('_toolboxChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
+    _rowChanged() {
+        this.dispatchEvent(new CustomEvent('_rowChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     deleteMines(){
@@ -214,6 +232,7 @@ class CritterDataStore extends PolymerElement {
 
         req.addEventListener('response', e => {
             let data = e.detail.__data.response;
+            this.levelId = data.id;
             this.level = data.level;
             this.spawn = data.spawn;
             this.tower = data.tower;
@@ -226,6 +245,7 @@ class CritterDataStore extends PolymerElement {
             this.xml = data.xml;
             this.test = data.test;
             this.toolbox = data.toolbox;
+            this.row = data.row;
         });
 
         let genRequest = req.generateRequest();

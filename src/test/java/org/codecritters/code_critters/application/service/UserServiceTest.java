@@ -184,8 +184,8 @@ public class UserServiceTest {
 
     @Test
     public void forgotPasswordTest() {
-        given(userRepositiory.findByUsernameAndEmail(user1.getUsername(), user1.getEmail())).willReturn(new User());
-        given(userRepositiory.findByUsernameAndEmail(user2.getUsername(), user2.getEmail())).willReturn(null);
+        when(userRepositiory.findByUsernameOrEmail(user1.getUsername(), user1.getEmail())).thenReturn(new User());
+        when(userRepositiory.findByUsernameOrEmail(user2.getUsername(), user2.getEmail())).thenReturn(null);
         Exception noUser = assertThrows(NotFoundException.class,
                 () -> userService.forgotPassword(user2, url)
         );
@@ -339,24 +339,34 @@ public class UserServiceTest {
 
     @Test
     public void changeUserChangeUsernameTest() {
+        User user = new User();
+        user.setUsername(user2.getUsername());
+        user1.setPassword("password");
+        user1.setOldPassword("password");
+        when(passwordService.verifyPassword(any(), any(), any())).thenReturn(true);
+        when(passwordService.hashPassword(any(), any())).thenReturn(user);
         given(userRepositiory.findByCookie(cookie)).willReturn(new User());
-        given(userRepositiory.existsByUsername(user2.getUsername())).willReturn(true);
+        given(userRepositiory.existsByUsername(user1.getUsername())).willReturn(true);
         Exception exception = assertThrows(AlreadyExistsException.class,
-                () -> userService.changeUser(user2, cookie, url)
+                () -> userService.changeUser(user1, cookie, url)
         );
-        userService.changeUser(user1, cookie, url);
         assertEquals("User with this username already exists!", exception.getMessage());
         verify(userRepositiory, times(1)).save(any());
     }
 
     @Test
     public void changeUserChangeEmailTest() {
+        User user = new User();
+        user.setUsername(user2.getUsername());
+        user2.setPassword("password");
+        user2.setOldPassword("password");
+        when(passwordService.verifyPassword(any(), any(), any())).thenReturn(true);
+        when(passwordService.hashPassword(any(), any())).thenReturn(user);
         given(userRepositiory.findByCookie(cookie)).willReturn(new User());
         given(userRepositiory.existsByEmail(user2.getEmail())).willReturn(true);
         Exception exception = assertThrows(AlreadyExistsException.class,
                 () -> userService.changeUser(user2, cookie, url)
         );
-        userService.changeUser(user1, cookie, url);
         assertEquals("User with this email already exists!", exception.getMessage());
         verify(userRepositiory, times(1)).save(any());
     }

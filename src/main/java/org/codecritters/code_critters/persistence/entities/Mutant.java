@@ -42,14 +42,25 @@ public class Mutant {
     private String code;
     @Column(columnDefinition = "text")
     private String init;
+    @Column(columnDefinition = "text")
+    private String xml;
 
     public Mutant() {
     }
 
-    public Mutant(Level level, String code, String init) {
+    public Mutant(Level level, String code, String init, String xml) {
         this.level = level;
         this.code = code;
         this.init = init;
+        this.xml = xml;
+    }
+
+    public Mutant(String id, Level level, String code, String init, String xml) {
+        this.id = id;
+        this.level = level;
+        this.code = code;
+        this.init = init;
+        this.xml = xml;
     }
 
     public String getId() {
@@ -82,5 +93,13 @@ public class Mutant {
 
     public void setInit(String init) {
         this.init = init;
+    }
+
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
     }
 }

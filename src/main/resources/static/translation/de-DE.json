@@ -33,7 +33,7 @@
   "profile": "Profil",
   "highscore": "Highscore",
   "delete_profile": "Profil löschen",
-  "break": "Zurück",
+  "break": "Abbrechen",
   "really_delete_account": "Möchtest du deinen Account wirklich löschen? Dieser Prozess kann nicht mehr rückgängig gemacht werden.",
   "change_password": "Passwort ändern",
   "invalid_password": "Passwort falsch",
@@ -94,5 +94,8 @@
   "delete": "Löschen",
   "edit": "Bearbeiten",
   "delete_level": "Bist du sicher, dass du das folgende Level löschen möchtest?",
-  "warning": "Der Vorgang kann nicht rückgängig gemacht werden."
+  "warning": "Der Vorgang kann nicht rückgängig gemacht werden.",
+  "show_levels": "Level anzeigen",
+  "update": "Änderungen speichern",
+  "change_row": "Kategorie ändern"
 }

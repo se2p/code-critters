@@ -28,12 +28,23 @@ public class MutantsServiceTest {
     @Mock
     private LevelRepository levelRepository;
 
+    private static final String NAME = "level_1";
+
     @Test
     public void createMutantsTest() {
-        MutantDTO mutant = new MutantDTO("1", "new");
-        MutantsDTO mutantsDTO = new MutantsDTO("level_1", Collections.singletonList(mutant));
+        MutantDTO mutant = new MutantDTO("1", "new", "id", "xml");
+        MutantsDTO mutantsDTO = new MutantsDTO(NAME, Collections.singletonList(mutant));
         mutantsService.createMutants(mutantsDTO);
-        verify(levelRepository, times(1)).findByName("level_1");
+        verify(levelRepository, times(1)).findByName(NAME);
         verify(mutantRepository, times(1)).save(any(Mutant.class));
+    }
+
+    @Test
+    public void updateMutantsTest() {
+        MutantDTO mutant = new MutantDTO("1", "new", "id", "xml");
+        MutantsDTO mutantsDTO = new MutantsDTO(NAME, Collections.singletonList(mutant));
+        mutantsService.updateMutants(mutantsDTO);
+        verify(levelRepository).findByName(NAME);
+        verify(mutantRepository).save(any(Mutant.class));
     }
 }

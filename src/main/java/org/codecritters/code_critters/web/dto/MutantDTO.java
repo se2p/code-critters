@@ -26,10 +26,14 @@ public class MutantDTO {
 
     private String code;
     private String init;
+    private String id;
+    private String xml;
 
-    public MutantDTO(String code, String init) {
+    public MutantDTO(String code, String init, String id, String xml) {
         this.code = code;
         this.init = init;
+        this.id = id;
+        this.xml = xml;
     }
 
     public MutantDTO() {
@@ -49,5 +53,17 @@ public class MutantDTO {
 
     public void setInit(String init) {
         this.init = init;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
     }
 }

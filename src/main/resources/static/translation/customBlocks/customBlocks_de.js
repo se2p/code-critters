@@ -28,7 +28,7 @@ Blockly.Blocks['set'] = {
     init: function() {
         this.appendValueInput("value1")
             .setCheck(null)
-            .appendField("Setzt");
+            .appendField("Setze");
         this.appendValueInput("value2")
             .setCheck(null)
             .appendField("auf");

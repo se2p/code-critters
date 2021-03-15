@@ -23,6 +23,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import '../critter-data-store/critter-data-store.js';
 import '../critter-gameboard/critter-board.js';
@@ -52,7 +53,7 @@ Displays the game elements
 
 window.Core = window.Core || {};
 
-class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
+class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
     static get template() {
         return html`
         <custom-style>
@@ -81,6 +82,10 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     }
                 }
 
+                [hidden] {
+                    display: none !important;
+                }
+
                 .tab {
                     display: none;
                 }
@@ -93,14 +98,20 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     margin-right: 5%;
                 }
 
+                #category,
+                #row_button,
                 #save_button,
+                #update_button,
                 #level_button,
                 critter-selector {
                     margin-left: 20px;
                     float: left;
                 }
                 
+                #category,
+                #row_button,
                 #save_button,
+                #update_button,
                 #level_button {
                     margin-top: 20px;
                 }
@@ -136,6 +147,10 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                     display: block;
                     clear: both;
                 }
+                
+                #current_row {
+                    color: #FFA600;
+                }
             </style>
         </custom-style>
 
@@ -164,10 +179,15 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         <div class="table">
             <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
         </div>
+        <div id="category" hidden$="[[showSaveButton]]">
+            [[__("category")]]: <b id="current_row">[[currentRow]]</b>
+        </div>
         <div>
-            <critter-selector values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
-            <critter-button id="save_button">Save</critter-button>
-            <a href="manage-levels" id="level_button"><critter-button>Show Levels</critter-button></a>
+            <critter-selector id="rowSelector" values="[[_rows]]" selected-value="{{selectedRow}}"></critter-selector>
+            <critter-button id="row_button" hidden="[[showSaveButton]]">[[__("change_row")]]</critter-button>
+            <critter-button id="save_button" hidden="[[!showSaveButton]]">[[__("save")]]</critter-button>
+            <critter-button id="update_button" hidden="[[showSaveButton]]">[[__("update")]]</critter-button>
+            <a href="manage-levels" id="level_button"><critter-button>[[__("show_levels")]]</critter-button></a>
         </div>
         `;
     }
@@ -203,6 +223,21 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
                 ]
             },
 
+            showSaveButton: {
+                type: Boolean,
+                value: true
+            },
+
+            showSelector: {
+                type: Boolean,
+                value: true
+            },
+
+            currentRow: {
+              type: String,
+              value: ''
+            },
+
             _boardHeight: {
                 type: Number,
                 computed: '_computeBoardHeight(_globalData.height, _blockSize)'
@@ -234,6 +269,21 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
             _rows: {
                 type: Array,
                 value: []
+            },
+
+            _updateTest: {
+                type: Boolean,
+                value: false
+            },
+
+            _updateMutants: {
+                type: Boolean,
+                value: false
+            },
+
+            _mutantList: {
+                type: Array,
+                value: []
             }
         };
     }
@@ -243,18 +293,77 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
 
         window.Core.GameRoot = this;
         window.Core.Generator = true;
+        this._globalData = window.Core.CritterLevelData;
 
         afterNextRender(this, function () {
-            this._globalData = window.Core.CritterLevelData;
-            this.$.save_button.addEventListener("click", this._saveLevel.bind(this));
+            let update = new URL(window.location.href).searchParams.get("update");
+            if (!update) {
+                this.$.save_button.addEventListener("click", this._saveLevel.bind(this));
+                this._initLevel();
+            } else {
+                this.showSaveButton = false;
+                this.levelName = update;
+                this._globalData.levelName = update;
+                this._updateTest = true;
+                this._updateMutants = true;
+                this._loadMutants();
+                this.$.update_button.addEventListener("click", this._updateLevel.bind(this));
+                this.$.row_button.addEventListener("click", this._updateRow.bind(this));
+                this.addEventListener("_rowChanged", event => this._rowChange(event));
+            }
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
-            this.addEventListener("valueChanged", (event) => this._validateLevelName(event));
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
             window.addEventListener("resize", (event) => this._handleResize(event));
-            this._initLevel();
             this._initNames();
             this._initRows();
         });
+    }
+
+    /**
+     * Sets the row category of the level being updated when the level data is loaded.
+     * @param event
+     * @private
+     */
+    _rowChange(event) {
+        this.$.current_row.innerHTML = this._globalData.row;
+        this.currentRow = this._globalData.row;
+    }
+
+    /**
+     * Changes the row of the level currently being updated to the selected category.
+     * @private
+     */
+    _updateRow() {
+        let index = this._rows.findIndex(({value}) => value === this.selectedRow);
+        this.$.current_row.innerHTML = this._rows[index].name;
+        this.currentRow = this._rows[index].name;
+    }
+
+    /**
+     * Loads the mutants for the level currently being updated.
+     * @returns {HTMLElement}
+     * @private
+     */
+    _loadMutants() {
+        let req = document.createElement('iron-ajax');
+        req.url = "/level/mutants";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.params = {level: this._globalData.levelName};
+
+        req.addEventListener('response', e => {
+            let mutants = e.detail.__data.response;
+            for (let i = 0; i < mutants.length; i++) {
+                this._critterList[i] = {id: mutants[i].id, code: mutants[i].code, init: mutants[i].init, xml: mutants[i].xml};
+            }
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
     }
 
     /** initializes an empty level **/
@@ -313,8 +422,64 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
     }
 
     /** validates the Level Name **/
-    _validateLevelName(event) {
-        this.$.name_input.valid = !this._names.includes(event.detail.name);
+    _validateLevelName() {
+        this.$.name_input.valid = !this._names.includes(this.levelName);
+    }
+
+    /**
+     * Checks, if all the data needed for the level is present.
+     * @private
+     */
+    _validateLevel() {
+        if (this.levelName === '') {
+            this.showErrorToast("Please enter a valid name");
+            return false;
+        }
+
+        if (!this.$.blockly_cut.getJavaScript()) {
+            this.showErrorToast("Please create some CUT");
+            return false;
+        }
+
+        let code = this.$.blockly_cut.getJavaScript();
+
+        let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+        let matchesInit = code.match(regExpInit) || [];
+
+        let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+        let matchesCUT = code.match(regExpCUT)  || [];
+
+        if(matchesCUT.length === 0 && matchesInit.length === 0){
+            this.showErrorToast("At least one Initialization or one CUT is required");
+            return false;
+        }
+
+        if(matchesCUT.length > 1){
+            this.showErrorToast("Too many CUTs");
+            return false;
+        }
+
+        if(matchesInit.length > 1){
+            this.showErrorToast("Too many Initializations");
+            return false;
+        }
+
+
+        if (!this._globalData.tower || this._globalData.tower.x === -1) {
+            this.showErrorToast("Please set the tower");
+            return false;
+        }
+
+        if (!this._globalData.spawn || this._globalData.spawn.x === -1) {
+            this.showErrorToast("Please set the spawn");
+            return false;
+        }
+        if (!this.existPath(this._globalData.spawn)) {
+            this.showErrorToast("There is no path to the tower");
+            return false;
+        }
+
+        return true;
     }
 
     async _saveImg() {
@@ -344,17 +509,10 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
 
     /** saves the Level Data**/
     _saveLevel() {
-        if (this.levelName === '') {
-            this.$.name_input.valid = false;
-        }
-
-        if (!this.$.name_input.valid) {
-            this.showErrorToast("Please enter a valid name");
+        if (!this._validateLevel()) {
             return;
-        }
-
-        if (!this.$.blockly_cut.getJavaScript()) {
-            this.showErrorToast("Please create some CUT");
+        } else if (this._validateLevelName()) {
+            this.showErrorToast("The level name already exists");
             return;
         }
 
@@ -366,38 +524,8 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
         let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
         let matchesCUT = code.match(regExpCUT)  || [];
 
-        if(matchesCUT.length === 0 && matchesInit.length === 0){
-            this.showErrorToast("At least one Initialization or one CUT is required");
-            return;
-        }
-
-        if(matchesCUT.length > 1){
-            this.showErrorToast("Too many CUTs");
-            return;
-        }
-
-        if(matchesInit.length > 1){
-            this.showErrorToast("Too many Initializations");
-            return;
-        }
-
         let init = matchesInit[0];
         let cut = matchesCUT[0];
-
-
-        if (!this._globalData.tower || this._globalData.tower.x === -1) {
-            this.showErrorToast("Please set the tower");
-            return;
-        }
-
-        if (!this._globalData.spawn || this._globalData.spawn.x === -1) {
-            this.showErrorToast("Please set the spawn");
-            return;
-        }
-        if (!this.existPath(this._globalData.spawn)) {
-            this.showErrorToast("There is no path to the tower");
-            return;
-        }
 
         let req = document.createElement('iron-ajax');
         req.url = "/generator/level/create";
@@ -433,6 +561,79 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
 
         req.addEventListener('error', e => {
             this.showErrorToast("Could not save level");
+            this.$.loading.hide();
+        });
+
+        this.$.loading.show();
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+
+        return req;
+    }
+
+    /**
+     * Updates the level data for the level that is currently being edited.
+     */
+    _updateLevel() {
+        if (!this._validateLevel()) {
+            return;
+        }
+
+        let code = this.$.blockly_cut.getJavaScript();
+
+        let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+        let matchesInit = code.match(regExpInit) || [];
+
+        let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+        let matchesCUT = code.match(regExpCUT)  || [];
+
+        let init = matchesInit[0];
+        let cut = matchesCUT[0];
+        let index = this._rows.findIndex(({name}) => name === this.currentRow);
+        let row = this._rows[index].value;
+        let test;
+
+        if (this._updateTest) {
+            test = this._globalData.test;
+        } else {
+            test = this.$.blockly_test.getXML();
+        }
+
+        let req = document.createElement('iron-ajax');
+        req.url = "/generator/level/update";
+        req.method = "post";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.body = {
+            id: this._globalData.levelId,
+            name: this.levelName,
+            level: this._globalData.level,
+            tower: this._globalData.tower,
+            spawn: this._globalData.spawn,
+            numberOfCritters: 15,
+            numberOfHumans: 5,
+            cut: cut,
+            init: init,
+            test: test,
+            xml: this.$.blockly_cut.getXML(),
+            row: row,
+        };
+
+        req.addEventListener('response', async () => {
+            if (!this._updateMutants) {
+                this.$.mutant_creator.updateMutants(this.levelName);
+                this.$.mutant_creator.saveMutants(this.levelName);
+            }
+
+            await this._saveImg();
+            this.$.loading.hide();
+        });
+
+        req.addEventListener('error', e => {
+            this.showErrorToast("Could not update level");
             this.$.loading.hide();
         });
 
@@ -500,12 +701,26 @@ class CritterLevelCreator extends Toaster(Level(PolymerElement)) {
             this.$.blockly_cut.setCode(code);
         }
         if(detail.new === 2) {
-            let code = this.$.blockly_test.getXML();
-            this.$.blockly_test._toolboxChanged();
-            this.$.blockly_test.setCode(code);
+            if (this._updateTest) {
+                let code = this._globalData.test;
+                this._updateTest = false;
+                this.$.blockly_test._toolboxChanged();
+                this.$.blockly_test.getCenteredCode(code);
+            } else {
+                let code = this.$.blockly_test.getXML();
+                this.$.blockly_test._toolboxChanged();
+                this.$.blockly_test.setCode(code);
+            }
         }
         if(detail.new === 3) {
-            this._globalData.xml = this.$.blockly_cut.getXML();
+            if (this._updateMutants) {
+                for (let i = 0; i < this._critterList.length; i++) {
+                    this.$.mutant_creator._initializeMutants(i, this._critterList[i]);
+                }
+                this._updateMutants = false;
+            } else {
+                this._globalData.xml = this.$.blockly_cut.getXML();
+            }
         }
     }
 

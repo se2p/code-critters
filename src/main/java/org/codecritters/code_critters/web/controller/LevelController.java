@@ -75,8 +75,8 @@ public class LevelController {
             throw new RuntimeException("IOError writing file to output stream");
         }
 
-
         HashMap map = new HashMap<String, Object>();
+        map.put("id", dto.getId());
         map.put("level", dto.getLevel());
         map.put("tower", dto.getTower());
         map.put("spawn", dto.getSpawn());
@@ -89,9 +89,9 @@ public class LevelController {
         map.put("xml", dto.getXml());
         map.put("test", dto.getTest());
         map.put("toolbox", toolbox);
+        map.put("row", dto.getRow());
 
         return map;
-
     }
 
     /**

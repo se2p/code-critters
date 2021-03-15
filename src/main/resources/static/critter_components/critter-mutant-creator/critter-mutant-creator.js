@@ -127,7 +127,14 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
         } else {
             this._setDisplayTab("block", detail.new);
             let element = this.shadowRoot.querySelector('.tab-' + detail.new);
-            let code = element.getXML();
+            let code = "";
+            if (element.update) {
+                code = element.xml;
+                element.update = false;
+                element.xml = true;
+            } else {
+                code = element.getXML();
+            }
             element._toolboxChanged();
             element.setCode(code);
         }
@@ -147,13 +154,106 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
         newTab.controls = true;
         newTab.cut = true;
         newTab.xml = true;
-        newTab.innerHTML = "<span><p>Mutant Code</p><p style=\"color:#FFA600\">Updating the CUT or changing the language will cause the mutant code to be overwritten!</p></span>";
+        newTab.innerHTML = "<span><p>Mutant Code</p><p style=\"color:#FFA600\">Updating the CUT or changing the "
+            + "language will cause the mutant code to be overwritten!</p></span>";
         this.shadowRoot.append(newTab);
+        return newTab;
+    }
+
+    /**
+     * Creates new tabs for all the mutants of the level that is being edited.
+     * @param number The number of the tab.
+     * @param mutant The mutant data.
+     * @private
+     */
+    _initializeMutants(number, mutant) {
+        if (number !== 0) {
+            let tab = this._createMutant(number);
+            tab.id = mutant.id;
+            tab.xml = mutant.xml;
+            tab.update = true;
+            this.tabs.splice(number, 0, {title: "Critter " + (number + 1)});
+        } else {
+            let tab = this.shadowRoot.querySelector('.tab-' + number);
+            tab.id = mutant.id;
+            tab.cut = true;
+            tab.xml = true;
+            tab.update = false;
+            tab._toolboxChanged();
+            tab.getCenteredCode(mutant.xml);
+        }
+
+        this.$.tabs._tabsChanged();
     }
 
     /** computes the heights of critter-board**/
     _computeBoardHeight(height) {
         return height - 40;
+    }
+
+    /**
+     * Saves the changes to all mutants that already exist in the database for the given level name.
+     * @param levelName The name of the level to which the mutants belong.
+     * @returns {HTMLElement}
+     */
+    updateMutants(levelName) {
+        let req = document.createElement('iron-ajax');
+        req.url = "/generator/mutants/update";
+        req.method = "post";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.body = {
+            name: levelName,
+            mutants: this._getUpdatedMutants()
+        };
+
+        req.addEventListener('response', e => {
+            this._createToaster("success", "Critter has been updated");
+        });
+
+        req.addEventListener('error', e => {
+            this._createToaster("error", "Could not update mutants");
+        });
+
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+
+        return req;
+    }
+
+    /**
+     * Returns the data of all mutants that have been updated.
+     * @returns {[]} The mutant data to be saved.
+     * @private
+     */
+    _getUpdatedMutants() {
+        let reqData = [];
+        for (let i = 0; i < this.tabs.length; ++i) {
+            if (i === this.tabs.length - 1 && this.tabs[i].title === "+") {
+                break;
+            }
+
+            let tab = this.shadowRoot.querySelector('.tab-' + i);
+
+            if (tab.id && !tab.update) {
+                let data = this._verifyCode(i);
+
+                if(!data) {
+                    return;
+                }
+
+                reqData.push({
+                    id: tab.id,
+                    init: data.init,
+                    code: data.cut,
+                    xml: data.xml
+                });
+            }
+        }
+        return reqData;
     }
 
     saveMutants(levelName) {
@@ -170,19 +270,11 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
         };
 
         req.addEventListener('response', e => {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "success";
-            toaster.msg = "Critter has been created";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this._createToaster("success", "Critter has been created");
         });
 
         req.addEventListener('error', e => {
-            let toaster = document.createElement("critter-toaster");
-            toaster.type = "error";
-            toaster.msg = "Could not save mutants";
-            this.shadowRoot.append(toaster);
-            toaster.show(this._toasterTime);
+            this._createToaster("error", "Could not save mutants");
         });
 
 
@@ -199,38 +291,71 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
                 break;
             }
 
-            let code;
-            if (this.shadowRoot.querySelector('.tab.code.tab-' + i) === null) {
-                this.showErrorToast("Mutant has no init");
-                throw new Error("Mutant has no init!");
+            let tab = this.shadowRoot.querySelector('.tab-' + i);
+
+            if (!tab.id) {
+                let data = this._verifyCode(i);
+
+                if(!data) {
+                    return;
+                }
+
+                reqData.push({
+                    init: data.init,
+                    code: data.cut,
+                    xml: data.xml
+                });
             }
-            code = this.shadowRoot.querySelector('.tab.code.tab-' + i).getJavaScript();
-
-            let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
-            let matchesInit = code.match(regExpInit) || [];
-
-            let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
-            let matchesCUT = code.match(regExpCUT)  || [];
-
-            if(matchesCUT.length > 1){
-                this.showErrorToast("Too many CUTs in mutant");
-                return;
-            }
-
-            if(matchesInit.length > 1){
-                this.showErrorToast("Too many initializations in mutant");
-                return;
-            }
-
-            let init = matchesInit[0];
-            let cut = matchesCUT[0];
-
-            reqData.push({
-                init: init,
-                code: cut
-            });
         }
         return reqData;
+    }
+
+    /**
+     * Checks, whether the mutant code in the tab with the given number matches the requirements.
+     * @param tabNumber The number of the tab to check.
+     * @returns {{init: (*), cut: (*), xml: *}|boolean} False, if the code is invalid, or the computed data, if it is.
+     * @private
+     */
+    _verifyCode(tabNumber) {
+        if (this.shadowRoot.querySelector('.tab.code.tab-' + tabNumber) === null) {
+            this.showErrorToast("Mutant has no init");
+            return false;
+        }
+
+        let code = this.shadowRoot.querySelector('.tab.code.tab-' + tabNumber).getJavaScript();
+        let xml = this.shadowRoot.querySelector('.tab.code.tab-' + tabNumber).getXML();
+
+        let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+        let matchesInit = code.match(regExpInit) || [];
+
+        let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+        let matchesCUT = code.match(regExpCUT)  || [];
+
+        if(matchesCUT.length > 1){
+            this.showErrorToast("Too many CUTs in mutant");
+            return false;
+        }
+
+        if(matchesInit.length > 1){
+            this.showErrorToast("Too many initializations in mutant");
+            return false;
+        }
+
+        return {init: matchesInit[0], cut: matchesCUT[0], xml: xml};
+    }
+
+    /**
+     * Creates a simple toaster with the given type and message.
+     * @param type The type of the toaster.
+     * @param msg The message the toaster should display.
+     * @private
+     */
+    _createToaster(type, msg) {
+        let toaster = document.createElement("critter-toaster");
+        toaster.type = type;
+        toaster.msg = msg;
+        this.shadowRoot.append(toaster);
+        toaster.show(this._toasterTime);
     }
 
 }

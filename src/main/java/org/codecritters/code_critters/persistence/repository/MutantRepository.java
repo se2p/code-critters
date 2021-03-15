@@ -34,7 +34,7 @@ import java.util.List;
 @Repository
 public interface MutantRepository extends CrudRepository<Mutant, String> {
 
-    @Query("SELECT m.code, m.init FROM Mutant AS m WHERE m.level = :level")
+    @Query("SELECT m.code, m.init, m.id, m.xml FROM Mutant AS m WHERE m.level = :level")
     List<String[]> getCodeByLevel(@Param("level") Level level);
 
     void deleteAllByLevel(Level level);

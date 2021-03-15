@@ -39,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -121,6 +122,18 @@ public class GeneratorController {
         }
     }
 
+    @PostMapping(path = "/level/update")
+    @Secured("ROLE_ADMIN")
+    public void updateLevel(@RequestBody LevelDTO dto, HttpServletResponse response) {
+        System.out.println(dto.getId());
+        System.out.println(dto.getName());
+        try {
+            levelService.updateLevel(dto);
+        } catch (AlreadyExistsException e) {
+            response.setStatus(460);
+        }
+    }
+
     /**
      * Creates new mutants
      */
@@ -128,6 +141,15 @@ public class GeneratorController {
     @Secured("ROLE_ADMIN")
     public void createMutants(@RequestBody MutantsDTO dto) {
         mutantsService.createMutants(dto);
+    }
+
+    /**
+     * Updates the given mutants
+     */
+    @PostMapping(path = "/mutants/update")
+    @Secured("ROLE_ADMIN")
+    public void updateMutants(@RequestBody MutantsDTO dto) {
+        mutantsService.updateMutants(dto);
     }
 
     @GetMapping(path = "/names")

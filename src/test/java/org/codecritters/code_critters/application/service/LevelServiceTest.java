@@ -53,6 +53,7 @@ public class LevelServiceTest {
     private ResultRepository resultRepository;
 
     private LevelDTO levelDTO;
+    private CritterRow row = new CritterRow("name", 1);
     private final String level2 = "level_2";
 
     @Before
@@ -67,7 +68,7 @@ public class LevelServiceTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1");
+        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, row.getName());
     }
 
     @Test
@@ -97,7 +98,9 @@ public class LevelServiceTest {
 
     @Test
     public void getLevelTest() {
-        given(levelRepository.findByName(levelDTO.getName())).willReturn(new Level());
+        Level level = new Level();
+        level.setRow(row);
+        given(levelRepository.findByName(levelDTO.getName())).willReturn(level);
         levelService.getLevel(levelDTO.getName());
         Exception exception = assertThrows(NotFoundException.class,
                 () -> levelService.getLevel(level2)
@@ -177,7 +180,7 @@ public class LevelServiceTest {
 
     @Test
     public void getMutantsTest() {
-        String[] mutants = {"code1", "init1"};
+        String[] mutants = {"code1", "init1", "id1", "xml1"};
         List<String[]> list = new ArrayList<>();
         list.add(mutants);
         given(levelRepository.getIdByName(levelDTO.getName())).willReturn(levelDTO.getId());
@@ -186,7 +189,9 @@ public class LevelServiceTest {
         MutantDTO mutant = mutantDTOS.get(0);
         assertAll("Should return the mutants String[]",
                 () -> assertEquals(1, mutantDTOS.size()),
-                () -> assertEquals("code1", mutant.getCode())
+                () -> assertEquals("code1", mutant.getCode()),
+                () -> assertEquals("id1", mutant.getId()),
+                () -> assertEquals("xml1", mutant.getXml())
         );
         verify(mutantRepository, times(1)).getCodeByLevel(any());
     }
@@ -261,13 +266,25 @@ public class LevelServiceTest {
         level.setId("id");
         when(levelRepository.findByName(levelDTO.getName())).thenReturn(level);
         levelService.deleteLevel(levelDTO.getName());
-        verify(mutantRepository).deleteAllByLevel(level);
-        verify(resultRepository).deleteAllByLevel(level);
         verify(levelRepository).deleteById(level.getId());
     }
 
     @Test
     public void deleteLevelNotFoundExceptionTest() {
         assertThrows(NotFoundException.class, () -> levelService.deleteLevel(levelDTO.getName()));
+    }
+
+    @Test
+    public void updateLevelTest() {
+        when(rowRepository.findCritterRowById(row.getName())).thenReturn(row);
+        levelService.updateLevel(levelDTO);
+        verify(levelRepository).save(any());
+    }
+
+    @Test
+    public void updateLevelConstraintViolationTest() {
+        when(rowRepository.findCritterRowById(row.getName())).thenReturn(row);
+        when(levelRepository.save(any())).thenThrow(ConstraintViolationException.class);
+        assertThrows(AlreadyExistsException.class, () -> levelService.updateLevel(levelDTO));
     }
 }

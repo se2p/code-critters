@@ -87,8 +87,8 @@ public class LevelControllerTest {
     @Test
     public void getMutantsTest() throws Exception {
         List<MutantDTO> mutantsList = new ArrayList<>();
-        MutantDTO mutant1 = new MutantDTO("code1", "init1");
-        MutantDTO mutant2 = new MutantDTO("code2", "init2");
+        MutantDTO mutant1 = new MutantDTO("code1", "init1", "id1", "xml");
+        MutantDTO mutant2 = new MutantDTO("code2", "init2", "id2", "xml");
         mutantsList.add(mutant1);
         mutantsList.add(mutant2);
         given(levelService.getMutants(level)).willReturn(mutantsList);

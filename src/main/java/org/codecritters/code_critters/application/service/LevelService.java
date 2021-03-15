@@ -85,6 +85,14 @@ public class LevelService {
         }
     }
 
+    public void updateLevel(LevelDTO dto) {
+        try {
+            levelRepository.save(createLevelDAO(dto));
+        } catch (ConstraintViolationException e) {
+            throw new AlreadyExistsException("Failed to update the level", e);
+        }
+    }
+
     public LevelDTO getLevel(String name) {
         Level level = levelRepository.findByName(name);
         if (level == null) {
@@ -134,6 +142,7 @@ public class LevelService {
         dto.setTower(level.getTower());
         dto.setNumberOfCritters(level.getNumberOfCritters());
         dto.setNumberOfHumans(level.getNumberOfHumans());
+        dto.setRow(level.getRow().getName());
 
         return dto;
     }
@@ -205,7 +214,7 @@ public class LevelService {
         }
         List<MutantDTO> mutantsDto = new LinkedList<MutantDTO>();
         for (Object[] mutant : mutants) {
-            MutantDTO dto = new MutantDTO((String) mutant[0], (String) mutant[1]);
+            MutantDTO dto = new MutantDTO((String) mutant[0], (String) mutant[1], (String) mutant[2], (String) mutant[3]);
             mutantsDto.add(dto);
         }
         return mutantsDto;

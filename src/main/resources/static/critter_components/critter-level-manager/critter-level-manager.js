@@ -116,7 +116,9 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
             <critter-loading id="loading"></critter-loading>
             
             <div>
-                <critter-button class="edit" id="edit">{{__("edit")}}</critter-button>
+                <a href="level-generator?update=[[selectedLevel]]" id="level_button">
+                    <critter-button class="edit" id="edit">{{__("edit")}}</critter-button>
+                </a>
                 <critter-button class="delete" id="delete">{{__("delete")}}</critter-button>
                 <critter-selector values="[[levels]]" selected-value="{{selectedLevel}}" id="levelSelector"></critter-selector>
             </div>
