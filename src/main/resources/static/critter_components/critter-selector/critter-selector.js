@@ -40,8 +40,7 @@ class CritterSelector extends PolymerElement {
     static get template() {
         return html`
             <style>
-                select{
-                    margin: 20px 0;
+                select {
                     padding: 5px 10px;
                     border: 1px solid #039be5;
                     font-size: 1.2em;

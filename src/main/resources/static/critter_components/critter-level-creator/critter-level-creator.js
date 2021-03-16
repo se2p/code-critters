@@ -112,7 +112,8 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                 #row_button,
                 #save_button,
                 #update_button,
-                #level_button {
+                #level_button,
+                #rowSelector {
                     margin-top: 20px;
                 }
                 

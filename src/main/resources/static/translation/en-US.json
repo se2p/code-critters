@@ -92,9 +92,18 @@
   "category": "Category",
   "delete": "Delete",
   "edit": "Edit",
+  "add": "Add",
   "delete_level": "Are you sure you want to delete the following level?",
+  "delete_row": "Are you sure you want to delete the following row?",
+  "levels_lost": "The following levels will be deleted:",
   "warning": "This change cannot be reverted.",
   "show_levels": "Show Levels",
   "update": "Update",
-  "change_row": "Change Row"
+  "change_row": "Change Row",
+  "level_deleted": "The level has been deleted",
+  "level_not_deleted": "Could not delete level",
+  "row_deleted": "The row has been deleted",
+  "row_not_deleted": "Could not delete row",
+  "update_row": "Do you really want to update the row name?",
+  "add_translation": "You will have to manually add an entry to the translation files\n to provide a translation of the row name on the homepage."
 }

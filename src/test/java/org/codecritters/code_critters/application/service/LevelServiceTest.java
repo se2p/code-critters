@@ -220,7 +220,7 @@ public class LevelServiceTest {
         given(rowRepository.getRows()).willReturn(rows);
         given(userRepository.existsByCookie(cookie)).willReturn(false);
         List groupedLevels = levelService.getLevelsGrouped(cookie);
-        assertEquals("{name=Tutorial, levels=[]}", groupedLevels.get(0).toString());
+        assertEquals("{name=Tutorial, id=null, levels=[]}", groupedLevels.get(0).toString());
         verify(rowRepository, times(1)).getRows();
         verify(userRepository, times(1)).existsByCookie(cookie);
         verify(userRepository, times(0)).findByCookie(cookie);
@@ -235,7 +235,7 @@ public class LevelServiceTest {
         given(rowRepository.getRows()).willReturn(rows);
         given(userRepository.existsByCookie(cookie)).willReturn(true);
         List groupedLevels = levelService.getLevelsGrouped(cookie);
-        assertEquals("{name=Tutorial, levels=[]}", groupedLevels.get(0).toString());
+        assertEquals("{name=Tutorial, id=null, levels=[]}", groupedLevels.get(0).toString());
         verify(rowRepository, times(1)).getRows();
         verify(userRepository, times(1)).existsByCookie(cookie);
         verify(userRepository, times(1)).findByCookie(cookie);

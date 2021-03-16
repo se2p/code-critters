@@ -93,9 +93,18 @@
   "category": "Kategorie",
   "delete": "Löschen",
   "edit": "Bearbeiten",
+  "add": "Hinzufügen",
   "delete_level": "Bist du sicher, dass du das folgende Level löschen möchtest?",
+  "delete_row": "Bist du sicher, dass du die folgende Kategorie löschen möchtest?",
+  "levels_lost": "Folgende Level werden dabei gelöscht:",
   "warning": "Der Vorgang kann nicht rückgängig gemacht werden.",
   "show_levels": "Level anzeigen",
   "update": "Änderungen speichern",
-  "change_row": "Kategorie ändern"
+  "change_row": "Kategorie ändern",
+  "level_deleted": "Das Level wurde gelöscht",
+  "level_not_deleted": "Level konnte nicht gelöscht werden",
+  "row_deleted": "Die Kategorie wurde gelöscht",
+  "row_not_deleted": "Die Kategorie konnte nicht gelöscht werden",
+  "update_row": "Möchtest du den Namen der Kategorie wirklich ändern?",
+  "add_translation": "Du musst manuell einen Eintrag in die Übersetzungsdateien einfügen,\n um eine Übersetzung der Kategorie auf der Startseite anzuzeigen."
 }

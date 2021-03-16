@@ -26,6 +26,7 @@ import org.codecritters.code_critters.application.exception.AlreadyExistsExcepti
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.application.service.LevelService;
 import org.codecritters.code_critters.application.service.MutantsService;
+import org.codecritters.code_critters.application.service.RowService;
 import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.MutantsDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
@@ -56,12 +57,14 @@ public class GeneratorController {
 
     private final LevelService levelService;
     private final MutantsService mutantsService;
+    private final RowService rowService;
 
 
     @Autowired
-    public GeneratorController(LevelService levelService, MutantsService mutantsService) {
+    public GeneratorController(LevelService levelService, MutantsService mutantsService, RowService rowService) {
         this.levelService = levelService;
         this.mutantsService = mutantsService;
+        this.rowService = rowService;
     }
 
     /**
@@ -150,6 +153,19 @@ public class GeneratorController {
     @Secured("ROLE_ADMIN")
     public void updateMutants(@RequestBody MutantsDTO dto) {
         mutantsService.updateMutants(dto);
+    }
+
+    /**
+     * Deletes the given row along with all levels belonging to it.
+     */
+    @PostMapping(path = "/row/delete")
+    @Secured("ROLE_ADMIN")
+    public void deleteRow(@RequestBody RowDTO dto, HttpServletResponse response) {
+        try {
+            rowService.deleteRow(dto);
+        } catch (NotFoundException e) {
+            response.setStatus(404);
+        }
     }
 
     @GetMapping(path = "/names")

@@ -65,14 +65,23 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 margin: auto;
             }
             
-            #edit,
-            #delete {
-                float: right;
-                margin: 2%;
+            #editLevel {
+                text-decoration: none;
             }
             
+            #editLevel,
+            #deleteLevel,
             #levelSelector {
                 float: right;
+                margin: 1%;
+            }
+            
+            #addRow,
+            #editRow,
+            #deleteRow,
+            #rowSelector {
+                float: left;
+                margin: 1%;
             }
 
             #delete_dialog {
@@ -80,18 +89,20 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 color: #212529;
             }
             
-            #levelDelete {
+            .deleteData {
                 font-weight: bold;
                 color: #ffa600;
             }
             
-            #breakDeleteButton,
-            #deleteButton {
+            #breakDeleteLevelButton,
+            #deleteLevelButton,
+            #breakDeleteRowButton,
+            #deleteRowButton {
                 float: left;
                 margin: 2%;
             }
             
-            .row{
+            .tableRow{
                 display: table-row;
                 font-size: 1.3em;
                 padding: 2% !important;
@@ -106,50 +117,78 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 border-bottom: solid 3px #FFA600;
                 font-size: 1.5em;
             }
-            
-            .space{
-                height: 20px;
-            }
          
             </style>
             <critter-data-store></critter-data-store>
             <critter-loading id="loading"></critter-loading>
             
-            <div>
+            <div id="rowEdit">
+                <critter-selector values="[[rows]]" selected-value="{{selectedRow}}" id="rowSelector"></critter-selector>
+                <critter-button id="deleteRow">{{__("delete")}}</critter-button>
+                <critter-button id="editRow">{{__("edit")}}</critter-button>
+                <critter-button id="addRow">{{__("add")}}</critter-button>
+            </div>
+            <div id="levelEdit">
                 <a href="level-generator?update=[[selectedLevel]]" id="level_button">
-                    <critter-button class="edit" id="edit">{{__("edit")}}</critter-button>
+                    <critter-button id="editLevel">{{__("edit")}}</critter-button>
                 </a>
-                <critter-button class="delete" id="delete">{{__("delete")}}</critter-button>
+                <critter-button id="deleteLevel">{{__("delete")}}</critter-button>
                 <critter-selector values="[[levels]]" selected-value="{{selectedLevel}}" id="levelSelector"></critter-selector>
             </div>
             
             <div class="table">
-                <div class="row heading_row">
+                <div class="tableRow heading_row">
                     <div class="cell heading_cell">{{__("level_name")}}</div>
                     <div class="cell heading_cell">{{__("category")}}</div>
-                    <div class="cell heading_cell">{{__("edit")}}</div>
+                    <div class="cell heading_cell">{{__("score")}}</div>
                 </div>
                 <template is="dom-repeat" items="{{levels}}">
-                    <div class="row">
+                    <div class="tableRow">
                         <div class="cell">{{item.name}}</div>
                         <div class="cell">{{item.row}}</div>
-                        <div class="cell">
-                            Something
-                        </div>
+                        <div class="cell">{{item.score}}</div>
                     </div>
                 </template>
             </div>
 
-            <critter-dialog id="delete_dialog">
-                <critter-form id="delete_form" method="POST" target="" >
+            <critter-dialog id="deleteLevelDialog">
+                <critter-form id="deleteLevelForm" method="POST" target="" >
                     <p>
                         {{__("delete_level")}}
                         <br>
                         {{__("warning")}}
                     </p>
-                    <p id="levelDelete">{{selectedLevel}}</p>
-                    <critter-button id="breakDeleteButton">[[__("break")]]</critter-button>
-                    <critter-button id="deleteButton">[[__("delete")]]</critter-button>
+                    <p class="deleteData">{{selectedLevel}}</p>
+                    <critter-button id="breakDeleteLevelButton">[[__("break")]]</critter-button>
+                    <critter-button id="deleteLevelButton">[[__("delete")]]</critter-button>
+                </critter-form>
+            </critter-dialog>
+
+            <critter-dialog id="deleteRowDialog">
+                <critter-form id="deleteRowForm" method="POST" target="" >
+                    <p>
+                        {{__("delete_row")}}
+                        <br>
+                        {{__("warning")}}
+                    </p>
+                    <p class="deleteData">{{selectedRowName}}</p>
+                    <p>{{__("levels_lost")}}</p>
+                    <p class="deleteData">{{rowLevels}}</p>
+                    <critter-button id="breakDeleteRowButton">[[__("break")]]</critter-button>
+                    <critter-button id="deleteRowButton">[[__("delete")]]</critter-button>
+                </critter-form>
+            </critter-dialog>
+
+            <critter-dialog id="updateRowDialog">
+                <critter-form id="updateRowForm" method="POST" target="" >
+                    <p>
+                        {{__("update_row")}}
+                        <br>
+                        {{__("add_translation")}}
+                    </p>
+                    <critter-input id="rowName" label="Name: " value="{{rowName}}"></critter-input>
+                    <critter-button id="breakUpdateRowButton">[[__("break")]]</critter-button>
+                    <critter-button id="updateRowButton">[[__("update")]]</critter-button>
                 </critter-form>
             </critter-dialog>
         `;
@@ -166,36 +205,64 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 value: []
             },
 
+            rows: {
+                type: Array,
+                value: []
+            },
+
             selectedLevel: {
-                type: String
+                type: String,
+                value: ''
             },
 
-            showDelete: {
-                type: Boolean,
-                value: false
+            selectedRow: {
+                type: String,
+                value: ''
             },
 
-            showEdit: {
-                type: Boolean,
-                value: false
+            selectedRowName: {
+                type: String,
+                value: ''
+            },
+
+            rowLevels: {
+                type: String,
+                value: ''
+            },
+
+            deleteLevels: {
+                type: Array,
+                value: []
+            },
+
+            rowName: {
+                type: String,
+                value: ''
             }
         }
     }
 
+    /**
+     * Loads the level and row data and adds the necessary event listeners to the buttons.
+     */
     connectedCallback() {
         super.connectedCallback();
 
         this.getLevelData();
-        this._globalData = window.Core.CritterLevelData;
 
         afterNextRender(this, function () {
-            this.$.edit.addEventListener("click", (event) => this._editLevel(event));
-            this.$.delete.addEventListener("click", this.openDeleteDialog.bind(this));
-            this.$.breakDeleteButton.addEventListener("click", this.closeDeleteDialog.bind(this));
-            this.$.deleteButton.addEventListener("click", this._deleteLevel.bind(this));
+            this.$.deleteLevel.addEventListener("click", this.openDeleteLevelDialog.bind(this));
+            this.$.breakDeleteLevelButton.addEventListener("click", this.closeDeleteLevelDialog.bind(this));
+            this.$.deleteLevelButton.addEventListener("click", this._deleteLevel.bind(this));
+            this.$.deleteRow.addEventListener("click", this.openDeleteRowDialog.bind(this));
+            this.$.breakDeleteRowButton.addEventListener("click", this.closeDeleteRowDialog.bind(this));
+            this.$.deleteRowButton.addEventListener("click", this._deleteRow.bind(this));
         });
     }
 
+    /**
+     * Retrieves the level and row data from the database to fill the table and selectors with the current values.
+     */
     getLevelData() {
         let req = document.createElement('iron-ajax');
         req.url = "/level/levels";
@@ -208,8 +275,9 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         req.addEventListener('response', e => {
             e.detail.__data.response.forEach((rowData) => {
                 rowData.levels.forEach((level) => {
-                    this.push('levels', {name: level.name, value: level.name, row: rowData.name});
+                    this.push('levels', {name: level.name, value: level.name, row: rowData.name, score: level.score});
                 })
+                this.push('rows', {name: rowData.name, value: rowData.id});
             })
         });
 
@@ -217,47 +285,134 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         req.completes = genRequest.completes;
     }
 
-    openDeleteDialog() {
-        this.$.delete_dialog.open();
+    /**
+     * Renders the popup dialog to confirm the deletion of the chosen level.
+     */
+    openDeleteLevelDialog() {
+        this.$.deleteLevelDialog.open();
     }
 
-    closeDeleteDialog() {
-        this.$.delete_dialog.close();
+    /**
+     * Closes the popup dialog and aborts the level deletion process.
+     */
+    closeDeleteLevelDialog() {
+        this.$.deleteLevelDialog.close();
     }
 
+    /**
+     * Renders the popup dialog to confirm the deletion of the chosen row and computes the levels that will be deleted
+     * alongside the row upon deletion.
+     */
+    openDeleteRowDialog() {
+        let index = this.rows.findIndex(({value}) => value === this.selectedRow);
+        this.selectedRowName = this.rows[index].name;
+        for (let i = 0; i < this.levels.length; i++) {
+            if (this.levels[i].row === this.selectedRowName) {
+                if (this.rowLevels) {
+                    this.rowLevels += ", " + this.levels[i].name;
+                    this.push('deleteLevels', this.levels[i].name);
+                } else {
+                    this.rowLevels = this.levels[i].name;
+                    this.push('deleteLevels', this.levels[i].name);
+                }
+            }
+        }
+        this.$.deleteRowDialog.open();
+    }
+
+    /**
+     * Closes the popup dialog, aborts the row deletion process and resets the level data.
+     */
+    closeDeleteRowDialog() {
+        this.rowLevels = "";
+        this.deleteLevels = [];
+        this.$.deleteRowDialog.close();
+    }
+
+    /**
+     * Deletes the currently selected level from the database along with all its mutants and results achieved for that
+     * level.
+     * @returns {HTMLElement}
+     * @private
+     */
     _deleteLevel() {
-        let req = document.createElement('iron-ajax');
-        req.url = "/generator/level/delete";
-        req.method = "post";
-        req.handleAs = 'json';
-        req.contentType = 'application/json';
-        req.bubbles = true;
-        req.rejectWithRequest = true;
-        req.body = this.selectedLevel;
+        let req = this._generateRequest("/generator/level/delete", this.selectedLevel);
 
         req.addEventListener('error', e => {
-            this.showErrorToast("Could not delete level");
+            this.showErrorToast("level_not_deleted");
             this.$.loading.hide();
         });
 
         this.$.loading.show();
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
-        this.$.delete_dialog.close();
+        this.$.deleteLevelDialog.close();
         let index = this.levels.findIndex(({name}) => name === this.selectedLevel);
         this.splice('levels', index, 1);
 
         this.$.loading.hide();
+        this.showSuccessToast("level_deleted");
 
         return req;
     }
 
-    _editLevel(event) {
-        console.log(event.detail);
-        console.log(this.levels.find(({name}) => name === this.selectedLevel));
-        console.log(this.levels.findIndex(({name}) => name === this.selectedLevel));
+    /**
+     * Deletes the currently selected row along with all its levels.
+     * @returns {HTMLElement}
+     * @private
+     */
+    _deleteRow() {
+        let index = this.rows.findIndex(({value}) => value === this.selectedRow);
+        let data = {id: this.rows[index].value, name: this.rows[index].name};
+
+        let req = this._generateRequest("/generator/row/delete", data);
+
+        req.addEventListener('error', e => {
+            this.showErrorToast("row_not_deleted");
+            this.$.loading.hide();
+        });
+
+        this.$.loading.show();
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        this.splice('rows', index, 1);
+
+        for (let i = 0; i < this.deleteLevels.length; i++) {
+            let index = this.levels.findIndex(({name}) => name === this.deleteLevels[i]);
+            this.splice('levels', index, 1);
+        }
+
+        this.closeDeleteRowDialog();
+        this.$.loading.hide();
+        this.showSuccessToast("row_deleted");
+
+        return req;
     }
 
+    /**
+     * Generates a post request with the given url and the given data to be submitted.
+     * @param url The url of the request.
+     * @param data The data to be transmitted.
+     * @returns {HTMLElement} The request to be sent to the database.
+     * @private
+     */
+    _generateRequest(url, data) {
+        let req = document.createElement('iron-ajax');
+        req.url = url;
+        req.method = "post";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.body = data;
+
+        return req;
+    }
+
+    /**
+     * Renders a popup displaying the given error message.
+     * @param msg The message to be displayed.
+     */
     showErrorToast(msg) {
         let toaster = document.createElement("critter-toaster");
         toaster.type = "static.error";
@@ -267,6 +422,10 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         toaster.show(this._toasterTime);
     }
 
+    /**
+     * Renders a popup displaying the given success message.
+     * @param msg The message to be displayed.
+     */
     showSuccessToast(msg) {
         let toaster = document.createElement("critter-toaster");
         toaster.type = "success";
