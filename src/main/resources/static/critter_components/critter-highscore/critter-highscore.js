@@ -157,7 +157,6 @@ class CritterHighscore extends I18n(PolymerElement) {
             let data = e.detail.__data.response;
             this.highscore = data;
         });
-        console.log(this.highscore);
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
@@ -183,8 +182,6 @@ class CritterHighscore extends I18n(PolymerElement) {
         } else {
             this.myScore = undefined;
         }
-
-        console.log(this.myScore);
     }
 
     _computeInHighscore(myScore) {

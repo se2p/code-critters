@@ -105,5 +105,11 @@
   "row_deleted": "The row has been deleted",
   "row_not_deleted": "Could not delete row",
   "update_row": "Do you really want to update the row name?",
-  "add_translation": "You will have to manually add an entry to the translation files\n to provide a translation of the row name on the homepage."
+  "add_translation": "You will have to add an entry to the translation files for the row name.",
+  "empty_field": "The field cannot be empty.",
+  "name_exists": "The name you choose already exists.",
+  "row_updated": "The row has been updated",
+  "row_not_updated": "Could not update row",
+  "row_position": "Category Position",
+  "add_row": "Please enter the name of the new category."
 }

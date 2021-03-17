@@ -97,7 +97,11 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
             #breakDeleteLevelButton,
             #deleteLevelButton,
             #breakDeleteRowButton,
-            #deleteRowButton {
+            #deleteRowButton,
+            #breakUpdateRowButton,
+            #updateRowButton,
+            #breakAddRowButton,
+            #addRowButton {
                 float: left;
                 margin: 2%;
             }
@@ -140,13 +144,13 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 <div class="tableRow heading_row">
                     <div class="cell heading_cell">{{__("level_name")}}</div>
                     <div class="cell heading_cell">{{__("category")}}</div>
-                    <div class="cell heading_cell">{{__("score")}}</div>
+                    <div class="cell heading_cell">{{__("row_position")}}</div>
                 </div>
                 <template is="dom-repeat" items="{{levels}}">
                     <div class="tableRow">
                         <div class="cell">{{item.name}}</div>
                         <div class="cell">{{item.row}}</div>
-                        <div class="cell">{{item.score}}</div>
+                        <div class="cell">{{item.position}}</div>
                     </div>
                 </template>
             </div>
@@ -186,9 +190,26 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                         <br>
                         {{__("add_translation")}}
                     </p>
-                    <critter-input id="rowName" label="Name: " value="{{rowName}}"></critter-input>
+                    <p>
+                        <critter-input id="rowName" label="Name: " value="{{rowName}}"></critter-input>
+                    </p>
                     <critter-button id="breakUpdateRowButton">[[__("break")]]</critter-button>
                     <critter-button id="updateRowButton">[[__("update")]]</critter-button>
+                </critter-form>
+            </critter-dialog>
+
+            <critter-dialog id="addRowDialog">
+                <critter-form id="addRowForm" method="POST" target="" >
+                    <p>
+                        {{__("add_row")}}
+                        <br>
+                        {{__("add_translation")}}
+                    </p>
+                    <p>
+                        <critter-input id="rowName" label="Name: " value="{{rowName}}"></critter-input>
+                    </p>
+                    <critter-button id="breakAddRowButton">[[__("break")]]</critter-button>
+                    <critter-button id="addRowButton">[[__("update")]]</critter-button>
                 </critter-form>
             </critter-dialog>
         `;
@@ -210,6 +231,11 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
                 value: []
             },
 
+            rowPositions: {
+              type: Array,
+              value: []
+            },
+
             selectedLevel: {
                 type: String,
                 value: ''
@@ -221,6 +247,11 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
             },
 
             selectedRowName: {
+                type: String,
+                value: ''
+            },
+
+            selectedPosition: {
                 type: String,
                 value: ''
             },
@@ -238,6 +269,11 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
             rowName: {
                 type: String,
                 value: ''
+            },
+
+            highestPosition: {
+                type: Number,
+                value: -1
             }
         }
     }
@@ -257,6 +293,12 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
             this.$.deleteRow.addEventListener("click", this.openDeleteRowDialog.bind(this));
             this.$.breakDeleteRowButton.addEventListener("click", this.closeDeleteRowDialog.bind(this));
             this.$.deleteRowButton.addEventListener("click", this._deleteRow.bind(this));
+            this.$.editRow.addEventListener("click", this.openUpdateRowDialog.bind(this));
+            this.$.breakUpdateRowButton.addEventListener("click", this.closeUpdateRowDialog.bind(this));
+            this.$.updateRowButton.addEventListener("click", this._updateRow.bind(this));
+            this.$.addRow.addEventListener("click", this.openAddRowDialog.bind(this));
+            this.$.breakAddRowButton.addEventListener("click", this.closeAddRowDialog.bind(this));
+            this.$.addRowButton.addEventListener("click", this._addRow.bind(this));
         });
     }
 
@@ -264,20 +306,20 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
      * Retrieves the level and row data from the database to fill the table and selectors with the current values.
      */
     getLevelData() {
-        let req = document.createElement('iron-ajax');
-        req.url = "/level/levels";
-        req.method = "GET";
-        req.handleAs = 'json';
-        req.contentType = 'application/json';
-        req.bubbles = true;
-        req.rejectWithRequest = true;
+        let req = this._generateRequest("/level/levels", "", "get");
 
         req.addEventListener('response', e => {
             e.detail.__data.response.forEach((rowData) => {
                 rowData.levels.forEach((level) => {
-                    this.push('levels', {name: level.name, value: level.name, row: rowData.name, score: level.score});
+                    this.push('levels', {name: level.name, value: level.name, row: rowData.name,
+                        position: rowData.position});
                 })
-                this.push('rows', {name: rowData.name, value: rowData.id});
+                this.push('rows', {name: rowData.name, value: rowData.id, position: rowData.position});
+                this.push('rowPositions', {name: rowData.position, value: rowData.id});
+
+                if (rowData.position > this.highestPosition) {
+                    this.highestPosition = rowData.position;
+                }
             })
         });
 
@@ -330,13 +372,47 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
     }
 
     /**
+     * Renders the popup dialog to change the name of the chosen row.
+     */
+    openUpdateRowDialog() {
+        let index = this.rows.findIndex(({value}) => value === this.selectedRow);
+        this.rowName = this.rows[index].name;
+        this.selectedPosition = this.selectedRow;
+        this.$.updateRowDialog.open();
+    }
+
+    /**
+     * Closes the popup dialog and aborts the process of changing the row name.
+     */
+    closeUpdateRowDialog() {
+        this.rowName = "";
+        this.selectedPosition = "";
+        this.$.updateRowDialog.close();
+    }
+
+    /**
+     * Renders the popup dialog to add a new row.
+     */
+    openAddRowDialog() {
+        this.$.addRowDialog.open();
+    }
+
+    /**
+     * Closes the popup dialog and aborts the process of adding a row.
+     */
+    closeAddRowDialog() {
+        this.rowName = "";
+        this.$.addRowDialog.close();
+    }
+
+    /**
      * Deletes the currently selected level from the database along with all its mutants and results achieved for that
      * level.
      * @returns {HTMLElement}
      * @private
      */
     _deleteLevel() {
-        let req = this._generateRequest("/generator/level/delete", this.selectedLevel);
+        let req = this._generateRequest("/generator/level/delete", this.selectedLevel, "post");
 
         req.addEventListener('error', e => {
             this.showErrorToast("level_not_deleted");
@@ -365,7 +441,7 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         let index = this.rows.findIndex(({value}) => value === this.selectedRow);
         let data = {id: this.rows[index].value, name: this.rows[index].name};
 
-        let req = this._generateRequest("/generator/row/delete", data);
+        let req = this._generateRequest("/generator/row/delete", data, "post");
 
         req.addEventListener('error', e => {
             this.showErrorToast("row_not_deleted");
@@ -390,16 +466,88 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
     }
 
     /**
-     * Generates a post request with the given url and the given data to be submitted.
+     * Updates the name of the selected row to the input value if it is a valid name.
+     * @private
+     */
+    _updateRow() {
+        if (!this._validateRowName(this.rowName)) {
+            return;
+        }
+
+        let data = {id: this.selectedRow, name: this.rowName};
+        let req = this._generateRequest("/generator/row/update", data, "post");
+
+        req.addEventListener('error', e => {
+            this.showErrorToast("row_not_updated");
+            this.$.loading.hide();
+        });
+
+        this.$.loading.show();
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+
+        let index = this.rows.findIndex(({value}) => value === this.selectedRow);
+        let oldName = this.rows[index].name;
+        this.rows[index].name = this.rowName;
+
+        for (let i = 0; i < this.levels.length; i++) {
+            if (this.levels[i].row === oldName) {
+                this.set('levels.' + i + '.row', this.rowName);
+                this.notifyPath('levels.' + i + '.row');
+            }
+        }
+
+        this.closeUpdateRowDialog();
+        this.$.loading.hide();
+        this.showSuccessToast("row_updated");
+
+        return req;
+    }
+
+    /**
+     * Inserts a new row with the entered name into the database if the name is valid.
+     * @private
+     */
+    _addRow() {
+        if (!this._validateRowName(this.rowName)) {
+            return;
+        }
+
+        let data = {name: this.rowName, position: this.highestPosition + 1};
+    }
+
+    /**
+     * Checks, whether the given row name is an empty string or already exists.
+     * @param rowName The name to validate.
+     * @returns {boolean} True iff the name is valid.
+     * @private
+     */
+    _validateRowName(rowName) {
+        rowName.trim();
+        if (rowName === "") {
+            this.showErrorToast("empty_field");
+            return false;
+        }
+        let index = this.rows.findIndex(({name}) => name === rowName);
+        if (index >= 0) {
+            this.showErrorToast("name_exists");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Generates a post or get request with the given url and the given data to be submitted.
      * @param url The url of the request.
      * @param data The data to be transmitted.
+     * @param method The method to use (post or get).
      * @returns {HTMLElement} The request to be sent to the database.
      * @private
      */
-    _generateRequest(url, data) {
+    _generateRequest(url, data, method) {
         let req = document.createElement('iron-ajax');
         req.url = url;
-        req.method = "post";
+        req.method = method;
         req.handleAs = 'json';
         req.contentType = 'application/json';
         req.bubbles = true;

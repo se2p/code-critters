@@ -168,6 +168,32 @@ public class GeneratorController {
         }
     }
 
+    /**
+     * Updates the name of the given row.
+     */
+    @PostMapping(path = "/row/update")
+    @Secured("ROLE_ADMIN")
+    public void updateRow(@RequestBody RowDTO dto, HttpServletResponse response) {
+        try {
+            rowService.updateRow(dto);
+        } catch (NotFoundException e) {
+            response.setStatus(404);
+        }
+    }
+
+    /**
+     * Adds a new row with the given name and position.
+     */
+    @PostMapping(path = "/row/add")
+    @Secured("ROLE_ADMIN")
+    public void addRow(@RequestBody RowDTO dto, HttpServletResponse response) {
+        try {
+            rowService.addRow(dto);
+        } catch (AlreadyExistsException e) {
+            response.setStatus(460);
+        }
+    }
+
     @GetMapping(path = "/names")
     public List<String> getLevelNames() {
         return levelService.getLevelNames();

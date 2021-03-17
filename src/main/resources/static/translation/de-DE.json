@@ -106,5 +106,11 @@
   "row_deleted": "Die Kategorie wurde gelöscht",
   "row_not_deleted": "Die Kategorie konnte nicht gelöscht werden",
   "update_row": "Möchtest du den Namen der Kategorie wirklich ändern?",
-  "add_translation": "Du musst manuell einen Eintrag in die Übersetzungsdateien einfügen,\n um eine Übersetzung der Kategorie auf der Startseite anzuzeigen."
+  "add_translation": "Du musst für den Namen einen Eintrag in die Übersetzungsdateien einfügen.",
+  "empty_field": "Das Eingabefeld darf nicht leer sein.",
+  "name_exists": "Der Name existiert bereits.",
+  "row_updated": "Der Name der Kategorie wurde geändert.",
+  "row_not_updated": "Die Änderung konnte nicht gespeichert werden.",
+  "row_position": "Position der Kategorie",
+  "add_row": "Bitte gib den Namen der neuen Kategorie ein."
 }

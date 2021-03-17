@@ -26,6 +26,7 @@ public class RowDTO {
 
     private String id;
     private String name;
+    private int position;
 
     /**
      * Specifies the row to which a level belongs.
@@ -35,6 +36,12 @@ public class RowDTO {
     public RowDTO(String id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public RowDTO(String id, String name, int position) {
+        this.id = id;
+        this.name = name;
+        this.position = position;
     }
 
     public RowDTO() {
@@ -54,5 +61,13 @@ public class RowDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getPosition() {
+        return  position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

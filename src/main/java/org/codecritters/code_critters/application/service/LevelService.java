@@ -238,6 +238,7 @@ public class LevelService {
                 HashMap map = new HashMap<String, Object>();
                 map.put("name", row.getName());
                 map.put("id", row.getId());
+                map.put("position", row.getPosition());
                 map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, user));
                 groupedLevels.add(map);
             }
@@ -246,6 +247,7 @@ public class LevelService {
                 HashMap map = new HashMap<String, Object>();
                 map.put("name", row.getName());
                 map.put("id", row.getId());
+                map.put("position", row.getPosition());
                 map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
                 groupedLevels.add(map);
             }
@@ -271,7 +273,7 @@ public class LevelService {
         List<RowDTO> rowDTOS = new LinkedList<>();
 
         for (CritterRow row : rows) {
-            rowDTOS.add(new RowDTO(row.getId(), row.getName()));
+            rowDTOS.add(new RowDTO(row.getId(), row.getName(), row.getPosition()));
         }
 
         return rowDTOS;
