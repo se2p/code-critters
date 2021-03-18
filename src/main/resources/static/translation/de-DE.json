@@ -112,5 +112,7 @@
   "row_updated": "Der Name der Kategorie wurde geändert.",
   "row_not_updated": "Die Änderung konnte nicht gespeichert werden.",
   "row_position": "Position der Kategorie",
-  "add_row": "Bitte gib den Namen der neuen Kategorie ein."
+  "add_row": "Bitte gib den Namen der neuen Kategorie ein.",
+  "row_added": "Die Kategorie wurde hinzugefügt",
+  "row_not_added": "Die Kategorie konnte nicht gespeichert werden"
 }

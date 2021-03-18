@@ -111,5 +111,7 @@
   "row_updated": "The row has been updated",
   "row_not_updated": "Could not update row",
   "row_position": "Category Position",
-  "add_row": "Please enter the name of the new category."
+  "add_row": "Please enter the name of the new category.",
+  "row_added": "The row has been added",
+  "row_not_added": "Could not add row"
 }

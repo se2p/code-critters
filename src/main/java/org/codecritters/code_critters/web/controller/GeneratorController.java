@@ -27,6 +27,7 @@ import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.application.service.LevelService;
 import org.codecritters.code_critters.application.service.MutantsService;
 import org.codecritters.code_critters.application.service.RowService;
+import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.MutantsDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
@@ -186,11 +187,12 @@ public class GeneratorController {
      */
     @PostMapping(path = "/row/add")
     @Secured("ROLE_ADMIN")
-    public void addRow(@RequestBody RowDTO dto, HttpServletResponse response) {
+    public RowDTO addRow(@RequestBody RowDTO dto, HttpServletResponse response) {
         try {
-            rowService.addRow(dto);
+            return rowService.addRow(dto);
         } catch (AlreadyExistsException e) {
             response.setStatus(460);
+            return null;
         }
     }
 

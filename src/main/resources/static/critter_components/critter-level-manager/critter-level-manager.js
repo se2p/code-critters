@@ -451,7 +451,18 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         this.$.loading.show();
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
-        this.splice('rows', index, 1);
+
+        if (this.rows[index].position === this.highestPosition) {
+            this.splice('rows', index, 1);
+            this.highestPosition = -1;
+            for (let i = 0; i < this.rows.length; i++) {
+                if (this.rows[i].position > this.highestPosition) {
+                    this.highestPosition = this.rows[i].position;
+                }
+            }
+        } else {
+            this.splice('rows', index, 1);
+        }
 
         for (let i = 0; i < this.deleteLevels.length; i++) {
             let index = this.levels.findIndex(({name}) => name === this.deleteLevels[i]);
@@ -514,6 +525,28 @@ class CritterLevelManager extends Toaster(I18n(PolymerElement)) {
         }
 
         let data = {name: this.rowName, position: this.highestPosition + 1};
+        let req = this._generateRequest("/generator/row/add", data, "post");
+
+        req.addEventListener('error', e => {
+            this.showErrorToast("row_not_added");
+            this.$.loading.hide();
+        });
+
+        req.addEventListener('response', e => {
+            let row = e.detail.__data.response;
+            this.push('rows', {name: row.name, value: row.id, position: row.position});
+            this.push('rowPositions', {name: row.position, value: row.id});
+            this.notifyPath('rows');
+            this.notifyPath('rowPositions');
+            this.highestPosition = row.position;
+            this.$.loading.hide();
+            this.showSuccessToast("row_added");
+            this.closeAddRowDialog();
+        });
+
+        this.$.loading.show();
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
     }
 
     /**
