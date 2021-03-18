@@ -113,5 +113,7 @@
   "row_position": "Category Position",
   "add_row": "Please enter the name of the new category.",
   "row_added": "The row has been added",
-  "row_not_added": "Could not add row"
+  "row_not_added": "Could not add row",
+  "error": "Error",
+  "error_text": "The page you are looking for can not be found or you do not have the right to access the page."
 }

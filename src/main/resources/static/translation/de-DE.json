@@ -114,5 +114,7 @@
   "row_position": "Position der Kategorie",
   "add_row": "Bitte gib den Namen der neuen Kategorie ein.",
   "row_added": "Die Kategorie wurde hinzugefügt",
-  "row_not_added": "Die Kategorie konnte nicht gespeichert werden"
+  "row_not_added": "Die Kategorie konnte nicht gespeichert werden",
+  "error": "Fehler",
+  "error_text": "Die Seite existiert nicht oder du hast nicht die nötigen Rechte, um sie zu sehen."
 }

@@ -28,6 +28,8 @@
     <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
     <script type=module src="critter_components/critter-header/critter-header.js"></script>
+    <script type=module src="critter_components/critter-translator/critter-translator-escaped.js"></script>
+    <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
 
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
@@ -35,11 +37,9 @@
     <custom-style>
         <style>
             body {
-                font-family: Arial;
-                font-size: 0.8em;
                 height: 100vh;
+                font-size: 0.8em;
                 margin: 0;
-                background-color: #2f8136;
             }
 
             #foreground_container {
@@ -47,7 +47,6 @@
                 position: relative;
                 height: 100vh;
                 margin: auto;
-                /*background-color: rgba(217, 248, 239, 0.4);*/
                 background-color: #F3F4F6;
                 z-index: 2;
             }
@@ -56,20 +55,41 @@
                 width: 100px;
             }
 
-            critter-background {
-                z-index: 1;
-            }
-
-            #foreground_container hr {
-                color: #FFA600;
-                background-color: #FFA600;
-                height: 3px;
-                margin: 0;
+            .text{
+                text-align: left;
+                font-size: 1.3em;
+                margin: 5% 0;
             }
 
             .content {
                 position: relative;
                 margin: 15px;
+            }
+
+            .col-sm-2 {
+                background-color: #f3f3f3;
+            }
+
+            .col-sm-8 {
+                box-shadow: 0 8px 20px 0 rgba(0,0,0,.08);
+                padding: 2%;
+                height: 100%;
+            }
+
+            hr {
+                color: #ffa600;
+                background-color: #ffa600;
+                height: 3px;
+                margin: 0;
+            }
+
+            #copyright {
+                color: white;
+                background-color: rgb(57, 58, 61);
+            }
+
+            #copyright_content {
+                padding: 2%;
             }
         </style>
 
@@ -78,11 +98,25 @@
 </head>
 <body>
 <div id="foreground_container">
-    <critter-header></critter-header>
-    <hr>
-    <div class="content">
-        <h1>Error</h1>
-        The page you are looking for can not be found or you do not have the right to access the page.
+    <div class="row">
+        <div class="col-sm-12">
+            <critter-header></critter-header>
+            <hr>
+        </div>
+    </div>
+    <div class="row content">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8 text">
+            <h3><b><critter-translator-escaped key="error"></critter-translator-escaped></b></h3>
+            <critter-translator-escaped key="error_text"></critter-translator-escaped>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="row fixed-bottom">
+        <div class="col-sm-12" id="copyright">
+            <hr>
+            <critter-copyright id="copyright_content"></critter-copyright>
+        </div>
     </div>
 </div>
 </body>

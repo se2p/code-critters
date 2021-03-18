@@ -129,8 +129,6 @@ public class GeneratorController {
     @PostMapping(path = "/level/update")
     @Secured("ROLE_ADMIN")
     public void updateLevel(@RequestBody LevelDTO dto, HttpServletResponse response) {
-        System.out.println(dto.getId());
-        System.out.println(dto.getName());
         try {
             levelService.updateLevel(dto);
         } catch (AlreadyExistsException e) {
