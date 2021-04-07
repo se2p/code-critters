@@ -101,6 +101,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 .full_blockly{
                     width: 90vw;
                 }
+                
+                #heads {
+                    margin-bottom: 1%;
+                }
             }
 
             #critter_container {
@@ -116,29 +120,27 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             #send_button,
             #speedUp_button,
-            #reload_button,
-            #coordinate_container{
-                padding: 2%;
-                margin: 2%;
+            #reload_button {
+                padding: 0 1%;
+                margin: 0 1%;
                 float: left;
             }
-            
+
             #game_containers {
                 padding: 2%;
             }
 
             #coordinate_container{
                 visibility: hidden;
+                float: right;
+                margin-top: 1%;
+                margin-bottom: 1%;
             }
             
             #finished_container *, #killed_container *{
                 padding: 1%;
                 margin: 0;
                 float: left;
-            }
-            
-            #finished_container, #killed_container {
-                margin: 2%;
             }
 
             #send_button {
@@ -213,9 +215,16 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 margin: 0;
             }
             
-            .row #buttons, .row #heads {
-                margin-bottom: 2%;
-                margin-top: 2%
+            #buttons, #heads {
+                border-radius: 15px;
+                border: 2px solid #FFA600;
+                padding: 1%;
+                max-width: 660px;
+                background-color: white;
+            }
+            
+            #heads {
+                margin-top: 1%;
             }
         </style>
 
@@ -261,20 +270,18 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 </div>
                 <br>
                 <div class="row" id="buttons">
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                         <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
                         <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
                         <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
-                    </div>
-                    <div class="col-sm-6">
                         <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
                     </div>
                 </div>
                 <div class="row" id="heads">
-                    <div class="col-sm-4">
+                    <div class="col-sm-12">
                         <div id="finished_container"></div>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <div id="killed_container"></div>
                     </div>
                 </div>
