@@ -20,7 +20,6 @@
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {critterStyle} from '/style/critter-botstrap.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
@@ -48,6 +47,13 @@ class CritterCopyright extends I18n(PolymerElement) {
                 .row {
                     text-align: center;
                 }
+                
+                .uniPage,
+                .uniPage:hover {
+                    text-decoration: none;
+                    color: #ffa600;
+                    margin: 2em;
+                }
             </style>
             
             ${critterStyle}
@@ -56,13 +62,14 @@ class CritterCopyright extends I18n(PolymerElement) {
                 <div class="col-sm-12">
                     <p>Copyright &copy; 2020 Code Critters<br>
                     Universität Passau, Innstraße 33, 94032 Passau<br>
-                    Lehrstuhl für Software Engineering II, Prof. Dr. Gordon Fraser<br>
-                    E-Mail: ?????</p>
+                    <!--Link to the chair's page-->
+                    <a class="uniPage" href="https://www.fim.uni-passau.de/lehrstuhl-fuer-software-engineering-ii/" target="_blank">Lehrstuhl für Software Engineering II</a><br>
+                    Prof. Dr. Gordon Fraser</p>
                     <p>
                         <!--Link to the university's general legal notice-->
-                        <a href="https://www.uni-passau.de/impressum/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('legal')]]</a>
+                        <a class="uniPage" href="https://www.uni-passau.de/impressum/" target="_blank">[[__('legal')]]</a>
                         <!--Link to the university's general privacy statement-->
-                        <a href="https://www.uni-passau.de/datenschutzerklaerung/" style="text-decoration: none; color: #ffa600; margin: 2em;" target="_blank">[[__('privacy')]]</a>
+                        <a class="uniPage" href="https://www.uni-passau.de/datenschutzerklaerung/" target="_blank">[[__('privacy')]]</a>
                     </p>
                 </div>
             </div>

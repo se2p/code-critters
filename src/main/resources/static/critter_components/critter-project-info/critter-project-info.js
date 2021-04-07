@@ -126,32 +126,6 @@ class CritterProjectInfo extends I18n(PolymerElement) {
             
             ${critterStyle}
             
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="card">
-                        <img src="[[importPath]]images/unicorn.png" class="profile_img" alt="Gordon Fraser">
-                            <h3>Gordon Fraser</h3>
-                            <p class="card-title">[[__('chair_se2')]]</p>
-                            <p>[[__('uni_passau')]]</p>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="card">
-                        <img src="[[importPath]]images/unterwelt.png" class="profile_img" alt="Gestalt der Unterwelt">
-                        <h3>Gordon Fraser</h3>
-                        <p class="card-title">[[__('shape')]]</p>
-                        <p>[[__('nether_world')]]</p>
-                    </div>
-                </div>
-                <div class="col-sm-4">
-                    <div class="card">
-                        <img src="[[importPath]]images/schlumpf.png" class="profile_img" alt="Schlumpf">
-                        <h3>Gordon Fraser</h3>
-                        <p class="card-title">[[__('smurf')]]</p>
-                        <p>[[__('smurf_home')]]</p>
-                    </div>
-                </div>
-            </div>
             <!--Short information segment about the Code Critters project.-->
             <div class="row" id="project_text">
                 <div class="col-sm-4">
