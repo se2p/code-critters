@@ -70,13 +70,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             }
             
             /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the fixed-size gameboard. */
-            @media only screen and (max-width: 1350px) and (min-width: 1081px) {
+            @media only screen and (max-width: 1350px) and (min-width: 1150px) {
                 #board_container {
-                    max-width: 67%;
+                    max-width: 62%;
                 }
                 
                 #blockly_container {
-                    max-width: 33%;
+                    max-width: 38%;
+                    margin-left: 2%;
                 }
                 
                 .full_blockly{
@@ -87,7 +88,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             }
             
             /* Causes the blockly_container to be positioned below the gameboard. */
-            @media only screen and (max-width: 1080px) {
+            @media only screen and (max-width: 1149px) {
                 #board_container {
                     max-width: 100%;
                     width: 100%;
@@ -99,6 +100,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 }
                 
                 .full_blockly{
+                    max-width: 640px;
                     width: 90vw;
                 }
                 
