@@ -23,6 +23,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import '../critter-blockly/critter-blockly.js';
 import '../critter-tab/critter-tab.js';
@@ -38,7 +39,7 @@ A creator for mutated critters
 ```
 
 */
-class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
+class CritterMutantCreator extends Toaster(Level(I18n(PolymerElement))) {
     static get template() {
         return html`
     <style>
@@ -61,7 +62,7 @@ class CritterMutantCreator extends Toaster(Level(PolymerElement)) {
     <critter-blockly class="tab code tab-0" height$="{{ _boardHeight}}" controls="true" trashcan="true" cut>
       <span>
         <p>Mutant Code</p>
-        <p style="color:#FFA600">Updating the CUT or changing the language will cause the mutant code to be overwritten!</p>
+        <p style="color:#FFA600">{{__("mutant_code_warning")}}</p>
       </span>
     </critter-blockly>
      `;

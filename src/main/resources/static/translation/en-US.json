@@ -112,5 +112,10 @@
   "row_added": "The row has been added",
   "row_not_added": "Could not add row",
   "error": "Error",
-  "error_text": "The page you are looking for can not be found or you do not have the right to access the page."
+  "error_text": "The page you are looking for can not be found or you do not have the right to access the page.",
+  "show_mutants": "Show Mutants",
+  "show_mutants_info": "On this page, you can check out the code of all mutants for",
+  "show_mutants_code": "You can see the mutated code for a specific mutant by clicking on one of the mutant tabs.",
+  "show_mutants_critter": "The Critter tab contains the original code you have to test.",
+  "mutant_code_warning": "Updating the CUT or changing the language will cause the mutant code to be overwritten!"
 }

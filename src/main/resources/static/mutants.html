@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Code Critters - Mutants</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+
+    <script type=module src="critter_components/critter-header/critter-header.js"></script>
+    <script type=module src="critter_components/critter-mutant-show/critter-mutant-show.js"></script>
+    <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
+
+    <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
+
+    <custom-style>
+        <style>
+            body {
+                font-family: Arial;
+                font-size: 0.8em;
+                margin: 0;
+            }
+
+            critter-header {
+                width: 100%;
+                margin: 0;
+            }
+
+            #header_row {
+                background-color: white;
+                margin-bottom: 1%;
+            }
+
+            hr {
+                color: #ffa600;
+                background-color: #ffa600;
+                height: 3px;
+                margin: 0;
+            }
+
+            #copyright {
+                color: white;
+                background-color: rgb(57, 58, 61);
+                font-size: 1.2em;
+                padding: 2%;
+            }
+        </style>
+
+    </custom-style>
+</head>
+<body>
+<div class="row" id="header_row">
+    <div class="col-sm-12">
+        <critter-header></critter-header>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12" id="mutants">
+        <critter-mutant-show></critter-mutant-show>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-sm-12" id="copyright">
+        <critter-copyright></critter-copyright>
+    </div>
+</div>
+</body>
+</html>

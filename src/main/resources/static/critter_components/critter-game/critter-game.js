@@ -248,6 +248,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             </div>
             <div id="dialog_text">
                 <critter-score id="dialog_score"></critter-score>
+                <critter-button id="mutant_button">[[__('show_mutants')]]</critter-button>
             </div>
             <div id="selector_container">
                 <h3>[[__('select_next')]]</h3>
@@ -409,6 +410,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
             this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
             this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
+            this.$.mutant_button.addEventListener("click", () => this._showMutants(this));
             this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
             this.$.board_container.addEventListener("mouseout", () => this._renderCoordinates(false));
             window.addEventListener("resize", (event) => this._handleResize(event));
@@ -807,6 +809,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
         return req;
+    }
+
+    /**
+     * Redirects to the mutants page where the mutant code for the current level is displayed.
+     * @private
+     */
+    _showMutants() {
+        window.location.href = "/mutants?level=" + this._globalData.levelName;
     }
 }
 

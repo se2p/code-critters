@@ -45,7 +45,7 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
         return html`
             <style>
                 #load_button{
-                    margin: var( --margin-selector-button);
+                    margin: 1%;
                 }
             </style>
             <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>

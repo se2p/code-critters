@@ -112,5 +112,10 @@
   "row_added": "Die Kategorie wurde hinzugefügt",
   "row_not_added": "Die Kategorie konnte nicht gespeichert werden",
   "error": "Fehler",
-  "error_text": "Die Seite existiert nicht oder du hast nicht die nötigen Rechte, um sie zu sehen."
+  "error_text": "Die Seite existiert nicht oder du hast nicht die nötigen Rechte, um sie zu sehen.",
+  "show_mutants": "Mutanten anzeigen",
+  "show_mutants_info": "Auf dieser Seite kannst du den Code aller Mutanten ansehen für",
+  "show_mutants_code": "Du kannst dir den Code eines konkreten Mutanten anschauen, indem du auf einen der Mutanten-Tabs klickst.",
+  "show_mutants_critter": "Der Critter-Tab enthält den ursprünglichen Code, den du testen sollst.",
+  "mutant_code_warning": "Eine Veränderung des CUTs oder das Umstellen der Sprache führt dazu, dass der Mutanten-Code überschrieben wird!"
 }
