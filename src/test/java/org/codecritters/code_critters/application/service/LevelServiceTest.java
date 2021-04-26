@@ -49,9 +49,6 @@ public class LevelServiceTest {
     @Mock
     private UserRepositiory userRepository;
 
-    @Mock
-    private ResultRepository resultRepository;
-
     private LevelDTO levelDTO;
     private CritterRow row = new CritterRow("name", 1);
     private final String level2 = "level_2";

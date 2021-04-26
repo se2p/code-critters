@@ -29,7 +29,7 @@ import '../critter-blockly/critter-blockly.js';
 import '../critter-tab/critter-tab.js';
 
 /*
-# critter-mutuant-show
+# critter-mutant-show
 
 Shows the code of the mutated critters for a given level
 
@@ -69,7 +69,7 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
                     font-size: 1.3em;
                 }
                 
-                .emphasize {
+                #levelName {
                     font-weight: bold;
                     color: #ffa600;
                 }
@@ -81,7 +81,7 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
                     <p>
                         {{__("show_mutants_info")}}
                     </p>
-                    <p class="emphasize">{{levelName}}</p>
+                    <p id="levelName">{{levelName}}</p>
                     <p>
                         {{__("show_mutants_code")}}
                         <br>
@@ -112,8 +112,7 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
             tabs: {
                 type: Array,
                 value: [
-                    {title: "Info"},
-                    {title: "Critter"}
+                    {title: "Info"}
                 ]
             },
 
@@ -199,7 +198,8 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
         req.addEventListener('response', e => {
             let mutants = e.detail.__data.response;
             for (let i = 0; i < mutants.length; i++) {
-                this._critterList[i] = {id: mutants[i].id, code: mutants[i].code, init: mutants[i].init, xml: mutants[i].xml};
+                this._critterList[i] = {id: mutants[i].id, code: mutants[i].code, init: mutants[i].init,
+                    xml: mutants[i].xml};
                 this._initializeMutants(i, this._critterList[i]);
             }
         });

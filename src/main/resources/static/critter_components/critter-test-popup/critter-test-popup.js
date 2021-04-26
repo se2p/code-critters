@@ -257,6 +257,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         }
         let detail = {};
         detail.code = new Function('x', 'y', code);
+        detail.js = code;
         detail.xml = this.$.blockly_test.getXML();
         this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = detail;
         this.dispatchEvent(new CustomEvent('_mineSet', {

@@ -69,7 +69,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 display: block;
             }
             
-            /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the fixed-size gameboard. */
+            /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the
+            fixed-size gameboard. */
             @media only screen and (max-width: 1350px) and (min-width: 1150px) {
                 #board_container {
                     max-width: 62%;
@@ -132,14 +133,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 padding: 2%;
             }
 
-            #coordinate_container{
+            #coordinate_container {
                 visibility: hidden;
                 float: right;
                 margin-top: 1%;
                 margin-bottom: 1%;
             }
             
-            #finished_container *, #killed_container *{
+            #finished_container *, #killed_container * {
                 padding: 1%;
                 margin: 0;
                 float: left;
@@ -154,21 +155,21 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 margin-bottom: 5px;
             }
 
-            #star_container{
+            #star_container {
                 color: gold;
                 height: 50px;
                 width: fit-content;
                 margin: auto;
             }
             
-            #star_container iron-icon{
+            #star_container iron-icon {
                 width: 100px;
                 height: 100px;
                 visibility: hidden;
                 transition: width 100ms, height 100ms;
             }
             
-            #star_container .star{
+            #star_container .star {
                 width: 50px;
                 height: 50px;
                 position: relative;
@@ -176,7 +177,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 float: left;
             }
             
-            #star_container .visibleStar{
+            #star_container .visibleStar {
                 width: 50px;
                 height: 50px;
                 visibility: visible;
@@ -186,18 +187,18 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 margin-top: 0;
             }
 
-            #dialog_text{
+            #dialog_text {
                 margin-top: 40px;
                 font-size: 1.5em;
                 text-align: center;
             }
 
-            #selector_container{
+            #selector_container {
                 margin-top: 60px;
                 text-align: center;
             }
 
-            #selector_container critter-level-selector-simple{
+            #selector_container critter-level-selector-simple {
                 --margin-selector-button: auto;
             }
             
@@ -227,6 +228,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             
             #heads {
                 margin-top: 1%;
+            }
+            
+            #mutant_button {
+                margin-left: auto;
+                margin-right: auto;
             }
         </style>
 
@@ -268,15 +274,19 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 <div class="row">
                     <critter-gameboard id="gameboard" show-grid="{{showGrid}}"></critter-gameboard>
                     <div id="critter_container"></div>
-                    <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}" popup-height="{{ _popupHeight}}">
+                    <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}"
+                                        popup-height="{{ _popupHeight}}">
                     </critter-test-popup>
                 </div>
                 <br>
                 <div class="row" id="buttons">
                     <div class="col-sm-12">
-                        <critter-control-button id="send_button" class="game_button" shape="play"></critter-control-button>
-                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled></critter-control-button>
-                        <critter-control-button id="reload_button" class="game_button" shape="reload"></critter-control-button>
+                        <critter-control-button id="send_button" class="game_button" shape="play">
+                        </critter-control-button>
+                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled>
+                        </critter-control-button>
+                        <critter-control-button id="reload_button" class="game_button" shape="reload">
+                        </critter-control-button>
                         <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
                     </div>
                 </div>
@@ -388,11 +398,35 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 value: 0
             },
 
+            _startGameTime: {
+                type: Number,
+                value: 0
+            },
+
             _totalTime: {
                 type: Number,
                 value: 0
-            }
+            },
 
+            _gameTime: {
+                type: Number,
+                value: 0
+            },
+
+            _finished: {
+                type: Boolean,
+                value: false
+            },
+
+            _game: {
+                type: Object,
+                value: null
+            },
+
+            _mines: {
+                type: Array,
+                value: []
+            }
         };
     }
 
@@ -414,6 +448,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
             this.$.board_container.addEventListener("mouseout", () => this._renderCoordinates(false));
             window.addEventListener("resize", (event) => this._handleResize(event));
+            window.addEventListener("beforeunload", (event) => this._saveGameData(event));
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
@@ -428,6 +463,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
+            this._createGame();
 
             this._startTime = Date.now();
         });
@@ -444,10 +480,15 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     _reloadGame() {
+        this._gameTime += Date.now() - this._startGameTime;
+        this._saveGameData();
         this._startTime = Date.now();
         this._totalTime = 0;
         this._paused = true;
         this._crittersSent = false;
+        this._finished = false;
+        this._gameTime = 0;
+        this._startGameTime = 0;
         this._finishedHumans = 0;
         this._doneCritters = 0;
         this._killedCritters = 0;
@@ -457,25 +498,28 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             critter.remove();
         });
         this._critterList = [];
+        this._game = null;
         this._timeoutManager.clear();
         this._globalData.deleteMines();
+        this._mines = [];
         this.$.gameboard.removeAllMines();
         this.$.send_button.shape = "play";
         this.$.speedUp_button.disabled = true;
         this._onCritterNumberChanged();
+        this._createGame();
     }
 
 
     /** starts the critters**/
     _startCritters(node) {
-        window.onbeforeunload = function() {
-            return true;
-        };
+        this._startGameTime = Date.now();
 
         this.dispatchEvent(new CustomEvent('_crittersStarted', {detail: {}, bubbles: true, composed: true}));
 
+        this._gameTime += (Date.now() - this._startGameTime);
         if (this._paused) {
             this._totalTime += (Date.now() -  this._startTime);
+            this._gameTime += (Date.now() - this._startGameTime);
 
             this._paused = false;
             this.$.send_button.shape = "pause";
@@ -493,6 +537,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             }
         } else {
             this._startTime = Date.now();
+            this._startGameTime = Date.now();
             this._timeoutManager.pauseAll();
             this._critterList.forEach(critter => {
                 critter.pause();
@@ -549,10 +594,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         req.addEventListener('response', e => {
             let mutants = e.detail.__data.response;
             for (let i = 0; i < this._globalData.numberOfCritters; i++) {
-                this._createCritter(false, new Function (mutants[i % (mutants.length)].code), new Function (mutants[i % (mutants.length)].init));
+                this._createCritter(false, new Function (mutants[i % (mutants.length)].code),
+                    new Function (mutants[i % (mutants.length)].init));
             }
             this._critterList = this._shuffleArray(this._critterList);
-
         });
 
         let genRequest = req.generateRequest();
@@ -664,7 +709,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     /**
-     * If the killed Critter is a mutant, killedCritters is updated along with the killed_container displaying alive and dead mutants.
+     * If the killed Critter is a mutant, killedCritters is updated along with the killed_container displaying
+     * alive and dead mutants.
      * @param e
      * @private
      */
@@ -692,7 +738,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     /**
-     * If the Critter that finished is human, finishedHumans is updated along with the finished_container displaying alive and dead humans.
+     * If the Critter that finished is human, finishedHumans is updated along with the finished_container displaying
+     * alive and dead humans.
      * @param e
      * @private
      */
@@ -700,14 +747,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this._updateScore(e.detail.human ? 50 : -100);
         if (e.detail.human) {
             this._finishedHumans++;
-            let finished = this._finishedHumans;
+            let finishedCritter = this._finishedHumans;
             let notFinished = this._globalData.numberOfHumans - this._finishedHumans;
             this.$.finished_container.innerHTML = "";
-            while (finished > 0) {
+            while (finishedCritter > 0) {
                 let image = document.createElement("critter-game-image");
                 image.name = "critter_head.png";
                 this.$.finished_container.appendChild(image);
-                finished--;
+                finishedCritter--;
             }
             while (notFinished > 0) {
                 let image = document.createElement("critter-game-image");
@@ -729,13 +776,17 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     _onLevelFinished() {
         // this.score -= 25 * (this._globalData.countMines());
         // this.score = (this.score < 0 ? 0 : this.score);
+        this._gameTime += (Date.now() - this._startGameTime);
+        this._finished = true;
+        this._mines = this._globalData.getMines();
+        let numMines = this._mines.length;
         this.$.score_dialog.open();
-        if(this._globalData.countMines() > 2) {
-            this.score = -25 * (this._globalData.countMines() - 2); //TODO free mines
+        if(numMines > 2) {
+            this.score = -25 * (numMines - 2); //TODO free mines
         }
         this.score = (this._finishedHumans + this._killedCritters) * 50 +
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
-        this.showScore();
+        this.showScore(numMines);
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
@@ -744,23 +795,26 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         } else if (this.score >= 500){
             stars = 1;
         }
-        window.onbeforeunload = null;
         this._storeResult(stars);
+        this._saveGame();
+        this._saveMines();
+        this.removeEventListener("beforeunload", this._saveGameData);
     }
 
-    async showScore() {
+    async showScore(numMines) {
         let dialogScore = this.$.dialog_score;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
         let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
         dialogScore.overallScore = this.score;
-        if(this._globalData.countMines() > 2) {
-            await dialogScore.insertData("mines_line", -25 * (this._globalData.countMines() - 2), this._globalData.countMines());
+        if(numMines > 2) {
+            await dialogScore.insertData("mines_line", -25 * (numMines - 2), numMines);
         } else {
-            await dialogScore.insertData("mines_line", 0, this._globalData.countMines());
+            await dialogScore.insertData("mines_line", 0, numMines);
         }
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
-        await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
+        await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) +
+            this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
     }
 
     _showStar(number) {
@@ -770,7 +824,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     /**
-     * Initializes the killed_container and finished_container with a picture for each alive mutant and human respectively.
+     * Initializes the killed_container and finished_container with a picture for each alive mutant and human
+     * respectively.
      * @private
      */
     _onCritterNumberChanged() {
@@ -818,7 +873,129 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     _showMutants() {
         window.location.href = "/mutants?level=" + this._globalData.levelName;
     }
+
+    /**
+     * Creates a game data set with initial values for the starting time, the level and the user, if logged in.
+     * @returns {HTMLElement}
+     * @private
+     */
+    _createGame() {
+        let data = {name: this._globalData.levelName}
+        let req = this._generateRequest("/game/create", data, "POST");
+
+        req.addEventListener('response', e => {
+            this._game = e.detail.__data.response;
+            this._game.name = this._globalData.levelName;
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
+    }
+
+    /**
+     * Saves the current data when the user has finished the game.
+     * @returns {HTMLElement}
+     * @private
+     */
+    _saveGame() {
+        this._game.mutantsKilled = this._killedCritters;
+        this._game.humansFinished = this._finishedHumans;
+        this._game.gameTime = this._gameTime;
+        this._game.score = this.score;
+
+        let req = this._generateRequest("/game/save", this._game, "POST");
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
+    }
+
+    /**
+     * Saves the mine code for all mines present at the point of saving.
+     * @returns {HTMLElement}
+     * @private
+     */
+    _saveMines() {
+        let data = {
+            game: this._game.id,
+            mines: this._computeMineData()
+        }
+
+        let req = this._generateRequest("/game/mines", data, "POST");
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
+    }
+
+    /**
+     * Returns the code and xml of the mines the user created.
+     * @returns {[]} An array holding the data of all mines.
+     * @private
+     */
+    _computeMineData() {
+        let mineData = [];
+        for (let i = 0; i < this._mines.length; i++) {
+            mineData.push({
+                code: this._mines[i].js,
+                xml: this._mines[i].xml
+            });
+        }
+        return mineData;
+    }
+
+    /**
+     * Saves the current game data when a user leaves the page without completing the level.
+     * @private
+     */
+    _saveGameData(event) {
+        if (this._finished) {
+            return;
+        }
+
+        if (event !== undefined) {
+            event.preventDefault();
+        }
+
+        this._game.mutantsKilled = this._killedCritters;
+        this._game.humansFinished = this._finishedHumans;
+        this._gameTime += Date.now() - this._startGameTime;
+        this._game.gameTime = this._gameTime;
+        this._mines = this._globalData.getMines();
+
+        let req = this._generateRequest("/game/save", this._game, "POST");
+
+        if (this._mines.length > 0) {
+            this._saveMines();
+        }
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+
+        return req;
+    }
+
+    /**
+     * Generates a post or get request with the given url and the given data to be submitted.
+     * @param url The url of the request.
+     * @param data The data to be transmitted.
+     * @param method The method to use (post or get).
+     * @returns {HTMLElement} The request to be sent to the database.
+     * @private
+     */
+    _generateRequest(url, data, method) {
+        let req = document.createElement('iron-ajax');
+        req.url = url;
+        req.method = method;
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.body = data;
+
+        return req;
+    }
 }
 
 window.customElements.define(CritterGame.is, CritterGame);
-

@@ -86,6 +86,37 @@ CREATE TABLE IF NOT EXISTS `result` (
     ENGINE=InnoDB
 ;
 
+CREATE TABLE IF NOT EXISTS `game` (
+                            `id` VARCHAR(255) NOT NULL,
+                            `start` DATETIME NULL DEFAULT NULL,
+                            `end` DATETIME NULL DEFAULT NULL,
+                            `score` INT(11) NOT NULL,
+                            `mutants_killed` INT DEFAULT 0,
+                            `humans_finished` INT DEFAULT 0,
+                            `game_time` DOUBLE NULL DEFAULT 0,
+                            `user_id` VARCHAR(255) DEFAULT NULL,
+                            `level_id` VARCHAR(255) NOT NULL,
+                            PRIMARY KEY (`id`),
+                            INDEX `game levelID` (`level_id`),
+                            CONSTRAINT `game levelID` FOREIGN KEY (`level_id`) REFERENCES `level` (`id`) ON DELETE CASCADE
+)
+    COLLATE='latin1_swedish_ci'
+    ENGINE=InnoDB
+;
+
+CREATE TABLE IF NOT EXISTS `mine` (
+                            `id` VARCHAR(255) NOT NULL,
+                            `game_id` VARCHAR(255) NOT NULL,
+                            `xml` TEXT NOT NULL,
+                            `code` TEXT NOT NULL,
+                            PRIMARY KEY (`id`),
+                            INDEX `gameID` (`game_id`),
+                            CONSTRAINT `gameID` FOREIGN KEY (`game_id`) REFERENCES `game` (`id`) ON DELETE CASCADE
+)
+    COLLATE='latin1_swedish_ci'
+    ENGINE=InnoDB
+;
+
 
 CREATE OR REPLACE VIEW score AS
 SELECT * , (SELECT COUNT(*) FROM (

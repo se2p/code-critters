@@ -203,16 +203,20 @@ class CritterDataStore extends PolymerElement {
         this.mines = Array.from({length: this.width}, () => Array.from({length: this.height}, () => undefined));
     }
 
-    countMines(){
-        let count = 0;
+    /**
+     * Gets all mines that have been set in the game.
+     * @returns {*} A list of mines.
+     */
+    getMines() {
+        let mineList = [];
         this.mines.forEach(row => {
             row.forEach(elem =>{
                 if(elem){
-                    count++;
+                    mineList.push(elem);
                 }
             });
         });
-        return count;
+        return mineList;
     }
 
     /** performs an ajax call to get level data from the server **/

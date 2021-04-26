@@ -54,7 +54,6 @@ public class MutantsService {
     public void updateMutants(MutantsDTO dto) {
         Level level = levelRepository.findByName(dto.getName());
         for (MutantDTO critter : dto.getMutants()) {
-            System.out.println(critter.getCode());
             Mutant mutant = new Mutant(critter.getId(), level, critter.getCode(), critter.getInit(), critter.getXml());
             mutantRepository.save(mutant);
         }
