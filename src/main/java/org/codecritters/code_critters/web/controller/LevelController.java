@@ -90,6 +90,7 @@ public class LevelController {
         map.put("test", dto.getTest());
         map.put("toolbox", toolbox);
         map.put("row", dto.getRow());
+        map.put("freeMines", dto.getFreeMines());
 
         return map;
     }

@@ -91,7 +91,7 @@ public class GeneratorControllerTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1");
+        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1", 2);
         mapper = new ObjectMapper();
         levelDTOContent = mapper.writeValueAsString(levelDTO);
         rowDTOContent = mapper.writeValueAsString(row1);

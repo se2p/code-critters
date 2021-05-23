@@ -65,7 +65,7 @@ public class LevelServiceTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, row.getName());
+        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, row.getName(), 2);
     }
 
     @Test
@@ -259,7 +259,7 @@ public class LevelServiceTest {
     public void deleteLevelTest() {
         Level level = new Level(new CritterRow(), levelDTO.getName(), levelDTO.getNumberOfCritters(),
                 levelDTO.getNumberOfHumans(), levelDTO.getCUT(), levelDTO.getTest(), levelDTO.getXml(),
-                levelDTO.getInit(), levelDTO.getLevel());
+                levelDTO.getInit(), levelDTO.getLevel(), levelDTO.getFreeMines());
         level.setId("id");
         when(levelRepository.findByName(levelDTO.getName())).thenReturn(level);
         levelService.deleteLevel(levelDTO.getName());

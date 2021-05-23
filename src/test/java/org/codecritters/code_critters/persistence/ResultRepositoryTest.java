@@ -56,8 +56,8 @@ public class ResultRepositoryTest {
             {"wood", "grass", "wood"},
             {"grass", "grass", "wood"}
     };
-    private final Level level1 = new Level(row1, "level_1", 10, 5, "cut", "test", "xml", "init", levelArray);
-    private final Level level2 = new Level(row1, "level_2", 10, 5, "cut", "test", "xml", "init", levelArray);
+    private final Level level1 = new Level(row1, "level_1", 10, 5, "cut", "test", "xml", "init", levelArray, 2);
+    private final Level level2 = new Level(row1, "level_2", 10, 5, "cut", "test", "xml", "init", levelArray, 2);
     private final Result result1 = new Result(800, "cookie3", level1, 2, user2);
     private final Result result2 = new Result(950, "cookie3", level2, 3, user2);
     private final Result result3 = new Result(500, "cookie1", level1, 1, user1);

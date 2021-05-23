@@ -38,8 +38,9 @@ public class LevelDTO {
     private HashMap<String, Integer> tower;
     private HashMap<String, Integer> spawn;
     private String row;
+    private int freeMines;
 
-    public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String init, String xml, String test, String[][] level, HashMap<String, Integer> tower, HashMap<String, Integer> spawn, String row) {
+    public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String init, String xml, String test, String[][] level, HashMap<String, Integer> tower, HashMap<String, Integer> spawn, String row, int freeMines) {
         this.id = id;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
@@ -52,9 +53,10 @@ public class LevelDTO {
         this.tower = tower;
         this.spawn = spawn;
         this.row = row;
+        this.freeMines = freeMines;
     }
 
-    public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String xml, String test, String init, String[][] level) {
+    public LevelDTO(String id, String name, int numberOfCritters, int numberOfHumans, String CUT, String xml, String test, String init, String[][] level, int freeMines) {
         this.id = id;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
@@ -64,6 +66,7 @@ public class LevelDTO {
         this.test = test;
         this.level = level;
         this.xml = xml;
+        this.freeMines = freeMines;
     }
 
     public LevelDTO() {
@@ -176,5 +179,13 @@ public class LevelDTO {
 
     public void setRow(String row) {
         this.row = row;
+    }
+
+    public int getFreeMines() {
+        return freeMines;
+    }
+
+    public void setFreeMines(int freeMines) {
+        this.freeMines = freeMines;
     }
 }

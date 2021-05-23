@@ -24,7 +24,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 /*
 # critter-data-store
 
-Storrage for level data
+Storage for level data
 
 ## Example
 ```html
@@ -144,6 +144,11 @@ class CritterDataStore extends PolymerElement {
                 type: String,
                 value: '',
                 notify: true
+            },
+
+            freeMines: {
+                type: Number,
+                notify: true
             }
         }
     }
@@ -154,7 +159,7 @@ class CritterDataStore extends PolymerElement {
             '_sizeChanged(width, height)',
             '_critterNumberChanged(numberOfCritters, numberOfHumans)',
             '_userChanged(user,*)',
-            '_rowChanged(row)'
+            '_rowChanged(row, freeMines)',
         ]
     }
 
@@ -250,6 +255,7 @@ class CritterDataStore extends PolymerElement {
             this.test = data.test;
             this.toolbox = data.toolbox;
             this.row = data.row;
+            this.freeMines = data.freeMines;
         });
 
         let genRequest = req.generateRequest();

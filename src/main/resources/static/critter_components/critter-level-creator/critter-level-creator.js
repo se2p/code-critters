@@ -152,6 +152,11 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                 #current_row {
                     color: #FFA600;
                 }
+                
+                #number_inputs {
+                    position: absolute;
+                    top: 920px;
+                }
             </style>
         </custom-style>
 
@@ -190,6 +195,9 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             <critter-button id="update_button" hidden="[[showSaveButton]]">[[__("update")]]</critter-button>
             <a href="manage-levels" id="level_button"><critter-button>[[__("show_levels")]]</critter-button></a>
         </div>
+        <div id="number_inputs" class="table">
+            <critter-input id="mine_input" type="number" label="Free Mines: " value="{{setMines}}"></critter-input>
+        </div>
         `;
     }
 
@@ -204,6 +212,11 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             levelName: {
                 type: String,
                 value: ''
+            },
+
+            setMines: {
+                type: Number,
+                value: 2
             },
 
             selectedElement: {
@@ -272,6 +285,11 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                 value: []
             },
 
+            _updateXml: {
+                type: Boolean,
+                value: false
+            },
+
             _updateTest: {
                 type: Boolean,
                 value: false
@@ -305,6 +323,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                 this.showSaveButton = false;
                 this.levelName = update;
                 this._globalData.levelName = update;
+                this._updateXml = true;
                 this._updateTest = true;
                 this._updateMutants = true;
                 this._loadMutants();
@@ -328,6 +347,8 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
     _rowChange(event) {
         this.$.current_row.innerHTML = this._globalData.row;
         this.currentRow = this._globalData.row;
+        this.$.mine_input.value = this._globalData.freeMines;
+        this.freeMines = this._globalData.freeMines;
     }
 
     /**
@@ -479,6 +500,14 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             this.showErrorToast("There is no path to the tower");
             return false;
         }
+        if (isNaN(this.setMines)) {
+            this.showErrorToast("Please enter a number in the mine field!");
+            return false;
+        }
+        if (this.setMines <= 0 || this.setMines > 10) {
+            this.showErrorToast("Free mines have to be between 1 and 10!");
+            return false;
+        }
 
         return true;
     }
@@ -547,6 +576,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             test: this.$.blockly_test.getXML(),
             xml: this.$.blockly_cut.getXML(),
             row: this.selectedRow,
+            freeMines: this.setMines
         };
 
         req.addEventListener('response', async () => {
@@ -581,25 +611,25 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             return;
         }
 
-        let code = this.$.blockly_cut.getJavaScript();
+        let code;
+        let init;
+        let cut;
 
-        let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
-        let matchesInit = code.match(regExpInit) || [];
+        if (!this._updateXml) {
+            code = this.$.blockly_cut.getJavaScript();
 
-        let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
-        let matchesCUT = code.match(regExpCUT)  || [];
+            let regExpInit = /\/\/INIT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/INIT_END/g;
+            let matchesInit = code.match(regExpInit) || [];
 
-        let init = matchesInit[0];
-        let cut = matchesCUT[0];
+            let regExpCUT =  /\/\/CUT_START\r?\n((?!\/\/INIT_START)(?!\/\/CUT_START)[^])*\r?\n\/\/CUT_END/g;
+            let matchesCUT = code.match(regExpCUT)  || [];
+
+            init = matchesInit[0];
+            cut = matchesCUT[0];
+        }
+
         let index = this._rows.findIndex(({name}) => name === this.currentRow);
         let row = this._rows[index].value;
-        let test;
-
-        if (this._updateTest) {
-            test = this._globalData.test;
-        } else {
-            test = this.$.blockly_test.getXML();
-        }
 
         let req = document.createElement('iron-ajax');
         req.url = "/generator/level/update";
@@ -616,11 +646,12 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             spawn: this._globalData.spawn,
             numberOfCritters: 15,
             numberOfHumans: 5,
-            cut: cut,
-            init: init,
-            test: test,
-            xml: this.$.blockly_cut.getXML(),
+            cut: this._updateXml ? this._globalData.cut : cut,
+            init: this._updateXml ? this._globalData.init : init,
+            test: this._updateTest ? this._globalData.test : this.$.blockly_test.getXML(),
+            xml: this._updateXml ? this._globalData.xml : this.$.blockly_cut.getXML(),
             row: row,
+            freeMines: this.setMines
         };
 
         req.addEventListener('response', async () => {
@@ -697,7 +728,13 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             this.shadowRoot.querySelector('#coordinate_container').style.display = "block";
         }
         if(detail.new === 1) {
-            let code = this.$.blockly_cut.getXML();
+            let code;
+            if (this._updateXml) {
+                code = this._globalData.xml;
+                this._updateXml = false;
+            } else {
+                code = this.$.blockly_cut.getXML();
+            }
             this.$.blockly_cut._toolboxChanged();
             this.$.blockly_cut.setCode(code);
         }

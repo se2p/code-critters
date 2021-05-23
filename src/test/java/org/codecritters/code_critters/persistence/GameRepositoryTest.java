@@ -48,7 +48,7 @@ public class GameRepositoryTest {
             {"wood", "grass", "wood"},
             {"grass", "grass", "wood"}
     };
-    private final Level level = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray);
+    private final Level level = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray, 2);
     private static final String ID = "1";
     private final Game game = new Game(ID, level, LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0);
 

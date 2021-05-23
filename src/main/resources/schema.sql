@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `level` (
                          `init` TEXT NULL DEFAULT NULL,
                          `xml` TEXT NULL DEFAULT NULL,
                          `row_id` VARCHAR(255) NULL DEFAULT NULL,
+                         `free_mines` int(11) DEFAULT 2,
                          PRIMARY KEY (`id`),
                          UNIQUE INDEX `levelName` (`name`),
                          INDEX `FKiyx8r274befk3mij0vy9lcnth` (`row_id`),

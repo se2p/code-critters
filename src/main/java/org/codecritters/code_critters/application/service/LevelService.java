@@ -143,6 +143,7 @@ public class LevelService {
         dto.setNumberOfCritters(level.getNumberOfCritters());
         dto.setNumberOfHumans(level.getNumberOfHumans());
         dto.setRow(level.getRow().getName());
+        dto.setFreeMines(level.getFreeMines());
 
         return dto;
     }
@@ -181,6 +182,7 @@ public class LevelService {
         }
         level.setNumberOfCritters(dto.getNumberOfCritters());
         level.setNumberOfHumans(dto.getNumberOfHumans());
+        level.setFreeMines(dto.getFreeMines());
 
         return level;
     }

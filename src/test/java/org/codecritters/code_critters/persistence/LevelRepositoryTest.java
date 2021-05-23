@@ -42,8 +42,8 @@ public class LevelRepositoryTest {
             {"wood", "grass", "wood"},
             {"grass", "grass", "wood"}
     };
-    private final Level level1 = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray);
-    private final Level level2 = new Level(row1, "level_2", 15, 4, "cut2", "test2", "xml2", "init2", levelArray);
+    private final Level level1 = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray, 2);
+    private final Level level2 = new Level(row1, "level_2", 15, 4, "cut2", "test2", "xml2", "init2", levelArray, 2);
 
     @Before
     public void setup() {

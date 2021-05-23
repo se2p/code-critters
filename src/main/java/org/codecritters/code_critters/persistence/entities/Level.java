@@ -65,9 +65,11 @@ public class Level {
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "row_id")
     private CritterRow row;
+    @Column(columnDefinition = "int default 2")
+    private int freeMines;
 
 
-    public Level(CritterRow row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level) {
+    public Level(CritterRow row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level, int freeMines) {
         this.row = row;
         this.name = name;
         this.numberOfCritters = numberOfCritters;
@@ -77,6 +79,7 @@ public class Level {
         this.level = level;
         this.init = init;
         this.xml = xml;
+        this.freeMines = freeMines;
     }
 
     public Level() {
@@ -180,5 +183,13 @@ public class Level {
 
     public void setRow(CritterRow row) {
         this.row = row;
+    }
+
+    public int getFreeMines() {
+        return freeMines;
+    }
+
+    public void setFreeMines(int freeMines) {
+        this.freeMines = freeMines;
     }
 }
