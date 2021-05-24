@@ -89,7 +89,7 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
                     </p>
                 </div>
             </div>
-            <critter-blockly id="blockly_cut" class="tab code tab-1" height$="{{ _boardHeight}}" controls="true" cut read-only/>
+            <critter-blockly id="blockly_cut" class="tab code tab-1 full-blockly" height$="{{ _boardHeight}}" controls="true" cut read-only/>
      `;
     }
 
@@ -112,7 +112,8 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
             tabs: {
                 type: Array,
                 value: [
-                    {title: "Info"}
+                    {title: "Info"},
+                    {title: "Critter Code"}
                 ]
             },
 
@@ -124,6 +125,11 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
             _critterList: {
                 type: Array,
                 value: []
+            },
+
+            _updateXML: {
+                type: Boolean,
+                value: true
             }
 
         };
@@ -154,17 +160,25 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
      * @private
      */
     _onTabChanged(event) {
+        if (this._updateXML) {
+            let element = this.shadowRoot.querySelector('.tab-1');
+            element.xml = this._globalData.xml;
+            this._globalData.toolbox = false;
+            this._globalData.controls = true;
+            this._globalData.readOnly = true;
+            this._updateXML = false;
+        }
+
         let detail = event.detail;
         this._setDisplayTab("none", detail.old);
         this._setDisplayTab("block", detail.new);
+
         if (detail.new !== 0) {
             let element = this.shadowRoot.querySelector('.tab-' + detail.new);
-            if (detail.new === 1) {
-                let code = this.$.blockly_cut.getXML();
-                this.$.blockly_cut.getCenteredCode(code);
-            } else {
-                element.getCenteredCode(element.xml);
-            }
+            element._toolboxChanged();
+            element._controlsChanged();
+            element._readOnlyChanged();
+            element.getCenteredCode(element.xml);
         }
     }
 
@@ -238,6 +252,7 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
         newTab.xml = true;
         newTab.controls = true;
         newTab.readOnly = true;
+        newTab.toolbox = false;
         this.shadowRoot.append(newTab);
         return newTab;
     }
