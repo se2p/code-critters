@@ -680,7 +680,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 }
 
                 #field::before,
-                .mine{
+                .mine {
                     content: " ";
                     width: 40px;
                     height: 40px;
@@ -690,7 +690,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     right: 0;
                 }
                 
-                .mine{
+                .mine {
                     position:absolute;
                 }
                 
@@ -698,7 +698,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                     background-position: -200px -200px;
                 }
 
-                .background-grass::before{
+                .background-grass::before {
                     background-image: url(image/texture.png);
                 }
 
@@ -764,44 +764,44 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 }
                 
                 .ice-diagonal-up-right::before,
-                .ice-diagonal-down-right::before{
+                .ice-diagonal-down-right::before {
                     background-position: -120px -440px;
                 }
                 
                 .ice-full-up-left::before,
                 .ice-full-down-left::before,
                 .ice-full-up-right::before,
-                .ice-full-down-right::before{
+                .ice-full-down-right::before {
                     background-position: -120px -400px;
                 }
                 
                 .ice-t-right::before,
                 .ice-t-left::before,
                 .ice-t-up::before,
-                .ice-t-down::before{
+                .ice-t-down::before {
                     background-position: -80px -440px;
                 }
                 
-                .ice-cross::before{
+                .ice-cross::before {
                     background-position: -40px -440px;
                 }
 
                 .ice-horizontal::before,
-                .ice-vertical::before{
+                .ice-vertical::before {
                     background-position: -40px -400px;
                 }
                 
                 .ice-horizontal-right::before,
                 .ice-horizontal-left::before,
                 .ice-vertical-up::before,
-                .ice-vertical-down::before{
+                .ice-vertical-down::before {
                     background-position: -80px -400px;
                 }
                 
                 .ice-vertical-right::before,
                 .ice-vertical-left::before,
                 .ice-horizontal-up::before,
-                .ice-horizontal-down::before{
+                .ice-horizontal-down::before {
                     background-position: 0 -440px;
                 }
                 
@@ -812,18 +812,18 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 .ice-horizontal-up-left::before,
                 .ice-horizontal-up-right::before,
                 .ice-horizontal-down-left::before,
-                .ice-horizontal-down-right::before{
+                .ice-horizontal-down-right::before {
                     background-position: -160px -400px;
                 }
                 
                 .ice-bow-down-right::before,
                 .ice-bow-down-left::before,
                 .ice-bow-up-right::before,
-                .ice-bow-up-left::before{
+                .ice-bow-up-left::before {
                     background-position: 0 -400px;
                 }
                 
-                .ice-only::before{
+                .ice-only::before {
                     background-position: -360px -280px;
                 }
                 
@@ -1656,47 +1656,563 @@ class CritterGameboardField extends Generator(PolymerElement) {
         }, 1000);
     }
 
+    /**
+     * Computes the image to be drawn for the current x and y coordinate for the current class on saving the level.
+     * @param x The x coordinate on the board.
+     * @param y The y coordinate on the board.
+     * @returns {Promise<{img: HTMLImageElement, x, y}|{img, x, y}>} The drawn image together with its coordinates.
+     */
     async computeImg(x, y) {
         if(this.imgBuffer.has(this.class)){
             return {x: x, y: y, img: this.imgBuffer.get(this.class)};
         }
         let canvas = this.$.cnavasBuffer;
+        let context = canvas.getContext('2d');
+        const image = new Image();
+        image.src = '/critter_components/critter-gameboard/image/texture.png';
 
         if(this.class.includes("tower")){
-            canvas.height = 90;
-            this.$.field.style.marginTop = "50px";
-            let context = canvas.getContext('2d');
-            let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage( renderResult.image, -8, -8);
-            this.$.field.style.marginTop = null;
+            context.drawImage(image, 160, 120, 40, 40, 0, 0, 40, 90);
+            const buildings = new Image();
+            buildings.src = '/critter_components/critter-gameboard/image/buildings.png';
+            context.drawImage(buildings, 100, 0, 40, 90, 0, 0, 40, 90);
             let img = new Image(40, 90);
-            img.src = canvas.toDataURL();
+            img.src = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
             return {x: x, y: y, img: img};
         }
 
         if(this.class.includes("spawn")){
-            canvas.height = 50;
-            canvas.width = 50;
-            this.$.field.style.marginTop = "10px";
-            let context = canvas.getContext('2d');
-            let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.innerHTML, canvas);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage( renderResult.image, -8, -8);
-            this.$.field.style.marginTop = null;
+            context.drawImage(image, 160, 120, 50, 50, 0, 0, 50, 50);
+            const buildings = new Image();
+            buildings.src = '/critter_components/critter-gameboard/image/buildings.png';
+            context.drawImage(buildings, 0, 40, 50, 50, 0, 0, 50, 50);
             let img = new Image(50, 50);
-            img.src = canvas.toDataURL();
+            img.src = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
             return {x: x, y: y, img: img};
         }
 
-        let context = canvas.getContext('2d');
-        let renderResult = await rasterizeHTML.drawHTML(this.shadowRoot.getElementById('field').innerHTML, canvas);
-        context.drawImage(renderResult.image, -8, -8);
+        if (this.class.includes("wood")) {
+            let coordinates = this._getWoodCoordinates(this.class);
+            context.drawImage(image, 160, 120, 40, 40, 0, 0, 40, 40);
+            context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+        } else if (this.class.includes("dirt") || this.class.includes("water")
+            || this.class.includes("ice")) {
+
+            let coordinates;
+
+            if (this.class.includes("dirt")) {
+                coordinates = this._getDirtCoordinates(this.class);
+            } else if (this.class.includes("water")) {
+                coordinates = this._getWaterCoordinates(this.class);
+            } else {
+                coordinates = this._getIceCoordinates(this.class);
+            }
+
+            context.drawImage(image, 160, 120, 40, 40, 0, 0, 40, 40);
+
+            if (coordinates[2] !== 0) {
+                if (coordinates[2] === 90) {
+                    if (this.class.includes("horizontal-up-right")) {
+                        context.setTransform(-1, 0, 0, 1, 0, 0);
+                    } else {
+                        context.translate(40, 0);
+                    }
+                    context.rotate(90 * Math.PI / 180);
+                    context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+                } else if (coordinates[2] === -90) {
+                    if (this.class.includes("horizontal-down-left")) {
+                        context.setTransform(-1, 0, 0, 1, 0, 0);
+                        context.translate(-40, -40);
+                    } else {
+                        context.translate(0, 40);
+                    }
+                    context.rotate(-90 * Math.PI / 180);
+                    context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+                } else {
+                    context.translate(40, 40);
+                    context.rotate(180 * Math.PI / 180);
+                    context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+                }
+            } else {
+                if (this.class.includes("vertical-left-up")) {
+                    context.setTransform(-1, 0, 0, 1, 0, 0);
+                    context.translate(-40, 0);
+                } else if (this.class.includes("vertical-right-down")) {
+                    context.setTransform(1, 0, 0, -1, 0, 0);
+                    context.translate(0, -40);
+                }
+                context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+            }
+        } else if (this.class.includes("grass")) {
+            let coordinates = this._getGrassCoordinates(this.class);
+            context.drawImage(image, coordinates[0], coordinates[1], 40, 40, 0, 0, 40, 40);
+        } else {
+            context.drawImage(image, 160, 120, 40, 40, 0, 0, 40, 40);
+        }
+
         let img = new Image(40, 40);
-        img.src = canvas.toDataURL();
+        img.src = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
         this.imgBuffer.set(this.class, img);
 
         return {x: x, y: y, img: img};
+    }
+
+    /**
+     * Returns the background coordinates of the given wood class string according to the styles specifications above.
+     * @param classString The string containing the class information.
+     * @returns {number[]} The background coordinates.
+     * @private
+     */
+    _getWoodCoordinates(classString) {
+        let coordinates;
+
+        if (classString === "wood wood-single") {
+            coordinates = [480, 240];
+        } else if (classString === "wood wood-left-down") {
+            coordinates = [560, 241];
+        } else if (classString === "wood wood-left-up") {
+            coordinates = [560, 280];
+        } else if (classString === "wood wood-right-up") {
+            coordinates = [520, 280];
+        } else if (classString === "wood wood-right-down") {
+            coordinates = [520, 241];
+        } else if (classString === "wood wood-right wood-up wood-down") {
+            coordinates = [560, 440];
+        } else if (classString === "wood wood-left wood-up wood-down") {
+            coordinates = [480, 440];
+        } else if (classString === "wood wood-up wood-down") {
+            coordinates = [520, 440];
+        } else if (classString === "wood wood-left wood-down") {
+            coordinates = [480, 400];
+        } else if (classString === "wood wood-left wood-up") {
+            coordinates = [480, 320];
+        } else if (classString === "wood wood-right wood-down") {
+            coordinates = [560, 400];
+        } else if (classString === "wood wood-right wood-up") {
+            coordinates = [560, 320];
+        } else if (classString === "wood wood-down") {
+            coordinates = [520, 400];
+        } else if (classString === "wood wood-up") {
+            coordinates = [520, 320];
+        } else if (classString === "wood wood-left") {
+            coordinates = [480, 360];
+        } else if (classString === "wood wood-right") {
+            coordinates = [560, 360];
+        } else {
+            coordinates = [520, 360];
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Returns the background coordinates of the given dirt class string and the rotation of the image according to the
+     * styles specifications above.
+     * @param classString The string containing the class information.
+     * @returns {number[]} The background coordinates and rotation.
+     * @private
+     */
+    _getDirtCoordinates(classString) {
+        let coordinates;
+
+        if (classString.includes("dirt-only")) {
+            coordinates = [0, 0, 0];
+        } else if (classString.includes("dirt-bow")) {
+            if (classString.includes("dirt-bow-down-left")) {
+                coordinates = [0, 240, 90];
+            } else if (classString.includes("dirt-bow-up-right")) {
+                coordinates = [0, 240, -90];
+            } else if (classString.includes("dirt-bow-up-left")) {
+                coordinates = [0, 240, 180];
+            } else {
+                coordinates = [0, 240, 0];
+            }
+        } else if (classString.includes("dirt-horizontal-up-")
+            || classString.includes("dirt-horizontal-down-")
+            || classString.includes("dirt-vertical-right-")
+            || classString.includes("dirt-vertical-left-")) {
+            if (classString.includes("dirt-horizontal-up-left")
+                || classString.includes("dirt-horizontal-down-left")) {
+                coordinates = [160, 240, -90];
+            } else if (classString.includes("dirt-horizontal-up-right")
+                || classString.includes("dirt-horizontal-down-right")) {
+                coordinates = [160, 240, 90];
+            } else if (classString.includes("dirt-vertical-left-down")) {
+                coordinates = [160, 240, 180];
+            } else {
+                coordinates = [160, 240, 0];
+            }
+        } else if (classString.includes("dirt-vertical-")
+            || classString.includes("dirt-horizontal-")) {
+            if (classString.includes("dirt-horizontal-up")) {
+                coordinates = [0, 280, -90];
+            } else if (classString.includes("dirt-horizontal-down")) {
+                coordinates = [0, 280, 90];
+            } else if (classString.includes("dirt-horizontal-left")) {
+                coordinates = [80, 240, 180];
+            } else if (classString.includes("dirt-horizontal-right")) {
+                coordinates = [80, 240, 0];
+            } else if (classString.includes("dirt-vertical-left")) {
+                coordinates = [0, 280, 180];
+            } else if (classString.includes("dirt-vertical-up")) {
+                coordinates = [80, 240, -90];
+            } else if (classString.includes("dirt-vertical-down")) {
+                coordinates = [80, 240, 90];
+            } else {
+                coordinates = [0, 280, 0];
+            }
+        } else if (classString.includes("dirt-horizontal") || classString.includes("dirt-vertical")) {
+            if (classString.includes("dirt-vertical")) {
+                coordinates = [40, 240, 90];
+            } else {
+                coordinates = [40, 240, 0];
+            }
+        } else if (classString.includes("dirt-cross")) {
+            coordinates = [40, 280, 0];
+        } else if (classString.includes("dirt-t")) {
+            if (classString.includes("dirt-t-down")) {
+                coordinates = [80, 280, 90];
+            } else if (classString.includes("dirt-t-up")) {
+                coordinates = [80, 280, -90];
+            } else if (classString.includes("dirt-t-left")) {
+                coordinates = [80, 280, 180];
+            } else {
+                coordinates = [80, 280, 0];
+            }
+        } else if (classString.includes("dirt-full")) {
+            if (classString.includes("dirt-full-up-left")) {
+                coordinates = [120, 240, 90];
+            } else if (classString.includes("dirt-full-up-right")) {
+                coordinates = [120, 240, 180];
+            } else if (classString.includes("dirt-full-down-right")) {
+                coordinates = [120, 240, -90];
+            } else {
+                coordinates = [120, 240, 0];
+            }
+        } else if (classString.includes("dirt-diagonal")) {
+            if (classString.includes("dirt-diagonal-down-right")) {
+                coordinates = [120, 280, 90];
+            } else {
+                coordinates = [120, 280, 0];
+            }
+        } else if (classString.includes("dirt-left-down")) {
+            coordinates = [80, 0, 0];
+        } else if (classString.includes("dirt-left-up")) {
+            coordinates = [80, 40, 0];
+        } else if (classString.includes("dirt-right-up")) {
+            coordinates = [40, 40, 0];
+        } else if (classString.includes("dirt-right-down")) {
+            coordinates = [40, 0, 0];
+        } else if (classString.includes("dirt-right") && classString.includes("dirt-down")
+            && classString.includes("dirt-up")) {
+            coordinates = [80, 200, 0];
+        } else if (classString.includes("dirt-left") && classString.includes("dirt-down")
+            && classString.includes("dirt-up")) {
+            coordinates = [0, 200, 0];
+        } else if (classString.includes("dirt-left") && classString.includes("dirt-down")) {
+            coordinates = [0, 159, 0];
+        } else if (classString.includes("dirt-left") && classString.includes("dirt-up")) {
+            coordinates = [0, 80, 0];
+        } else if (classString.includes("dirt-right") && classString.includes("dirt-down")) {
+            coordinates = [80, 159, 0];
+        } else if (classString.includes("dirt-right") && classString.includes("dirt-up")) {
+            coordinates = [80, 80, 0];
+        } else if (classString.includes("dirt-down")) {
+            coordinates = [40, 159, 0];
+        } else if (classString.includes("dirt-up")) {
+            coordinates = [40, 80, 0];
+        } else if (classString.includes("dirt-left")) {
+            coordinates = [0, 120, 0];
+        } else if (classString.includes("dirt-right")) {
+            coordinates = [80, 120, 0];
+        } else if (classString.includes("dirt2")) {
+            coordinates = [80, 200, 0];
+        } else if (classString.includes("dirt1")) {
+            coordinates = [40, 200, 0];
+        } else {
+            coordinates = [0, 200, 0];
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Returns the background coordinates of the given water class string and the rotation of the image according to the
+     * styles specifications above.
+     * @param classString The string containing the class information.
+     * @returns {number[]} The background coordinates and rotation.
+     * @private
+     */
+    _getWaterCoordinates(classString) {
+        let coordinates;
+
+        if (classString.includes("water-only")) {
+            coordinates = [360, 0, 0];
+        } else if (classString.includes("water-bow")) {
+            if (classString.includes("water-bow-up-left")) {
+                coordinates = [0, 320, 180];
+            } else if (classString.includes("water-bow-up-right")) {
+                coordinates = [0, 320, -90];
+            } else if (classString.includes("water-bow-down-left")) {
+                coordinates = [0, 320, 90];
+            } else {
+                coordinates = [0, 320, 0];
+            }
+        } else if (classString.includes("water-vertical-right-")
+            || classString.includes("water-vertical-left-")
+            || classString.includes("water-horizontal-up-")
+            || classString.includes("water-horizontal-down-")) {
+            if (classString.includes("water-vertical-left-down")) {
+                coordinates = [160, 320, 180];
+            } else if (classString.includes("water-horizontal-down-right")
+                || classString.includes("water-horizontal-up-right")) {
+                coordinates = [160, 320, 90];
+            } else if (classString.includes("water-horizontal-down-left")
+                || classString.includes("water-horizontal-up-right")) {
+                coordinates = [160, 320, -90];
+            } else {
+                coordinates = [160, 320, 0];
+            }
+        } else if (classString.includes("water-vertical-right")
+            || classString.includes("water-vertical-left")
+            || classString.includes("water-horizontal-up")
+            || classString.includes("water-horizontal-down")) {
+            coordinates = [0, 360, 0];
+        } else if (classString.includes("water-horizontal-") || classString.includes("water-vertical-")) {
+            if (classString.includes("water-vertical-down")
+                || classString.includes("water-horizontal-down")) {
+                coordinates = [80, 320, 90];
+            } else if (classString.includes("water-vertical-up")
+                || classString.includes("water-horizontal-up")) {
+                coordinates = [80, 320, -90];
+            } else if (classString.includes("water-vertical-left")
+                || classString.includes("water-horizontal-left")) {
+                coordinates = [80, 320, 180];
+            } else if (classString.includes("water-horizontal-left")) {
+                coordinates = [80, 320, 180];
+            } else {
+                coordinates = [80, 320, 0];
+            }
+        } else if (classString.includes("water-horizontal") || classString.includes("water-vertical")) {
+            if (classString.includes("water-vertical")) {
+                coordinates = [40, 320, 90];
+            } else {
+                coordinates = [40, 320, 0];
+            }
+        } else if (classString.includes("water-cross")) {
+            coordinates = [40, 360, 0];
+        } else if (classString.includes("water-t")) {
+            if (classString.includes("water-t-up")) {
+                coordinates = [80, 360, -90];
+            } else if (classString.includes("water-t-down")) {
+                coordinates = [80, 360, 90];
+            } else if (classString.includes("water-t-left")) {
+                coordinates = [80, 360, 180];
+            } else {
+                coordinates = [80, 360, 0];
+            }
+        } else if (classString.includes("water-full")) {
+            if (classString.includes("water-full-down-right")) {
+                coordinates = [120, 320, -90];
+            } else if (classString.includes("water-full-up-right")) {
+                coordinates = [120, 320, 180];
+            } else if (classString.includes("water-full-up-left")) {
+                coordinates = [120, 320, 90];
+            } else {
+                coordinates = [120, 320, 0];
+            }
+        } else if (classString.includes("water-diagonal")) {
+            if (classString.includes("water-diagonal-down-right")) {
+                coordinates = [120, 360, 90];
+            } else {
+                coordinates = [120, 360, 0];
+            }
+        } else if (classString.includes("water-left-down")) {
+            coordinates = [440, 0, 0];
+        } else if (classString.includes("water-left-up")) {
+            coordinates = [440, 39, 0];
+        } else if (classString.includes("water-right-up")) {
+            coordinates = [400, 39, 0];
+        } else if (classString.includes("water-right-down")) {
+            coordinates = [400, 0, 0];
+        } else if ((classString.includes("water-down") && classString.includes("water-right")
+            && classString.includes("water-up")) || classString.includes("water2")) {
+            coordinates = [440, 200, 0];
+        } else if ((classString.includes("water-down") && classString.includes("water-left")
+            && classString.includes("water-up")) || classString.includes("water0")) {
+            coordinates = [360, 200, 0];
+        } else if (classString.includes("water-down") && classString.includes("water-left")) {
+            coordinates = [360, 158, 0];
+        } else if (classString.includes("water-left") && classString.includes("water-up")) {
+            coordinates = [360, 80, 0];
+        } else if (classString.includes("water-down") && classString.includes("water-right")) {
+            coordinates = [440, 158, 0];
+        } else if (classString.includes("water-up") && classString.includes("water-right")) {
+            coordinates = [440, 80, 0];
+        } else if (classString.includes("water-down")) {
+            coordinates = [400, 158, 0];
+        } else if (classString.includes("water-up")) {
+            coordinates = [400, 80, 0];
+        } else if (classString.includes("water-left")) {
+            coordinates = [360, 120, 0];
+        } else if (classString.includes("water-right")) {
+            coordinates = [440, 120, 0];
+        } else if (classString.includes("water1")) {
+            coordinates = [400, 200, 0];
+        } else {
+            coordinates = [400, 120, 0];
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Returns the background coordinates of the given ice class string and the rotation of the image according to the
+     * styles specifications above.
+     * @param classString The string containing the class information.
+     * @returns {number[]} The background coordinates and rotation.
+     * @private
+     */
+    _getIceCoordinates(classString) {
+        let coordinates;
+
+        if (classString.includes("ice-only")) {
+            coordinates = [360, 280, 0];
+        } else if (classString.includes("ice-bow")) {
+            if (classString.includes("ice-bow-up-left")) {
+                coordinates = [0, 400, 180];
+            } else if (classString.includes("ice-bow-up-right")) {
+                coordinates = [0, 400, -90];
+            } else if (classString.includes("ice-bow-down-left")) {
+                coordinates = [0, 400, 90];
+            } else {
+                coordinates = [0, 400, 0];
+            }
+        } else if (classString.includes("ice-vertical-right-")
+            || classString.includes("ice-vertical-left-")) {
+            if (classString.includes("ice-vertical-left-down")) {
+                coordinates = [160, 400, 180];
+            } else {
+                coordinates = [160, 400, 0];
+            }
+        } else if (classString.includes("ice-horizontal-up-")
+            || classString.includes("ice-horizontal-down-")) {
+            if (classString.includes("left")) {
+                coordinates = [160, 400, -90];
+            } else {
+                coordinates = [160, 400, 90];
+            }
+        } else if (classString.includes("ice-vertical-")) {
+            if (classString.includes("right")) {
+                coordinates = [0, 440, 0];
+            } else if (classString.includes("left")) {
+                coordinates = [0, 440, 180];
+            } else if (classString.includes("up")) {
+                coordinates = [80, 400, -90];
+            } else {
+                coordinates = [80, 400, 90];
+            }
+        } else if (classString.includes("ice-horizontal-")) {
+            if (classString.includes("right")) {
+                coordinates = [80, 400, 0];
+            } else if (classString.includes("left")) {
+                coordinates = [80, 400, 180];
+            } else if (classString.includes("up")) {
+                coordinates = [0, 440, -90];
+            } else {
+                coordinates = [0, 440, 90];
+            }
+        } else if (classString.includes("ice-vertical")) {
+            coordinates = [40, 400, 90];
+        } else if (classString.includes("ice-horizontal")) {
+            coordinates = [40, 400, 0];
+        } else if (classString.includes("ice-cross")) {
+            coordinates = [40, 440, 0];
+        } else if (classString.includes("ice-t")) {
+            if (classString.includes("down")) {
+                coordinates = [80, 440, 90];
+            } else if (classString.includes("up")) {
+                coordinates = [80, 440, -90];
+            } else if (classString.includes("left")) {
+                coordinates = [80, 440, 180];
+            } else {
+                coordinates = [80, 440, 0];
+            }
+        } else if (classString.includes("ice-full")) {
+            if (classString.includes("up-left")) {
+                coordinates = [120, 400, 90];
+            } else if (classString.includes("up-right")) {
+                coordinates = [120, 400, 180];
+            } else if (classString.includes("down-right")) {
+                coordinates = [120, 400, -90];
+            } else {
+                coordinates = [120, 400, 0];
+            }
+        } else if (classString.includes("ice-diagonal")) {
+            if (classString.includes("down-right")) {
+                coordinates = [120, 440, 90];
+            } else {
+                coordinates = [120, 440, 0];
+            }
+        } else if (classString.includes("ice-left-down")) {
+            coordinates = [440, 240, 0];
+        } else if (classString.includes("ice-left-up")) {
+            coordinates = [440, 280, 0];
+        } else if (classString.includes("ice-right-up")) {
+            coordinates = [400, 280, 0];
+        } else if (classString.includes("ice-right-down")) {
+            coordinates = [440, 439, 0];
+        } else if ((classString.includes("ice-right") && classString.includes("ice-up")
+            && classString.includes("ice-down")) || classString.includes("ice2")) {
+            coordinates = [440, 440, 0];
+        } else if ((classString.includes("ice-left") && classString.includes("ice-up")
+            && classString.includes("ice-down")) || classString.includes("ice0")) {
+            coordinates = [360, 440, 0];
+        } else if (classString.includes("ice-left") && classString.includes("ice-down")) {
+            coordinates = [360, 400, 0];
+        } else if (classString.includes("ice-left") && classString.includes("ice-up")) {
+            coordinates = [360, 320, 0];
+        } else if (classString.includes("ice-right") && classString.includes("ice-down")) {
+            coordinates = [440, 400, 0];
+        } else if (classString.includes("ice-right") && classString.includes("ice-up")) {
+            coordinates = [440, 320, 0];
+        } else if (classString.includes("ice-down")) {
+            coordinates = [400, 400, 0];
+        } else if (classString.includes("ice-up")) {
+            coordinates = [400, 320, 0];
+        } else if (classString.includes("ice-left")) {
+            coordinates = [360, 360, 0];
+        } else if (classString.includes("ice-right")) {
+            coordinates = [440, 360, 0];
+        } else if (classString.includes("ice1")) {
+            coordinates = [400, 440, 0];
+        } else {
+            coordinates = [400, 360, 0];
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Returns the background coordinates of the given grass class string according to the styles specification above.
+     * @param classString The string containing the class information.
+     * @returns {number[]} The background coordinates.
+     * @private
+     */
+    _getGrassCoordinates(classString) {
+        let coordinates;
+
+        if (classString === "grass0") {
+            coordinates = [120, 200];
+        } else if (classString === "grass1") {
+            coordinates = [160, 200];
+        } else if (classString === "grass2") {
+            coordinates = [200, 200];
+        } else {
+            coordinates = [160, 120];
+        }
+
+        return coordinates;
     }
 
 }
