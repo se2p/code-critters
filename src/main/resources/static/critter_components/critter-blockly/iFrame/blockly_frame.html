@@ -29,7 +29,7 @@
   <script src="/static/blockly/blockly_compressed.js"></script>
   <script src="/static/blockly/blocks_compressed.js"></script>
   <script src="/static/blockly/javascript_compressed.js"></script>
-  <script src="/static/blockly/msg/js/en.js" id="lang_script"></script>
+  <script src="/static/blockly/msg/en.js" id="lang_script"></script>
   <script src="/translation/customBlocks/customBlocks_en.js" id="custom_blocks"></script>
   <script src="/customBlocks.js"></script>
 
@@ -177,7 +177,7 @@
     var scriptCustom = document.createElement("script");
     var xml = getXML();
     scriptLang.id = "lang_script";
-    scriptLang.src = "/static/blockly/msg/js/" + langTag + ".js";
+    scriptLang.src = "/static/blockly/msg/" + langTag + ".js";
     scriptCustom.id = "custom_blocks";
     scriptCustom.src = "/translation/customBlocks/customBlocks_" + langTag + ".js";
 
