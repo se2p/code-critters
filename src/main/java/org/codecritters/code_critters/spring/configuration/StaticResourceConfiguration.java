@@ -25,10 +25,10 @@ package org.codecritters.code_critters.spring.configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
+public class StaticResourceConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -50,7 +50,7 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/node_modules/");
         registry.addResourceHandler("/critter_components/**").addResourceLocations("classpath:/static/critter_components/");
         registry.addResourceHandler("/style/**").addResourceLocations("classpath:/static/style/");
-        registry.addResourceHandler("/images/**").addResourceLocations("file:./images/");
+        registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/images/");
         registry.addResourceHandler("/translation/**").addResourceLocations("classpath:/static/translation/");
         //registry.addResourceHandler("/images/**").addResourceLocations("classpath:/static/critter_components/critter-blockly/iFrame/images/");
 

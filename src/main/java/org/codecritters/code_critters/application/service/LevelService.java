@@ -259,6 +259,7 @@ public class LevelService {
 
     public void storeImage(MultipartFile image) {
         String name = image.getOriginalFilename();
+        //TODO: Fix path
         File file = new File("./images/" + name);
         try {
             file.getParentFile().mkdirs();
