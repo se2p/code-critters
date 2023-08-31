@@ -12,10 +12,13 @@ import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
 import org.codecritters.code_critters.web.dto.MutantsDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
-import org.junit.Before;
-import org.junit.Test;
+// Using junit 5 here instead of the commented out junit 4 imports
+// import org.junit.Before;
+// import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,7 +29,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -47,7 +50,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(GeneratorController.class)
 @Import(SecurityTestConfig.class)
 @ActiveProfiles("test")
@@ -79,7 +82,7 @@ public class GeneratorControllerTest {
     private String rowDTOContent;
     private ObjectMapper mapper;
 
-    @Before
+    @BeforeEach
     public void setup() throws JsonProcessingException {
         String[][] levelArray = {
                 {"wood", "grass", "wood"},

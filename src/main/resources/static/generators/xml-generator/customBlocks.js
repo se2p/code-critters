@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -142,8 +142,8 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
     }
 ]);
 
-Blockly.FieldColour.COLOURS = ['#FF0000','#0000FF','#00FFFF','#009900','#FFA500','#FFFF00','#FFFFFF','#000000','#FF00FF'];
-Blockly.FieldColour.COLUMNS = 3;
+// Blockly.FieldColour.COLOURS = ['#FF0000','#0000FF','#00FFFF','#009900','#FFA500','#FFFF00','#FFFFFF','#000000','#FF00FF'];
+// Blockly.FieldColour.COLUMNS = 3;
 
 Blockly.JavaScript['custom_colour_picker'] = function(block) {
     var colour_name = block.getFieldValue('COLOUR');
@@ -332,14 +332,14 @@ Blockly.defineBlocksWithJsonArray([
     }
 ]);
 
-Blockly.Constants.Terrain = {};
+Blockly.Blocks.Terrain = {};
 
-Blockly.Constants.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION = function() {
-    this.mixin(Blockly.Constants.Terrain.QUOTE_IMAGE_MIXIN);
+Blockly.Blocks.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION = function() {
+    this.mixin(Blockly.Blocks.Terrain.QUOTE_IMAGE_MIXIN);
     this.quoteTerrain_();
 };
 
-Blockly.Constants.Terrain.QUOTE_IMAGE_MIXIN = {
+Blockly.Blocks.Terrain.QUOTE_IMAGE_MIXIN = {
     quoteTerrain_: function () {
         for (var i = 0, input; input = this.inputList[i]; i++) {
             input.insertFieldAt(0, this.newQuote_(true));

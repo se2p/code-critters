@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -24,10 +24,10 @@ package org.codecritters.code_critters.persistence.entities;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.util.HashMap;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 //@Table(indexes = {@Index(columnList = "name", name = "level_name")})
@@ -37,7 +37,7 @@ public class Level {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-    @NotEmpty
+    @javax.validation.constraints.NotEmpty
     @Column(unique = true)
     private String name;
     @Column(columnDefinition = "int default 10")
