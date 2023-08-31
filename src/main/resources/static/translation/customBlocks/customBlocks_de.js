@@ -128,14 +128,14 @@ Blockly.defineBlocksWithJsonArray([
     }
 ]);
 
-Blockly.Constants.Terrain = {};
+Blockly.Blocks.Terrain = {};
 
-Blockly.Constants.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION = function() {
-    this.mixin(Blockly.Constants.Terrain.QUOTE_IMAGE_MIXIN);
+Blockly.Blocks.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION = function() {
+    this.mixin(Blockly.Blocks.Terrain.QUOTE_IMAGE_MIXIN);
     this.quoteTerrain_();
 };
 
-Blockly.Constants.Terrain.QUOTE_IMAGE_MIXIN = {
+Blockly.Blocks.Terrain.QUOTE_IMAGE_MIXIN = {
     quoteTerrain_: function () {
         for (var i = 0, input; input = this.inputList[i]; i++) {
             input.insertFieldAt(0, this.newQuote_(true));
