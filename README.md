@@ -13,6 +13,7 @@ or
 
 
 - npm or yarn (only for developement)
+- provide a `.env` file following the `.env.example`
 
 For starting the game, you only need a MySQL Server (e.g. [MariaDB](https://mariadb.org/)) running. 
 for the sake of simplicity, the project contains a docker-compose file that starts a MySql
