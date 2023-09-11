@@ -20,3 +20,4 @@ temp/
 src/main/resources/static/**/*\.psd
 
 \.history/
+/.env
