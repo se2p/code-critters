@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -23,16 +23,31 @@ package org.codecritters.code_critters.persistence.entities;
  */
 
 
+
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@Immutable
+@Subselect("select * from Score")
 public class Score {
 
     @Id
     private String username;
+    @Column(
+            columnDefinition = "decimal(32)"
+    )
     private int score;
+    @Column(columnDefinition = "bigint(21)")
     private int levels;
+
+    @Column(
+            columnDefinition = "bigint(22)"
+    )
     private int position;
 
     public Score(String username, int score, int levels, int position) {

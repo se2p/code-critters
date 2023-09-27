@@ -82,3 +82,9 @@ java -jar Code-Critters-x.x.x.jar
 ```
 Now a server starts and the application is available at localhost on whatever port you 
 configured in `application.properties`.
+
+### Development
+
+When updating the database schema you can now use flyway migration. To do so, move your migration script
+to the folder ``src/main/java/resources/db/migration`` using the correct file naming schema (https://www.red-gate.com/blog/database-devops/flyway-naming-patterns-matter)
+and consecutive version numbers in this format ``YYYYMMDD``

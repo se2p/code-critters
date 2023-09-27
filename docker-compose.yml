@@ -1,9 +1,18 @@
 version: "3"
 
 services:
+  flyway:
+    env_file: ./.env
+    network_mode: "host"
+    image: flyway/flyway
+    command: -url=${MYSQLDB_URL} -schemas=${MYSQLDB_DATABASE} -user=${MYSQLDB_USER} -password=${MYSQLDB_ROOT_PASSWORD} -placeholderReplacement="false" -locations="filesystem:/flyway/sql" -connectRetries=60 migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    depends_on:
+      - mysqldb
   mysqldb:
     container_name: "critter-mysql"
-    image: mariadb:11.1-rc
+    image: mariadb:latest
     ports:
       - "3306:3306"
     env_file: ./.env
@@ -12,8 +21,9 @@ services:
       MYSQL_PASSWORD: $MYSQLDB_ROOT_PASSWORD
       MYSQL_USER: $MYSQLDB_USER
       MYSQL_DATABASE: $MYSQLDB_DATABASE
-    volumes:
-      - ./init:/docker-entrypoint-initdb.d
+      # Used to seed database before flyway
+    # volumes:
+     # - ./init:/docker-entrypoint-initdb.d
   mailhog:
     container_name: "critter-mailhog"
     image: mailhog/mailhog:latest
@@ -24,7 +34,7 @@ services:
     build: .
     container_name: CCapp #CodeCrittersApp
     depends_on:
-      - mysqldb
+      - flyway
     restart: on-failure
     env_file: ./.env
     ports:
