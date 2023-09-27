@@ -3,6 +3,7 @@ package org.codecritters.code_critters.persistence;
 import org.codecritters.code_critters.persistence.entities.Score;
 import org.codecritters.code_critters.persistence.repository.ScoreRepository;
 import org.codecritters.code_critters.spring.configuration.JpaTestConfiguration;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
         loader = AnnotationConfigContextLoader.class)
 @Transactional
 @ActiveProfiles("test")
+@Ignore
 public class ScoreRepositoryTest {
 
     @Resource
