@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: "critter-mysql"
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "critteruser"
+      MYSQL_PASSWORD: "password"
+      MYSQL_DATABASE: "codecritters"
+  mailhog:
+    container_name: "critter-mailhog"
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
