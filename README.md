@@ -19,7 +19,7 @@ For starting the game, you only need a MySQL Server (e.g. [MariaDB](https://mari
 for the sake of simplicity, the project contains a docker-compose file that starts a MySql
 instance with
 ```bash
-docker-compose up
+docker-compose up -f docker-compose-local.yml
 ```
 A db-dump containing some demo data has also been added to the project. 
 For development you also need an installation of npm (or yarn) to load frontend dependencies.
@@ -43,6 +43,14 @@ To Configure the system, you need to edit the `application.properties` in the `r
 folder. This file also holds the database settings (Initially this data belongs to the docker
 configuration). 
 
+## Run Complete Application with Docker-Compose
+
+To start the whole application, including frontend, backend and database execute the `docker-compose-prod.yml`
+file with the following command:
+
+```bash
+docker-compose up
+```
 
 ## Build and Deployment
 
