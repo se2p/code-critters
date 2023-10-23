@@ -84,7 +84,7 @@ Blockly.JavaScript['assert'] = function(block) {
     var value_value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
 
     var code = 'if (' + value_target + ' !== ' + value_value + ') {\n' +
-        '\tthis._killCritter(x, y); \n' +
+        '\tthis._killCritter(x, y, ' + value_target + ', ' + value_value + '); \n' +
         '}\n';
     return code;
 };

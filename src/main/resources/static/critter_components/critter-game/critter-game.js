@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -393,11 +393,23 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 value: true
             },
 
-            _startTime: {
+            _pauseStart: {
                 type: Number,
                 value: 0
             },
 
+            _pauseEnd: {
+                type: Number,
+                value: 0
+            },
+
+            _startTime: {
+                type: Number,
+                value: 0
+            },
+            /**
+             * !not the start time saved in db! that is created in backend when creating a game
+             */
             _startGameTime: {
                 type: Number,
                 value: 0
@@ -424,6 +436,26 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             },
 
             _mines: {
+                type: Array,
+                value: []
+            },
+
+            _killedMutantsList: {
+                type: Array,
+                value: []
+            },
+
+            _killedHumansList: {
+                type: Array,
+                value: []
+            },
+
+            _finishedMutantsList: {
+                type: Array,
+                value: []
+            },
+
+            _finishedHumansList: {
                 type: Array,
                 value: []
             }
@@ -460,13 +492,47 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.addEventListener("_thirdStarReached", () => this._showStar(3));
             this.addEventListener("_secondStarReached", () => this._showStar(2));
             this.addEventListener("_firstStarReached", () => this._showStar(1));
-
+            this.addEventListener("_mineSet", (event) => this._updateMine(event));
+            this.addEventListener("_mineRemoved", (event) => this._updateMine(event));
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
             this._createGame();
 
             this._startTime = Date.now();
         });
+    }
+
+    /**
+     * Saves updates on mines to the database, i.e. on creation, editing or deletion of a mine.
+     */
+    _updateMine(event) {
+        let mine = event.detail.mine;
+
+        let mineDtoObject = {
+            game: this._game.id,
+            xPosition: mine.xPosition,
+            yPosition: mine.yPosition,
+            creationStart: new Date(mine.creationStart),
+            creationEnd: new Date(mine.creationEnd),
+            code: mine.js,
+            xml: mine.xml,
+            deleted: mine.deleted,
+            deletionDateTime: mine.deletionDateTime ? new Date(mine.deletionDateTime) : null,
+            updated: mine.updated
+        }
+
+        let mineData = [];
+        mineData.push(mineDtoObject);
+        let data = {
+            game: this._game.id,
+            mines: mineData
+        }
+
+        let req = this._generateRequest("/game/mine", mineDtoObject, "POST");
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
     }
 
     _speedUpGame() {
@@ -485,6 +551,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._startTime = Date.now();
         this._totalTime = 0;
         this._paused = true;
+        this._pauseStart = 0;
+        this._pauseEnd = 0;
         this._crittersSent = false;
         this._finished = false;
         this._gameTime = 0;
@@ -502,6 +570,22 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._timeoutManager.clear();
         this._globalData.deleteMines();
         this._mines = [];
+        this._killedMutantsList.forEach(critter => {
+            critter.remove();
+        });
+        this._killedMutantsList = [];
+        this._killedHumansList.forEach(critter => {
+            critter.remove();
+        });
+        this._killedHumansList = [];
+        this._finishedMutantsList.forEach(critter => {
+            critter.remove();
+        });
+        this._finishedMutantsList = [];
+        this._finishedHumansList.forEach(critter => {
+            critter.remove();
+        });
+        this._finishedHumansList = [];
         this.$.gameboard.removeAllMines();
         this.$.send_button.shape = "play";
         this.$.speedUp_button.disabled = true;
@@ -517,16 +601,37 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this.dispatchEvent(new CustomEvent('_crittersStarted', {detail: {}, bubbles: true, composed: true}));
 
         this._gameTime += (Date.now() - this._startGameTime);
+
         if (this._paused) {
             this._totalTime += (Date.now() -  this._startTime);
             this._gameTime += (Date.now() - this._startGameTime);
 
             this._paused = false;
+            this._pauseEnd = Date.now();
+
+            // game is also "paused" before the first start; pauseStart is set once a real pause has been triggered
+            if (this._pauseStart) {
+                let data = {
+                    gameId: this._game.id,
+                    pauseStart: new Date(this._pauseStart),
+                    pauseEnd: new Date(this._pauseEnd)
+                }
+
+                let req = this._generateRequest("game/pause", data, "POST");
+
+                let genRequest = req.generateRequest();
+                req.completes = genRequest.completes;
+            }
+
             this.$.send_button.shape = "pause";
             if(!this._crittersSent) {
                 this._addHumans();
                 this._addCritters();
                 this._sendCritters();
+                this._critterList.forEach(critter => {
+                    console.log("Each in list id: " + critter.id + " and cut: " + critter.cut);
+                });
+                console.log("Length: " + this._critterList.length)
                 this._crittersSent = true;
                 this.$.speedUp_button.disabled = false;
             } else {
@@ -544,6 +649,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             });
             this.$.send_button.shape = "play";
             this._paused = true;
+            this._pauseStart = Date.now();
         }
     }
 
@@ -567,13 +673,15 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     _addHumans() {
         let i = 0;
         while (i++ < this._globalData.numberOfHumans) {
-            this._createCritter(true, this._globalData.cut, this._globalData.init);
+            // humans have no id (no reference to database element like for mutants)
+            this._createCritter("", true, this._globalData.cut, this._globalData.init);
         }
     }
 
-    _createCritter(human, cut, init) {
+    _createCritter(id, human, cut, init) {
         let container = this.$.critter_container;
         let critter = document.createElement("critter-critter");
+        critter.id = id;
         critter.human = human;
         critter.cut = cut;
         critter.init = init;
@@ -594,7 +702,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         req.addEventListener('response', e => {
             let mutants = e.detail.__data.response;
             for (let i = 0; i < this._globalData.numberOfCritters; i++) {
-                this._createCritter(false, new Function (mutants[i % (mutants.length)].code),
+                this._createCritter(mutants[i % (mutants.length)].id, false, new Function (mutants[i % (mutants.length)].code),
                     new Function (mutants[i % (mutants.length)].init));
             }
             this._critterList = this._shuffleArray(this._critterList);
@@ -718,6 +826,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this._updateScore(e.detail.human ? -100 : 50);
         if (!e.detail.human) {
             this._killedCritters++;
+            this._killedMutantsList.push(e.detail.critterId)
             let killed = this._killedCritters;
             let alive = this._globalData.numberOfCritters - this._killedCritters;
             this.$.killed_container.innerHTML = "";
@@ -733,6 +842,13 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 this.$.killed_container.appendChild(image);
                 alive--;
             }
+        } else {
+            // if human was killed
+            let humanInitAndCode = {
+                init: `${e.detail.critterInit}`,
+                cut: `${e.detail.critterCut}`
+            };
+            this._killedHumansList.push(humanInitAndCode)
         }
         this._onCritterDone()
     }
@@ -747,6 +863,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         // this._updateScore(e.detail.human ? 50 : -100);
         if (e.detail.human) {
             this._finishedHumans++;
+            let humanInitAndCode = {
+                init: `${e.detail.critterInit}`,
+                cut: `${e.detail.critterCut}`
+            };
+            this._finishedHumansList.push(humanInitAndCode);
             let finishedCritter = this._finishedHumans;
             let notFinished = this._globalData.numberOfHumans - this._finishedHumans;
             this.$.finished_container.innerHTML = "";
@@ -762,6 +883,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 this.$.finished_container.appendChild(image);
                 notFinished--;
             }
+        } else {
+            // if mutant made it to the tower
+            this._finishedMutantsList.push(e.detail.critterId);
         }
         this._onCritterDone()
     }
@@ -798,7 +922,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
         this._storeResult(stars);
         this._saveGame();
-        this._saveMines();
         this.removeEventListener("beforeunload", this._saveGameData);
     }
 
@@ -905,6 +1028,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._game.humansFinished = this._finishedHumans;
         this._game.gameTime = this._gameTime;
         this._game.score = this.score;
+        this._game.killedMutantsList = this._killedMutantsList;
+        this._game.killedHumansList = this._killedHumansList;
+        this._game.finishedMutantsList = this._finishedMutantsList;
+        this._game.finishedHumansList = this._finishedHumansList;
 
         let req = this._generateRequest("/game/save", this._game, "POST");
 
@@ -940,6 +1067,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let mineData = [];
         for (let i = 0; i < this._mines.length; i++) {
             mineData.push({
+                xPosition: this._mines[i].xPosition,
+                yPosition: this._mines[i].yPosition,
+                creationStart: new Date(this._mines[i].creationStart),
+                creationEnd: new Date(this._mines[i].creationEnd),
                 code: this._mines[i].js,
                 xml: this._mines[i].xml
             });
@@ -964,13 +1095,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._game.humansFinished = this._finishedHumans;
         this._gameTime += Date.now() - this._startGameTime;
         this._game.gameTime = this._gameTime;
-        this._mines = this._globalData.getMines();
-
+        this._game.killedMutantsList = this._killedMutantsList;
+        this._game.killedHumansList = this._killedHumansList;
+        this._game.finishedMutantsList = this._finishedMutantsList;
+        this._game.finishedHumansList = this._finishedHumansList;
         let req = this._generateRequest("/game/save", this._game, "POST");
-
-        if (this._mines.length > 0) {
-            this._saveMines();
-        }
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;

@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -63,14 +63,31 @@ public class MineService {
         }
 
         for (MineDTO dto : mines.getMines()) {
-            Mine mine = createMine(dto);
+            Mine mine = saveMine(dto);
             mine.setGame(game.get());
-            mineRepository.save(mine);
         }
     }
 
-    private Mine createMine(MineDTO dto) {
+    /**
+     * Saves a mine given as a MineDto object.
+     * @param dto The mine dto
+     * @return The saved mine object
+     */
+    public Mine saveMine(MineDTO dto) {
+
+        if (dto.getGame() == null) {
+            throw new IncompleteDataException("Cannot save mines for game with id null!");
+        }
+
         Mine mine = new Mine();
+
+        Optional<Game> game = gameRepository.findById(dto.getGame());
+
+        if (!game.isPresent()) {
+            throw new NotFoundException("Could not find game with id " + dto.getGame());
+        }
+
+        mine.setGame(game.get());
 
         if (dto.getXml() != null) {
             mine.setXml(dto.getXml());
@@ -79,6 +96,24 @@ public class MineService {
             mine.setCode(dto.getCode());
         }
 
+        if (dto.getCreationStart() != null) {
+            mine.setCreationStart(dto.getCreationStart());
+        }
+
+        if (dto.getCreationEnd() != null) {
+            mine.setCreationEnd(dto.getCreationEnd());
+        }
+
+        if (dto.getDeletionDateTime() != null) {
+            mine.setDeletionDateTime(dto.getDeletionDateTime());
+        }
+
+        mine.setUpdated(dto.isUpdated());
+        mine.setDeleted(dto.isDeleted());
+        mine.setxPosition(dto.getxPosition());
+        mine.setyPosition(dto.getyPosition());
+
+        mineRepository.save(mine);
         return mine;
     }
 }

@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -24,17 +24,20 @@ package org.codecritters.code_critters.application.service;
 
 import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
-import org.codecritters.code_critters.persistence.entities.Game;
-import org.codecritters.code_critters.persistence.entities.Level;
-import org.codecritters.code_critters.persistence.entities.User;
-import org.codecritters.code_critters.persistence.repository.GameRepository;
-import org.codecritters.code_critters.persistence.repository.LevelRepository;
-import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.persistence.entities.*;
+import org.codecritters.code_critters.persistence.repository.*;
 import org.codecritters.code_critters.web.dto.GameDTO;
+import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
+import org.codecritters.code_critters.web.dto.HumanDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -42,13 +45,15 @@ public class GameService {
     private final LevelRepository levelRepository;
     private final UserRepositiory userRepositiory;
     private final GameRepository gameRepository;
+    private final MutantRepository mutantRepository;
 
     @Autowired
     public GameService(LevelRepository levelRepository, UserRepositiory userRepositiory,
-                       GameRepository gameRepository) {
+                       GameRepository gameRepository, MutantRepository mutantRepository) {
         this.levelRepository = levelRepository;
         this.userRepositiory = userRepositiory;
         this.gameRepository = gameRepository;
+        this.mutantRepository = mutantRepository;
     }
 
     /**
@@ -102,6 +107,30 @@ public class GameService {
         gameRepository.save(game);
     }
 
+    public void updatePauseTimes(GamePauseTimeDTO dto) {
+
+        if (dto.getGameId() == null || dto.getGameId().isEmpty()) {
+            throw new IncompleteDataException("Cannot update a game dto with an empty ID!");
+        }
+
+        Optional<Game> curGameOptional = gameRepository.findById(dto.getGameId());
+
+        if (!curGameOptional.isPresent()) {
+            throw new NotFoundException("Could not find a game with id " + dto.getGameId());
+        }
+
+        Game curGame = curGameOptional.get();
+
+        if (dto.getPauseStart() == null && dto.getPauseEnd() == null) {
+            return;
+        }
+
+        PauseTime pauseTime = new PauseTime(curGame, dto.getPauseStart(), dto.getPauseEnd());
+
+        curGame.addPauseTimeToList(pauseTime);
+        gameRepository.save(curGame);
+    }
+
     private GameDTO createGameDTO(Game game) {
         GameDTO dto = new GameDTO();
 
@@ -147,6 +176,94 @@ public class GameService {
         game.setMutantsKilled(dto.getMutantsKilled());
         game.setHumansFinished(dto.getHumansFinished());
         game.setGameTime(dto.getGameTime());
+
+
+        // Collect all finished and killed mutants:
+        if (dto.getKilledMutantsList() != null && dto.getFinishedMutantsList() != null) {
+
+            // Collect all finished mutants:
+
+            List<Mutant> allFinishedMutants = mutantRepository.findByIdIn(dto.getFinishedMutantsList());
+            // Count how often each mutant has survived
+            Map<String, Integer> finishedMutantsAmountMap = dto.getFinishedMutantsList().stream().collect(Collectors.groupingBy(e -> e, Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
+
+            List<GameMutants> finishedMutants = new ArrayList<>();
+
+            for (Mutant current : allFinishedMutants) {
+                Integer count = finishedMutantsAmountMap.get(current.getId());
+                GameMutants currentFinished = new GameMutants(game, current, count, false);
+                finishedMutants.add(currentFinished);
+            }
+
+            // Collect all killed mutants:
+
+            List<Mutant> allKilledMutants = mutantRepository.findByIdIn(dto.getKilledMutantsList());
+            // Count how often each mutant has been killed
+            Map<String, Integer> killedMutantsAmountMap = dto.getKilledMutantsList().stream().collect(Collectors.groupingBy(e -> e, Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
+
+            List<GameMutants> killedMutants = new ArrayList<>();
+
+            for (Mutant current : allKilledMutants) {
+                Integer count = killedMutantsAmountMap.get(current.getId());
+                GameMutants currentFinished = new GameMutants(game, current, count, true);
+                killedMutants.add(currentFinished);
+            }
+
+            List<GameMutants> allGameMutants = new ArrayList<>();
+            allGameMutants.addAll(finishedMutants);
+            allGameMutants.addAll(killedMutants);
+
+            game.setGameMutantsList(allGameMutants);
+
+        }
+
+        // Collect all finished and killed humans:
+
+        if (dto.getFinishedHumansList() != null && dto.getKilledHumansList() != null) {
+
+            // Collect all finished humans:
+            List<GameHumans> allFinished = new ArrayList<>();
+            for (HumanDTO human : dto.getFinishedHumansList()) {
+                if (allFinished.isEmpty()) {
+                    GameHumans newFinished = new GameHumans(game, human.getInit(), human.getCut(), 1, false);
+                    allFinished.add(newFinished);
+                } else {
+                    for (GameHumans fh : allFinished) {
+                        // if same human prototype is finished more than once
+                        if (fh.getCut().equals(human.getCut()) && fh.getInit().equals(human.getInit())) {
+                            fh.setCount(fh.getCount() + 1);
+                        } else {
+                            GameHumans newFinished = new GameHumans(game, human.getInit(), human.getCut(), 1, false);
+                            allFinished.add(newFinished);
+                        }
+                    }
+                }
+            }
+
+            // Collect all killed humans:
+            List<GameHumans> allKilled = new ArrayList<>();
+            for (HumanDTO human : dto.getKilledHumansList()) {
+                if (allKilled.isEmpty()) {
+                    GameHumans newKilled = new GameHumans(game, human.getInit(), human.getCut(), 1, true);
+                    allKilled.add(newKilled);
+                } else {
+                    for (GameHumans kh : allKilled) {
+                        // if same human prototype is killed more than once
+                        if (kh.getCut().equals(human.getCut()) && kh.getInit().equals(human.getInit())) {
+                            kh.setCount(kh.getCount() + 1);
+                        } else {
+                            GameHumans newKilled = new GameHumans(game, human.getInit(), human.getCut(), 1, true);
+                            allKilled.add(newKilled);
+                        }
+                    }
+                }
+            }
+
+            List<GameHumans> allGameHumans = new ArrayList<>();
+            allGameHumans.addAll(allFinished);
+            allGameHumans.addAll(allKilled);
+            game.setGameHumansList(allGameHumans);
+        }
 
         return game;
     }

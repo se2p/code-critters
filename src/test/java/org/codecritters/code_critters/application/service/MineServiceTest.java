@@ -39,12 +39,13 @@ public class MineServiceTest {
     private MineRepository mineRepository;
 
     private static final String ID = "1";
+    private static final String GAME = "1234";
     private static final String ID2 = "2";
     private static final String CODE = "code";
     private static final String XML = "xml";
-    private final Game game = new Game(ID, new Level(), LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID);
-    private MineDTO mine1 = new MineDTO(ID, CODE + ID, XML + ID);
-    private MineDTO mine2 = new MineDTO(ID2, CODE + ID2, XML + ID2);
+    private Game game = new Game(ID, new Level(), LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID, new ArrayList<>());
+    private MineDTO mine1 = new MineDTO(ID, GAME, CODE + ID, XML + ID, LocalDateTime.now(), LocalDateTime.now(), 8, 2, false, LocalDateTime.now(), true);
+    private MineDTO mine2 = new MineDTO(ID2, GAME, CODE + ID2, XML + ID2, LocalDateTime.now(), LocalDateTime.now(), 5, 3, false, LocalDateTime.now(), true);
     private MinesDTO minesDTO = new MinesDTO();
     private List<MineDTO> mines = new ArrayList<>();
 
@@ -58,7 +59,9 @@ public class MineServiceTest {
 
     @Test
     public void testSaveMines() {
-        when(gameRepository.findById(ID)).thenReturn(Optional.of(game));
+        minesDTO.setGame(ID);
+        minesDTO.setMines(mines);
+        when(gameRepository.findById(any())).thenReturn(Optional.of(game));
         mineService.saveMines(minesDTO);
         verify(mineRepository, times(2)).save(any());
     }

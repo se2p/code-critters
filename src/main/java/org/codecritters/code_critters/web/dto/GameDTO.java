@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.dto;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -25,6 +25,7 @@ package org.codecritters.code_critters.web.dto;
 import org.codecritters.code_critters.persistence.entities.Level;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class GameDTO {
 
@@ -39,10 +40,20 @@ public class GameDTO {
     private double gameTime;
     private String userID;
 
+    private List<String> killedMutantsList;
+
+    private List<HumanDTO> killedHumansList;
+
+    private List<String> finishedMutantsList;
+
+    private List<HumanDTO> finishedHumansList;
+
+
     public GameDTO() {}
 
     public GameDTO(String name, String id, Level level, LocalDateTime start, LocalDateTime end, int score,
-                   int mutantsKilled, int humansFinished, double gameTime, String userID) {
+                   int mutantsKilled, int humansFinished, double gameTime, String userID, List<String> killedMutantsList,
+                   List<HumanDTO> killedHumansList, List<String> finishedMutantsList, List<HumanDTO> finishedHumansList) {
         this.name = name;
         this.id = id;
         this.level = level;
@@ -53,6 +64,10 @@ public class GameDTO {
         this.humansFinished = humansFinished;
         this.gameTime = gameTime;
         this.userID = userID;
+        this.killedMutantsList = killedMutantsList;
+        this.killedHumansList = killedHumansList;
+        this.finishedMutantsList = finishedMutantsList;
+        this.finishedHumansList = finishedHumansList;
     }
 
     public String getName() {
@@ -133,5 +148,37 @@ public class GameDTO {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public List<String> getKilledMutantsList() {
+        return killedMutantsList;
+    }
+
+    public void setKilledMutantsList(List<String> killedMutantsList) {
+        this.killedMutantsList = killedMutantsList;
+    }
+
+    public List<String> getFinishedMutantsList() {
+        return finishedMutantsList;
+    }
+
+    public void setFinishedMutantsList(List<String> finishedMutantsList) {
+        this.finishedMutantsList = finishedMutantsList;
+    }
+
+    public List<HumanDTO> getKilledHumansList() {
+        return killedHumansList;
+    }
+
+    public void setKilledHumansList(List<HumanDTO> killedHumansList) {
+        this.killedHumansList = killedHumansList;
+    }
+
+    public List<HumanDTO> getFinishedHumansList() {
+        return finishedHumansList;
+    }
+
+    public void setFinishedHumansList(List<HumanDTO> finishedHumansList) {
+        this.finishedHumansList = finishedHumansList;
     }
 }

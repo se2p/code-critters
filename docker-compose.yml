@@ -12,7 +12,7 @@ services:
       - mysqldb
   mysqldb:
     container_name: "critter-mysql"
-    image: mariadb:latest
+    image: mariadb:11.1-rc
     ports:
       - "3306:3306"
     env_file: ./.env

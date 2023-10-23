@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -50,6 +51,7 @@ public class GameRepositoryTest {
     };
     private final Level level = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray, 2);
     private static final String ID = "1";
+    private static final String userId = "userId";
     private final Game game = new Game(ID, level, LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0);
 
     @Before
@@ -64,6 +66,7 @@ public class GameRepositoryTest {
         level.setTower(tower);
         rowRepository.save(row1);
         levelRepository.save(level);
+        game.setUserID(userId);
         Game savedGame = gameRepository.save(game);
         game.setId(savedGame.getId());
     }
@@ -84,5 +87,13 @@ public class GameRepositoryTest {
                 () -> assertEquals(game.getHumansFinished(), findGame.get().getHumansFinished()),
                 () -> assertEquals(game.getGameTime(), findGame.get().getGameTime())
         );
+    }
+
+    @Test
+    public void testFindAllByUserId() {
+        List<Game> games = gameRepository.findAllByUserID(game.getUserID());
+
+        assertEquals(1, games.size());
+        assertEquals(userId, games.get(0).getUserID());
     }
 }
