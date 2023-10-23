@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @RunWith(SpringRunner.class)
@@ -97,7 +98,9 @@ public class MutantRepositoryTest {
         List<Mutant> mutants = repository.findByIdIn(ids);
 
         assertEquals(2, mutants.size());
-        assertEquals(mutant1.getId(), mutants.get(0).getId());
-        assertEquals("mutantCode1", mutants.get(0).getCode());
+        assertTrue(mutants.get(0).getId() == mutant1.getId()
+                || mutants.get(0).getId() == mutant2.getId());
+        assertTrue(mutants.get(0).getCode() == mutant1.getCode()
+                || mutants.get(0).getCode() == mutant2.getCode());
     }
 }

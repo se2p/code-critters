@@ -22,7 +22,9 @@
 //goog.addDependency("../" + "/hair_field_colour.js", ['Blockly.HairFieldColour'], ['Blockly.Field', 'Blockly.utils', 'goog.dom', 'goog.events', 'goog.style', 'goog.ui.ColorPicker']);
 //goog.require('Blockly.HairFieldColour');
 
-Blockly.JavaScript['properties'] = function(block) {
+// Optional new parameter "generator" for all these javascript generator functions,
+// but not necessary in our use cases so far
+Blockly.JavaScript.forBlock['properties'] = function(block, generator) {
     var dropdown_properties = block.getFieldValue('properties');
     var code;
     switch (dropdown_properties) {
@@ -53,7 +55,7 @@ Blockly.JavaScript['properties'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['properties_user'] = function(block) {
+Blockly.JavaScript.forBlock['properties_user'] = function(block) {
     var dropdown_properties = block.getFieldValue('properties');
     var code;
     switch (dropdown_properties) {
@@ -72,14 +74,14 @@ Blockly.JavaScript['properties_user'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['set'] = function(block) {
+Blockly.JavaScript.forBlock['set'] = function(block) {
     var value_name1 = Blockly.JavaScript.valueToCode(block, 'value1', Blockly.JavaScript.ORDER_ATOMIC);
     var value_name2 = Blockly.JavaScript.valueToCode(block, 'value2', Blockly.JavaScript.ORDER_ATOMIC);
     var code = value_name1 + " = " + value_name2 + ";\n";
     return code;
 };
 
-Blockly.JavaScript['assert'] = function(block) {
+Blockly.JavaScript.forBlock['assert'] = function(block) {
     var value_target = Blockly.JavaScript.valueToCode(block, 'target', Blockly.JavaScript.ORDER_ATOMIC);
     var value_value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -89,30 +91,30 @@ Blockly.JavaScript['assert'] = function(block) {
     return code;
 };
 
-Blockly.JavaScript['variable'] = function(block) {
+Blockly.JavaScript.forBlock['variable'] = function(block) {
     var text_name = block.getFieldValue('NAME');
     var code = 'this.variable_' + text_name;
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['dirt'] = function(block) {
+Blockly.JavaScript.forBlock['dirt'] = function(block) {
     var code = '"dirt"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['grass'] = function(block) {
+Blockly.JavaScript.forBlock['grass'] = function(block) {
     var code = '"grass"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['water'] = function(block) {
+Blockly.JavaScript.forBlock['water'] = function(block) {
     var code = '"water"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['lava'] = function(block) {
+Blockly.JavaScript.forBlock['lava'] = function(block) {
     var code = '"lava"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['ice'] = function(block) {
+Blockly.JavaScript.forBlock['ice'] = function(block) {
     var code = '"ice"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
@@ -227,26 +229,26 @@ Blockly.Extensions.register('custom_text_quotes',
     Blockly.Blocks.Terrain.CUSTOM_TEXT_QUOTES_EXTENSION);
 
 
-Blockly.JavaScript['cut_head'] = function(block) {
+Blockly.JavaScript.forBlock['cut_head'] = function(block) {
     let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
     let code = '//CUT_START\n' + statements_content + "\n//CUT_END\n";
     return code;
 };
 
 
-Blockly.JavaScript['shirt_picker'] = function(block) {
+Blockly.JavaScript.forBlock['shirt_picker'] = function(block) {
     let dropdown_color = block.getFieldValue('color');
     let code = '"' + dropdown_color + '"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['hair_picker'] = function(block) {
+Blockly.JavaScript.forBlock['hair_picker'] = function(block) {
     let dropdown_color = block.getFieldValue('color');
     let code = '"' + dropdown_color + '"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['init_head'] = function(block) {
+Blockly.JavaScript.forBlock['init_head'] = function(block) {
     let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
     let code = '//INIT_START\n' + statements_content + "\n//INIT_END\n";
     return code;
