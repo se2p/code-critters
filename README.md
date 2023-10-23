@@ -51,6 +51,7 @@ file with the following command:
 ```bash
 docker-compose up
 ```
+Make sure to have build the most recent `Code-Critters-1.0.1.jar` via `maven package`
 
 ## Build and Deployment
 

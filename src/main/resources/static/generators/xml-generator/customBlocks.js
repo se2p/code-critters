@@ -79,7 +79,7 @@ Blockly.JavaScript['properties'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['properties_user'] = function(block) {
+Blockly.JavaScript.forBlock['properties_user'] = function(block) {
     var dropdown_properties = block.getFieldValue('properties');
     var code;
     switch (dropdown_properties) {
@@ -145,7 +145,7 @@ Blockly.defineBlocksWithJsonArray([  // BEGIN JSON EXTRACT
 // Blockly.FieldColour.COLOURS = ['#FF0000','#0000FF','#00FFFF','#009900','#FFA500','#FFFF00','#FFFFFF','#000000','#FF00FF'];
 // Blockly.FieldColour.COLUMNS = 3;
 
-Blockly.JavaScript['custom_colour_picker'] = function(block) {
+Blockly.JavaScript.forBlock['custom_colour_picker'] = function(block) {
     var colour_name = block.getFieldValue('COLOUR');
     var code;
     switch (colour_name.toLowerCase()) {
@@ -170,7 +170,7 @@ Blockly.JavaScript['custom_colour_picker'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['colour_picker'] = function(block) {
+Blockly.JavaScript.forBlock['colour_picker'] = function(block) {
     var colour_name = block.getFieldValue('COLOUR');
     var code;
     switch (colour_name.toLowerCase()) {
@@ -224,7 +224,7 @@ Blockly.Blocks['assert'] = {
     }
 };
 
-Blockly.JavaScript['assert'] = function(block) {
+Blockly.JavaScript.forBlock['assert'] = function(block) {
     var value_target = Blockly.JavaScript.valueToCode(block, 'target', Blockly.JavaScript.ORDER_ATOMIC);
     var value_value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
 
@@ -246,30 +246,30 @@ Blockly.Blocks['variable'] = {
     }
 };
 
-Blockly.JavaScript['variable'] = function(block) {
+Blockly.JavaScript.forBlock['variable'] = function(block) {
     var text_name = block.getFieldValue('NAME');
     var code = 'this.variable_' + text_name;
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['dirt'] = function(block) {
+Blockly.JavaScript.forBlock['dirt'] = function(block) {
     var code = '"dirt"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['grass'] = function(block) {
+Blockly.JavaScript.forBlock['grass'] = function(block) {
     var code = '"grass"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['water'] = function(block) {
+Blockly.JavaScript.forBlock['water'] = function(block) {
     var code = '"water"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['lava'] = function(block) {
+Blockly.JavaScript.forBlock['lava'] = function(block) {
     var code = '"lava"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
-Blockly.JavaScript['ice'] = function(block) {
+Blockly.JavaScript.forBlock['ice'] = function(block) {
     var code = '"ice"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
@@ -426,7 +426,7 @@ Blockly.Blocks['cut_head'] = {
     }
 };
 
-Blockly.JavaScript['cut_head'] = function(block) {
+Blockly.JavaScript.forBlock['cut_head'] = function(block) {
     let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
     let code = '//CUT_START\n' + statements_content + "\n//CUT_END\n";
     return code;
@@ -480,7 +480,7 @@ Blockly.Blocks['shirt_picker'] = {
     }
 };
 
-Blockly.JavaScript['shirt_picker'] = function(block) {
+Blockly.JavaScript.forBlock['shirt_picker'] = function(block) {
     let dropdown_color = block.getFieldValue('color');
     let code = '"' + dropdown_color + '"';
     return [code, Blockly.JavaScript.ORDER_NONE];
@@ -513,13 +513,13 @@ Blockly.Blocks['hair_picker'] = {
     }
 };
 
-Blockly.JavaScript['hair_picker'] = function(block) {
+Blockly.JavaScript.forBlock['hair_picker'] = function(block) {
     let dropdown_color = block.getFieldValue('color');
     let code = '"' + dropdown_color + '"';
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.JavaScript['init_head'] = function(block) {
+Blockly.JavaScript.forBlock['init_head'] = function(block) {
     let statements_content = Blockly.JavaScript.statementToCode(block, 'Content');
     let code = '//INIT_START\n' + statements_content + "\n//INIT_END\n";
     return code;
