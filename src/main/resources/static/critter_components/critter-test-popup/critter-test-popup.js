@@ -30,7 +30,7 @@ import '../critter-blockly/critter-blockly.js';
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 import '/lib/@polymer/iron-iconset-svg/iron-iconset-svg.js';
-
+import {leftEmptyAssertBlockly, rightEmptyAssertBlockly} from "../constants.js";
 
 /*
 # critter-popup
@@ -256,8 +256,12 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
         if (code === '') {
-            this.showErrorToast("You have to create a test first");
+            this.showErrorToast("empty_test");
             this._popupClose();
+            return;
+        }
+        else if (code.toString().includes(leftEmptyAssertBlockly) || code.toString().includes(rightEmptyAssertBlockly)) {
+            this.showErrorToast("incomplete_assert_block");
             return;
         }
         let detail = {};
