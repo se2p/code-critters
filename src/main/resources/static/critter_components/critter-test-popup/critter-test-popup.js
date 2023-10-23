@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -227,6 +227,11 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
 
             _copiedCode: {
                 type: String
+            },
+
+            _mineCreationStart: {
+                type: Number,
+                value: Date.now()
             }
         }
     }
@@ -256,12 +261,24 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
             return;
         }
         let detail = {};
+        detail.creationStart = this._mineCreationStart;
+        detail.creationEnd = Date.now();
         detail.code = new Function('x', 'y', code);
         detail.js = code;
         detail.xml = this.$.blockly_test.getXML();
+        detail.xPosition = this._selectedBlock.x + 1;
+        detail.yPosition = this._selectedBlock.y;
+        detail.deleted = false;
+        detail.deletionDateTime = null;
+        detail.updated = false;
+
+        // if an existing mine is edited
+        if (this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] != null) {
+            detail.updated = true;
+        }
         this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = detail;
         this.dispatchEvent(new CustomEvent('_mineSet', {
-            detail: {position: this._selectedBlock},
+            detail: {position: this._selectedBlock, mine: detail},
             bubbles: true,
             composed: true
         }));
@@ -269,9 +286,15 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     }
 
     _deleteMine() {
+        let removedMine = this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y];
+
+        removedMine.creationStart = this._mineCreationStart;
+        removedMine.creationEnd = Date.now();
+        removedMine.deleted = true;
+        removedMine.deletionDateTime = Date.now();
         this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = undefined;
         this.dispatchEvent(new CustomEvent('_mineRemoved', {
-            detail: {position: this._selectedBlock},
+            detail: {position: this._selectedBlock, mine: removedMine},
             bubbles: true,
             composed: true
         }));
@@ -300,6 +323,8 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         this._selectedBlock = detail;
         this.$.mine_popup.show(detail);
         if (this._globalData.mines[detail.x][detail.y]) {
+            // save mine creation or update start time
+            this._mineCreationStart = Date.now();
             this.$.blockly_test.setCode(this._globalData.mines[detail.x][detail.y].xml);
         } else {
             this.$.blockly_test.setCode('<xml xmlns="http://www.w3.org/1999/xhtml"></xml>');

@@ -5,6 +5,8 @@ import org.codecritters.code_critters.application.service.GameService;
 import org.codecritters.code_critters.application.service.MineService;
 import org.codecritters.code_critters.spring.configuration.SecurityTestConfig;
 import org.codecritters.code_critters.web.dto.GameDTO;
+import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
+import org.codecritters.code_critters.web.dto.MineDTO;
 import org.codecritters.code_critters.web.dto.MinesDTO;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +48,10 @@ public class GameControllerTest {
     private MineService mineService;
 
     private MinesDTO minesDTO = new MinesDTO();
+
+    private MineDTO mineDTO = new MineDTO();
+
+    private GamePauseTimeDTO gamePauseTimeDTO = new GamePauseTimeDTO();
     private final GameDTO gameDTO = new GameDTO();
     private final MockCookie cookie = new MockCookie("id", "123");
     private final String TOKEN_ATTR_NAME = "org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN";
@@ -53,7 +59,9 @@ public class GameControllerTest {
     private final CsrfToken csrfToken = httpSessionCsrfTokenRepository.generateToken(new MockHttpServletRequest());
 
     @AfterEach
-    public void resetService() {reset(gameService, mineService);}
+    public void resetService() {
+        reset(gameService, mineService);
+    }
 
     @Test
     public void testCreateGame() throws Exception {
@@ -62,12 +70,12 @@ public class GameControllerTest {
         System.out.println(game);
         when(gameService.createGame(any(), anyString())).thenReturn(gameDTO);
         mvc.perform(post("/game/create")
-                .content(game)
-                .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-                .param(csrfToken.getParameterName(), csrfToken.getToken())
-                .cookie(cookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(game)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .cookie(cookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(gameService).createGame(any(), anyString());
     }
@@ -77,11 +85,11 @@ public class GameControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         String game = mapper.writeValueAsString(gameDTO);
         mvc.perform(post("/game/save")
-                .content(game)
-                .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-                .param(csrfToken.getParameterName(), csrfToken.getToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(game)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(gameService).saveGame(any());
     }
@@ -91,12 +99,40 @@ public class GameControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         String mines = mapper.writeValueAsString(minesDTO);
         mvc.perform(post("/game/mines")
-                .content(mines)
-                .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-                .param(csrfToken.getParameterName(), csrfToken.getToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(mines)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         verify(mineService).saveMines(any());
+    }
+
+    @Test
+    public void testSaveMine() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String mine = mapper.writeValueAsString(mineDTO);
+        mvc.perform(post("/game/mine")
+                        .content(mine)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(mineService).saveMine(any());
+    }
+
+    @Test
+    public void testSavePauseTime() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String pause = mapper.writeValueAsString(gamePauseTimeDTO);
+        mvc.perform(post("/game/pause")
+                        .content(pause)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(gameService).updatePauseTimes(any());
     }
 }

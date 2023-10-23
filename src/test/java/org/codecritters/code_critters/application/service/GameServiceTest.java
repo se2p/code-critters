@@ -4,9 +4,11 @@ import org.codecritters.code_critters.application.exception.IncompleteDataExcept
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.Game;
 import org.codecritters.code_critters.persistence.entities.Level;
+import org.codecritters.code_critters.persistence.entities.Mutant;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.GameRepository;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
+import org.codecritters.code_critters.persistence.repository.MutantRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.GameDTO;
 import org.junit.Test;
@@ -17,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,13 +45,16 @@ public class GameServiceTest {
     @Mock
     private GameRepository gameRepository;
 
+    @Mock
+    private MutantRepository mutantRepository;
+
     private static final String COOKIE = "cookie";
     private static final String ID = "1";
     private final Level level = new Level();
     private final User user = new User();
     private final GameDTO gameDTO = new GameDTO("level", ID, level, LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0,
-            0, null);
-    private final Game game = new Game(ID, level, LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID);
+            0, null, Arrays.asList("some", "id"), new ArrayList<>(),  Arrays.asList("some", "id"), new ArrayList<>());
+    private final Game game = new Game(ID, level, LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID, new ArrayList<>());
 
     @BeforeEach
     public void setup() {
@@ -114,6 +121,7 @@ public class GameServiceTest {
     @Test
     public void testSaveGame() {
         when(levelRepository.findByName(gameDTO.getName())).thenReturn(level);
+        when(mutantRepository.findByIdIn(any())).thenReturn(new ArrayList<Mutant>());
         gameService.saveGame(gameDTO);
         verify(gameRepository).save(any());
     }

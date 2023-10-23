@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.controller;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 import org.codecritters.code_critters.application.service.GameService;
 import org.codecritters.code_critters.application.service.MineService;
 import org.codecritters.code_critters.web.dto.GameDTO;
+import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
+import org.codecritters.code_critters.web.dto.MineDTO;
 import org.codecritters.code_critters.web.dto.MinesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -70,11 +72,32 @@ public class GameController {
     }
 
     /**
+     * NOTE: This endpoint is no longer called by the frontend. It saves only the final state of all mines in a game.
+     * Now the /mine endpoint is used on every mine update in order to track the individual mine histories.
+     *
      * Saves the given mine data.
      * @param mines The list of mines to save.
      */
     @PostMapping(path = "/mines")
     public void saveMines(@RequestBody MinesDTO mines) {
         mineService.saveMines(mines);
+    }
+
+    /**
+     * Saves the given mine data.
+     * @param mine a MineDTO object
+     */
+    @PostMapping(path = "/mine")
+    public void saveMine(@RequestBody MineDTO mine) {
+        mineService.saveMine(mine);
+    }
+
+    /**
+     * Saves the given game pause information.
+     * @param dto a GamePauseTimeDTO object containing the gameId, start and end time of a pause
+     */
+    @PostMapping(path="/pause")
+    public void savePauseTime(@RequestBody GamePauseTimeDTO dto) {
+        gameService.updatePauseTimes(dto);
     }
 }

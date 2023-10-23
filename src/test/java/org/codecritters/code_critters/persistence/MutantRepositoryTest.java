@@ -17,13 +17,12 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(
@@ -48,7 +47,11 @@ public class MutantRepositoryTest {
             {"grass", "grass", "wood"}
     };
     private Level level = new Level(row1, "level_1", 10, 5, "cut", "test", "xml", "init", levelArray, 2);
-    private final Mutant mutant1 = new Mutant(level, "mutantCode", "init", "xml");
+    private final Mutant mutant1 = new Mutant(level, "mutantCode1", "init", "xml");
+    private final Mutant mutant2 = new Mutant(level, "mutantCode2", "init", "xml");
+    private String id1 = "1";
+    private String id2 = "2";
+
 
     @Before
     public void saveMutants() {
@@ -62,18 +65,39 @@ public class MutantRepositoryTest {
         level.setTower(tower);
         rows.save(row1);
         levels.save(level);
+        mutant1.setId(id1);
+        mutant2.setId(id2);
         repository.save(mutant1);
+        repository.save(mutant2);
     }
 
     @Test
     public void getCodeByLevelTest() {
         List<String[]> mutants = repository.getCodeByLevel(level);
-        assertEquals(1, mutants.size());
+        assertEquals(2, mutants.size());
     }
 
     @Test
     public void deleteAllByLevel() {
         repository.deleteAllByLevel(level);
         assertEquals(0, repository.getCodeByLevel(level).size());
+    }
+
+    @Test
+    public void findByIdInTest() {
+        Mutant saved1 = repository.save(mutant1);
+        Mutant saved2 = repository.save(mutant2);
+        mutant1.setId(saved1.getId());
+        mutant2.setId(saved2.getId());
+
+        List<String> ids = new ArrayList<>();
+        ids.add(mutant1.getId());
+        ids.add(mutant2.getId());
+
+        List<Mutant> mutants = repository.findByIdIn(ids);
+
+        assertEquals(2, mutants.size());
+        assertEquals(mutant1.getId(), mutants.get(0).getId());
+        assertEquals("mutantCode1", mutants.get(0).getCode());
     }
 }

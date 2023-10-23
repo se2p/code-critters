@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -24,13 +24,10 @@ package org.codecritters.code_critters.persistence.entities;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -49,8 +46,18 @@ public class Game {
     private int mutantsKilled;
     private int humansFinished;
     private double gameTime;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<PauseTime> pauseTimeList = new ArrayList<>();
+
     @Column(name = "user_id")
     private String userID;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<GameHumans> gameHumansList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<GameMutants> gameMutantsList = new ArrayList<>();
 
     public Game() {}
 
@@ -91,7 +98,7 @@ public class Game {
     }
 
     public Game(String id, Level level, LocalDateTime start, LocalDateTime end, int score, int mutantsKilled,
-                int humansFinished, double gameTime, String userID) {
+                int humansFinished, double gameTime, String userID, List<PauseTime> pauseTimeList) {
         this.id = id;
         this.level = level;
         this.start = start;
@@ -101,6 +108,7 @@ public class Game {
         this.humansFinished = humansFinished;
         this.gameTime = gameTime;
         this.userID = userID;
+        this.pauseTimeList = pauseTimeList;
     }
 
     public String getId() {
@@ -159,6 +167,30 @@ public class Game {
         this.humansFinished = humansFinished;
     }
 
+    public List<PauseTime> getPauseTimeList() {
+        return pauseTimeList;
+    }
+
+    public void setPauseTimeList(List<PauseTime> pauseTimeList) {
+        this.pauseTimeList = pauseTimeList;
+    }
+
+    public List<GameHumans> getGameHumansList() {
+        return gameHumansList;
+    }
+
+    public void setGameHumansList(List<GameHumans> gameHumansList) {
+        this.gameHumansList = gameHumansList;
+    }
+
+    public List<GameMutants> getGameMutantsList() {
+        return gameMutantsList;
+    }
+
+    public void setGameMutantsList(List<GameMutants> gameMutantsList) {
+        this.gameMutantsList = gameMutantsList;
+    }
+
     public double getGameTime() {
         return gameTime;
     }
@@ -173,6 +205,10 @@ public class Game {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public void addPauseTimeToList(PauseTime pauseTime) {
+        this.pauseTimeList.add(pauseTime);
     }
 
     @Override
