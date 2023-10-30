@@ -86,7 +86,13 @@ configured in `application.properties`.
 
 ### Development
 
-When updating the database schema you can now use flyway migration. To do so, move your migration script
+During development, the easiest way to work on Code Critters is first to start only the database via docker
+```bash
+docker-compose -f docker-compose-local.yml up
+```
+and then run the spring application as usually via the main method in `Code_CrittersServiceApplication`.
+
+When updating the database schema you can use flyway migrations. To do so, move your migration script
 to the folder ``src/main/java/resources/db/migration`` using the correct file naming schema (https://www.red-gate.com/blog/database-devops/flyway-naming-patterns-matter)
 and consecutive version numbers in this format ``YYYYMMDD``
 

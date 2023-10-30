@@ -39,6 +39,7 @@ import './critter-game-image.js'
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 import {critterStyle} from '/style/critter-botstrap.js'
+import {normalInterval, speedyInterval} from "../constants.js";
 
 
 
@@ -123,6 +124,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             #send_button,
             #speedUp_button,
+            #speedDown_button,
             #reload_button {
                 padding: 0 1%;
                 margin: 0 1%;
@@ -283,7 +285,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                     <div class="col-sm-12">
                         <critter-control-button id="send_button" class="game_button" shape="play">
                         </critter-control-button>
-                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" disabled>
+                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" hidden="{{_isSpeedUp}}" disabled>
+                        </critter-control-button>
+                        <critter-control-button id="speedDown_button" class="game_button" shape="normalSpeed" hidden="{{!_isSpeedUp}}">
                         </critter-control-button>
                         <critter-control-button id="reload_button" class="game_button" shape="reload">
                         </critter-control-button>
@@ -347,7 +351,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             _interval: {
                 type: Number,
-                value: 2000
+                value: normalInterval
             },
 
             _hoverX: {
@@ -458,6 +462,11 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             _finishedHumansList: {
                 type: Array,
                 value: []
+            },
+
+            _isSpeedUp: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -475,6 +484,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         afterNextRender(this, function () {
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
             this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
+            this.$.speedDown_button.addEventListener("click", () => this._speedDownGame(this))
             this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
             this.$.mutant_button.addEventListener("click", () => this._showMutants(this));
             this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
@@ -540,9 +550,19 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this._critterList.forEach((critter) => {
                 critter.speedy = true;
             });
-            this._interval = 1500;
+            this._interval = speedyInterval;
         }
-        this.$.speedUp_button.disabled = true;
+        this._isSpeedUp = this._interval === speedyInterval;
+    }
+
+    _speedDownGame() {
+        if(this._crittersSent) {
+            this._critterList.forEach((critter) => {
+                critter.speedy = false;
+            });
+            this._interval = normalInterval;
+        }
+        this._isSpeedUp = this._interval === speedyInterval;
     }
 
     _reloadGame() {
@@ -561,7 +581,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._doneCritters = 0;
         this._killedCritters = 0;
         this.score = 0;
-        this._interval = 2000;
+        this._interval = normalInterval;
         this._critterList.forEach(critter => {
             critter.remove();
         });
@@ -570,6 +590,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._timeoutManager.clear();
         this._globalData.deleteMines();
         this._mines = [];
+        this._isSpeedUp = this._interval === speedyInterval;
         this._killedMutantsList.forEach(critter => {
             critter.remove();
         });
@@ -628,12 +649,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 this._addHumans();
                 this._addCritters();
                 this._sendCritters();
-                this._critterList.forEach(critter => {
-                    console.log("Each in list id: " + critter.id + " and cut: " + critter.cut);
-                });
-                console.log("Length: " + this._critterList.length)
                 this._crittersSent = true;
                 this.$.speedUp_button.disabled = false;
+                this._isSpeedUp = this._interval === speedyInterval;
             } else {
                 this._timeoutManager.resumeAll();
                 this._critterList.forEach(critter => {
