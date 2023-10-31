@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.repository;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -41,6 +41,9 @@ public interface LevelRepository extends CrudRepository<Level, String> {
 
     @Query("SELECT l.name FROM Level as l ORDER BY l.name ASC")
     List<String> getLevelNames();
+
+    @Query("SELECT l.displayName FROM Level as l ORDER BY l.displayName ASC")
+    List<String> getLevelDisplayNames();
 
     @Query("SELECT l.id FROM Level AS l WHERE l.name = :name")
     String getIdByName(@Param("name") String name);

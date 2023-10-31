@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -33,6 +33,7 @@ import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.RowRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.LevelDTO;
+import org.codecritters.code_critters.web.dto.LevelNamesDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class LevelService {
@@ -156,6 +159,9 @@ public class LevelService {
         if (dto.getName() != null) {
             level.setName(dto.getName());
         }
+        if (dto.getDisplayName() != null) {
+            level.setDisplayName(dto.getDisplayName());
+        }
         if (dto.getLevel() != null) {
             level.setLevel(dto.getLevel());
         }
@@ -201,6 +207,45 @@ public class LevelService {
         });
         return list;
 
+    }
+
+    private List<String> getLevelDisplayNames() {
+        List<String> levelDisplayNames = levelRepository.getLevelDisplayNames();
+        Collections.sort(levelDisplayNames, (o1, o2) -> {
+            if(o1.startsWith("Level ") && o2.startsWith("Level ")) {
+                String num1 = o1.replaceAll("[^0-9]", "");
+                String num2 = o2.replaceAll("[^0-9]", "");
+                if(Integer.valueOf(num1) < Integer.valueOf(num2)){
+                    return -1;
+                } else if(Integer.valueOf(num1) > Integer.valueOf(num2)){
+                    return 1;
+                }
+            }
+            return 0;
+        });
+        return levelDisplayNames;
+    }
+
+    /**
+     * Gets all level names as a list of objects holding the basic name
+     * (e.g. level_1) and the displayName (e.g. Level 1 - Woods)
+     * @return A list of LevelNamesDTOs
+     */
+    public List<LevelNamesDTO> getLevelNamesAll() {
+        // get sorted names lists
+        List<String> levelDisplayNames = getLevelDisplayNames();
+        List<String> levelNames = getLevelNames();
+
+        List<LevelNamesDTO> levelNamesDTOS = new ArrayList<>();
+        for (int i = 0; i < levelNames.size(); i++) {
+            for (int j = 0; j < levelDisplayNames.size(); j++) {
+                if (i == j) {
+                    LevelNamesDTO cur = new LevelNamesDTO(levelNames.get(i), levelDisplayNames.get(j));
+                    levelNamesDTOS.add(cur);
+                }
+            }
+        }
+        return levelNamesDTOS;
     }
 
     public List<MutantDTO> getMutants(String name) {

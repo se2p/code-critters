@@ -8,10 +8,7 @@ import org.codecritters.code_critters.application.service.LevelService;
 import org.codecritters.code_critters.application.service.MutantsService;
 import org.codecritters.code_critters.application.service.RowService;
 import org.codecritters.code_critters.spring.configuration.SecurityTestConfig;
-import org.codecritters.code_critters.web.dto.LevelDTO;
-import org.codecritters.code_critters.web.dto.MutantDTO;
-import org.codecritters.code_critters.web.dto.MutantsDTO;
-import org.codecritters.code_critters.web.dto.RowDTO;
+import org.codecritters.code_critters.web.dto.*;
 // Using junit 5 here instead of the commented out junit 4 imports
 // import org.junit.Before;
 // import org.junit.Test;
@@ -70,6 +67,8 @@ public class GeneratorControllerTest {
 
     private LevelDTO levelDTO;
     private final String level = "level";
+    private final String levelDisplayName1 = "Level 1";
+    private final String levelDisplayName2 = "Level 2";
     private final MockCookie cookie = new MockCookie("id", "123");
     private final MutantDTO mutant1 = new MutantDTO("code1", "init1", "id1", "xml1");
     private final MutantDTO mutant2 = new MutantDTO("code2", "init2", "id2", "xml2");
@@ -94,7 +93,7 @@ public class GeneratorControllerTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1", 2);
+        levelDTO = new LevelDTO("id1", "level_1", levelDisplayName1, 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1", 2);
         mapper = new ObjectMapper();
         levelDTOContent = mapper.writeValueAsString(levelDTO);
         rowDTOContent = mapper.writeValueAsString(row1);
@@ -350,5 +349,33 @@ public class GeneratorControllerTest {
                 .andReturn();
 
         verify(levelService).getRows();
+    }
+
+    @Test
+    public void testGetLevelNamesFull() throws Exception {
+        List<LevelNamesDTO> names = new ArrayList<>();
+        LevelNamesDTO level1 = new LevelNamesDTO(levelDTO.getName(), levelDTO.getDisplayName());
+        LevelNamesDTO level2 = new LevelNamesDTO("level_2", levelDisplayName2);
+        names.add(level1);
+        names.add(level2);
+
+        when(levelService.getLevelNamesAll()).thenReturn(names);
+
+        MvcResult result = mvc.perform(get("/generator/fullNames")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        assertAll(
+                () -> assertTrue(content.contains(level1.getName())),
+                () -> assertTrue(content.contains(level1.getDisplayName())),
+                () -> assertTrue(content.contains(level2.getName())),
+                () -> assertTrue(content.contains(level2.getDisplayName()))
+
+        );
+
+        verify(levelService).getLevelNamesAll();
     }
 }

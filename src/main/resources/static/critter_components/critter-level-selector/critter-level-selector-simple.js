@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -48,7 +48,7 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
                     margin: 1% auto;
                 }
             </style>
-            <critter-selector values="{{levels}}" selected-value="{{selectedLevel}}"></critter-selector>
+            <critter-selector values="{{levelNamesList}}" selected-value="{{selectedLevel}}"></critter-selector>
             <br>
             <critter-button id="load_button">[[__('load_level')]]</critter-button>
         `;
@@ -60,10 +60,9 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
 
     static get properties() {
         return {
-            levels: {
-                type: []
+            levelNamesList: {
+            type: []
             },
-
             selectedLevel: {
                 type: String,
                 value: ""
@@ -83,7 +82,7 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
     /** gets all existing level names **/
     _initNames() {
         let req = document.createElement('iron-ajax');
-        req.url = "/generator/names";
+        req.url = "/generator/fullNames";
         req.method = "GET";
         req.handleAs = 'json';
         req.contentType = 'application/json';
@@ -91,7 +90,7 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
         req.rejectWithRequest = true;
 
         req.addEventListener('response', e => {
-            this.levels = e.detail.__data.response;
+            this.levelNamesList = e.detail.__data.response;
         });
 
         let genRequest = req.generateRequest();

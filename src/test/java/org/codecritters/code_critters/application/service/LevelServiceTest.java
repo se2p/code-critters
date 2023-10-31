@@ -10,6 +10,7 @@ import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.RowRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.web.dto.LevelDTO;
+import org.codecritters.code_critters.web.dto.LevelNamesDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
 import org.junit.Before;
@@ -65,7 +66,7 @@ public class LevelServiceTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, row.getName(), 2);
+        levelDTO = new LevelDTO("id1", "level_1", "Level 1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, row.getName(), 2);
     }
 
     @Test
@@ -257,7 +258,7 @@ public class LevelServiceTest {
 
     @Test
     public void deleteLevelTest() {
-        Level level = new Level(new CritterRow(), levelDTO.getName(), levelDTO.getNumberOfCritters(),
+        Level level = new Level(new CritterRow(), levelDTO.getName(), "Level 1", levelDTO.getNumberOfCritters(),
                 levelDTO.getNumberOfHumans(), levelDTO.getCUT(), levelDTO.getTest(), levelDTO.getXml(),
                 levelDTO.getInit(), levelDTO.getLevel(), levelDTO.getFreeMines());
         level.setId("id");
@@ -283,5 +284,17 @@ public class LevelServiceTest {
         when(rowRepository.findCritterRowById(row.getName())).thenReturn(row);
         when(levelRepository.save(any())).thenThrow(ConstraintViolationException.class);
         assertThrows(AlreadyExistsException.class, () -> levelService.updateLevel(levelDTO));
+    }
+
+    @Test
+    public void getLevelNamesAllTest() {
+        when(levelRepository.getLevelDisplayNames()).thenReturn(Arrays.asList(levelDTO.getDisplayName()));
+        when(levelRepository.getLevelNames()).thenReturn(Arrays.asList(levelDTO.getName()));
+        List<LevelNamesDTO> levelNames = levelService.getLevelNamesAll();
+        assertAll("Should return level display name",
+                () -> assertEquals(1, levelNames.size()),
+                () -> assertTrue(Objects.equals(levelNames.get(0).getDisplayName(), levelDTO.getDisplayName())),
+                () -> assertTrue(Objects.equals(levelNames.get(0).getDisplayName(), levelDTO.getDisplayName()))
+                );
     }
 }
