@@ -47,7 +47,7 @@ public class MutantRepositoryTest {
             {"wood", "grass", "wood"},
             {"grass", "grass", "wood"}
     };
-    private Level level = new Level(row1, "level_1", 10, 5, "cut", "test", "xml", "init", levelArray, 2);
+    private Level level = new Level(row1, "level_1", "Level 1", 10, 5, "cut", "test", "xml", "init", levelArray, 2);
     private final Mutant mutant1 = new Mutant(level, "mutantCode1", "init", "xml");
     private final Mutant mutant2 = new Mutant(level, "mutantCode2", "init", "xml");
     private String id1 = "1";

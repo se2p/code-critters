@@ -40,6 +40,8 @@ public class Level {
     @javax.validation.constraints.NotEmpty
     @Column(unique = true)
     private String name;
+    @Column
+    private String displayName;
     @Column(columnDefinition = "int default 10")
     private int numberOfCritters;
     @Column(columnDefinition = "int default 5")
@@ -69,9 +71,10 @@ public class Level {
     private int freeMines;
 
 
-    public Level(CritterRow row, String name, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level, int freeMines) {
+    public Level(CritterRow row, String name, String displayName, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level, int freeMines) {
         this.row = row;
         this.name = name;
+        this.displayName = displayName;
         this.numberOfCritters = numberOfCritters;
         this.numberOfHumans = numberOfHumans;
         this.CUT = CUT;
@@ -103,6 +106,14 @@ public class Level {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public int getNumberOfCritters() {

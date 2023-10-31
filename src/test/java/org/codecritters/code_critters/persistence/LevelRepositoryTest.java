@@ -42,8 +42,8 @@ public class LevelRepositoryTest {
             {"wood", "grass", "wood"},
             {"grass", "grass", "wood"}
     };
-    private final Level level1 = new Level(row1, "level_1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray, 2);
-    private final Level level2 = new Level(row1, "level_2", 15, 4, "cut2", "test2", "xml2", "init2", levelArray, 2);
+    private final Level level1 = new Level(row1, "level_1", "Level 1", 10, 5, "cut1", "test1", "xml1", "init1", levelArray, 2);
+    private final Level level2 = new Level(row1, "level_2", "Level 2", 15, 4, "cut2", "test2", "xml2", "init2", levelArray, 2);
 
     @Before
     public void setup() {
@@ -76,6 +76,13 @@ public class LevelRepositoryTest {
                 () -> assertTrue(levelNames.contains(level1.getName())),
                 () -> assertTrue(levelNames.contains(level2.getName()))
         );
+    }
+
+    @Test
+    public void getLevelDisplayNamesTest() {
+        List<String> levelDisplayNames = repository.getLevelDisplayNames();
+        assertTrue(levelDisplayNames.contains(level1.getDisplayName()));
+        assertTrue(levelDisplayNames.contains(level2.getDisplayName()));
     }
 
     @Test
