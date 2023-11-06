@@ -260,7 +260,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             </div>
             <div id="selector_container">
                 <h3>[[__('select_next')]]</h3>
-                <critter-level-selector-simple></critter-level-selector-simple>
+                <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>
             </div>
         </critter-dialog>
         
@@ -319,6 +319,12 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
     static get properties() {
         return {
+            currentLevelName: {
+                type: String,
+                value: "",
+                notify: true
+            },
+
             showGrid: {
                 type: Boolean,
                 value: true
@@ -506,6 +512,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.addEventListener("_mineRemoved", (event) => this._updateMine(event));
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
+            this.currentLevelName = this._globalData.levelName;
             this._createGame();
 
             this._startTime = Date.now();

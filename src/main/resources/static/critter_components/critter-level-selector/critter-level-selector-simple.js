@@ -48,7 +48,7 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
                     margin: 1% auto;
                 }
             </style>
-            <critter-selector values="{{levelNamesList}}" selected-value="{{selectedLevel}}"></critter-selector>
+            <critter-selector values="{{levelNamesList}}" selected-value="{{selectedLevel}}" initial-value="{{initialSelectValue}}"></critter-selector>
             <br>
             <critter-button id="load_button">[[__('load_level')]]</critter-button>
         `;
@@ -66,6 +66,14 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
             selectedLevel: {
                 type: String,
                 value: ""
+            },
+            initialValue: {
+                type: String,
+                value: ""
+            },
+            initialSelectValue: {
+                type: String,
+                computed: '_nextLevelForSelector(initialValue)'
             }
         }
     }
@@ -75,7 +83,6 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
 
         afterNextRender(this, function () {
             this.$.load_button.addEventListener("click", this._loadLevel.bind(this));
-            this._initNames();
         });
     }
 
@@ -100,6 +107,32 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
 
     _loadLevel() {
         window.location.href = "/game?level=" + this.selectedLevel;
+    }
+
+    /**
+     * Returns the value of the next level for the selector. It is used to show a default selected option.
+     * @param currentLevel Holds the current level, e.g. 'level_2'
+     */
+    _nextLevelForSelector(currentLevel) {
+        this._initNames();
+        if (currentLevel) {
+            if (this.levelNamesList.length > 0) {
+                let currentLevelIndex = 0;
+                for (let i = 0; i < this.levelNamesList.length; i++) {
+                    if (this.levelNamesList[i].name === currentLevel) {
+                        currentLevelIndex = i;
+                    }
+                }
+                // If playing the last level, the selector defaults to the current, last level
+                if (this.levelNamesList.length - 1 === currentLevelIndex) {
+                    return this.levelNamesList[this.levelNamesList.length - 1].name;
+                } // in any other case select the next level from list
+                else {
+                    return this.levelNamesList[currentLevelIndex + 1].name;
+                }
+            }
+        }
+        return this.initialValue;
     }
 }
 
