@@ -46,10 +46,15 @@ class CritterSelector extends PolymerElement {
                     font-size: 1.2em;
                 }
             </style>
-               
+            
             <select id="selector" name="selector">
                   <template is="dom-repeat" items="{{values}}">
-                    <option value="{{item.value}}">{{item.name}}</option>
+                      <template is="dom-if" if="{{_isSelected(item.value)}}">
+                        <option id="{{item.value}}" value="{{item.value}}" selected>{{item.name}}</option>
+                      </template>
+                      <template is="dom-if" if="{{!_isSelected(item.value)}}">
+                          <option id="{{item.value}}" value="{{item.value}}">{{item.name}}</option>
+                      </template>
                   </template>
             </select>
         `;
@@ -69,6 +74,11 @@ class CritterSelector extends PolymerElement {
                 type: String,
                 value: "",
                 notify: true
+            },
+            initialValue: {
+                type: String,
+                value: "",
+                notify: true
             }
         }
     }
@@ -85,6 +95,11 @@ class CritterSelector extends PolymerElement {
         afterNextRender(this, function () {
             this.$.selector.addEventListener("change", (event) => this._valueChanged(event))
         });
+    }
+
+    // Sets the "selected" property of the level selector options
+    _isSelected(value) {
+        return value === this.selectedValue;
     }
 
     _valuesChanged() {
@@ -109,7 +124,12 @@ class CritterSelector extends PolymerElement {
             this.values = temp;
         }
 
-        this.selectedValue = this.values[0].value;
+        // Set selected value if an initialValue property is given (by a parent component)
+        if (this.initialValue) {
+            this.selectedValue = this.initialValue;
+        } else {
+            this.selectedValue = this.values[0].value;
+        }
     }
 
     _valueChanged(event) {
