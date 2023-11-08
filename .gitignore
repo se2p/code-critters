@@ -21,3 +21,5 @@ src/main/resources/static/**/*\.psd
 
 \.history/
 /.env
+
+config/certbot/
