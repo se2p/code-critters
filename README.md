@@ -53,6 +53,20 @@ docker-compose up
 ```
 Make sure to have build the most recent `Code-Critters-1.0.1.jar` via `maven package`
 
+## DevOps
+
+### Deployment Comments
+
+- locally run ``maven package`` to get latest jar file `Code-Critters-1.0.1.jar` 
+- go on the hosting VM and replace the old jar from the VM with the new one 
+- execute ``docker-compose down`` and ``docker container prune``
+- git pull latest changes from master and run ``docker-compose up``
+- NOTE: do not delete local files ``config/certbot`` from VM (responsible for ssl certificate)
+
+- Usually not required because certificate renewal happens automatically, but 
+if there is a need to manually recreate ssl certificates, remove certbot files and 
+run ``bash init-letsencrypt.sh`` 
+
 ## Build and Deployment
 
 ### Deployment

@@ -37,8 +37,6 @@ services:
       - flyway
     restart: on-failure
     env_file: ./.env
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/$MYSQLDB_DATABASE?useSSL=false
       - SPRING_DATASOURCE_USERNAME=$MYSQLDB_USER
@@ -46,3 +44,25 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
     stdin_open: true
     tty: true
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./config/certbot/conf:/etc/letsencrypt
+      - ./config/certbot/www:/var/www/certbot
+    depends_on:
+      - app
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./config/certbot/conf:/etc/letsencrypt
+      - ./config/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 24h & wait $${!}; done;'"
+
