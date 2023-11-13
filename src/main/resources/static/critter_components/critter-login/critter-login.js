@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -186,6 +186,7 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
     _onLoginSuccess(e) {
         this._globalData.user = e.detail.__data.response;
+        window.dispatchEvent(new CustomEvent('_refresh', {detail: {}, bubbles: true, composed: true}));
         this.showSuccessToast("login_successful");
         this.$.login_dialog.close();
     }
@@ -233,6 +234,8 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             this._globalData.user = undefined;
             this._globalData.setNewCookie();
             this.showLogin = true;
+            window.dispatchEvent(new CustomEvent('_refresh', {detail: {}, bubbles: true, composed: true}));
+            this.showSuccessToast("logout_successful");
         });
         req.addEventListener('error', (e) => this._onError(e));
 

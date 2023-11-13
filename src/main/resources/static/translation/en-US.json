@@ -24,6 +24,7 @@
   "login": "Login",
   "login_successful": "Login successful",
   "logout": "Logout",
+  "logout_successful": "Logout successful",
   "register": "Register",
   "registration_successful": "Registration successful. Please check your emails to complete registration.",
   "long_data": "Username, email or password too long",
