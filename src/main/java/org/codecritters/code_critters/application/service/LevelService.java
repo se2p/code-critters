@@ -24,6 +24,8 @@ package org.codecritters.code_critters.application.service;
 
 import org.codecritters.code_critters.application.exception.AlreadyExistsException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.persistence.customDataTypes.LevelResultType;
+import org.codecritters.code_critters.persistence.customDataTypes.SortByLevelName;
 import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.persistence.entities.User;
@@ -44,8 +46,6 @@ import javax.validation.ConstraintViolationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class LevelService {
@@ -286,7 +286,12 @@ public class LevelService {
                 map.put("name", row.getName());
                 map.put("id", row.getId());
                 map.put("position", row.getPosition());
-                map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, user));
+
+                // Sort list of levels to ensure correct order
+                List<LevelResultType> sortedList = levelRepository.getLevelNamesAndResultByGroup(row, user);
+                Collections.sort(sortedList, new SortByLevelName());
+
+                map.put("levels", sortedList);
                 groupedLevels.add(map);
             }
         } else {
@@ -295,7 +300,12 @@ public class LevelService {
                 map.put("name", row.getName());
                 map.put("id", row.getId());
                 map.put("position", row.getPosition());
-                map.put("levels", levelRepository.getLevelNamesAndResultByGroup(row, cookie));
+
+                // Sort list of levels to ensure correct order
+                List<LevelResultType> sortedList = levelRepository.getLevelNamesAndResultByGroup(row, cookie);
+                Collections.sort(sortedList, new SortByLevelName());
+
+                map.put("levels", sortedList);
                 groupedLevels.add(map);
             }
         }
