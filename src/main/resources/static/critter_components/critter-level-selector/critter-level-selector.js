@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -84,9 +84,18 @@ class CritterLevelSelector extends Level(PolymerElement) {
 
         this._globalData = window.Core.CritterLevelData;
 
+        window.addEventListener("_refresh", this._initNames.bind(this));
+
         afterNextRender(this, function () {
             this._initNames();
         });
+    }
+
+  disconnectedCallback() {
+        super.disconnectedCallback();
+        // event listeners attached to outside-of-component element (like window) should be
+        // removed to prevent memory leaks and enable the garbage collector (see https://polymer-library.polymer-project.org/3.0/docs/devguide/events)
+        window.removeEventListener("_refresh", () => this._initNames.bind(this));
     }
 
     /** gets all existing level names **/
@@ -100,7 +109,11 @@ class CritterLevelSelector extends Level(PolymerElement) {
         req.rejectWithRequest = true;
 
         req.addEventListener('response', e => {
-            this.$.preview_container.innerHtml = "";
+            // clear level preview first
+            while (this.$.preview_container.firstChild) {
+                this.$.preview_container.removeChild(this.$.preview_container.lastChild)
+            }
+
             e.detail.__data.response.forEach((rowData) => {
                 let row = document.createElement("critter-level-row");
                 row.name = rowData.name;
