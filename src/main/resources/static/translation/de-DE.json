@@ -114,6 +114,7 @@
   "row_not_added": "Die Kategorie konnte nicht gespeichert werden",
   "error": "Fehler",
   "error_text": "Die Seite existiert nicht oder du hast nicht die nötigen Rechte, um sie zu sehen.",
+  "please_login": "Um diese Seite aufrufen zu können, logge dich zuerst ein oder registriere dich.",
   "show_mutants": "Mutanten anzeigen",
   "show_mutants_info": "Auf dieser Seite kannst du den Code aller Mutanten ansehen für",
   "show_mutants_code": "Du kannst dir den Code eines konkreten Mutanten anschauen, indem du auf einen der Mutanten-Tabs klickst.",
