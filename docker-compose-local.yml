@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  mysql:
+  mysqldb:
     container_name: "critter-mysql"
     image: mariadb:11.1-rc
     ports:
@@ -17,3 +17,22 @@ services:
     ports:
       - "8025:8025"
       - "1025:1025"
+
+# Comment in to start app in container as well
+#  app:
+#    build: .
+#    container_name: CCapp #CodeCrittersApp
+#    restart: on-failure
+#    env_file: ./.env
+#    depends_on:
+#      - mysqldb
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/$MYSQLDB_DATABASE?useSSL=false
+#      - SPRING_DATASOURCE_USERNAME=$MYSQLDB_USER
+#      - SPRING_DATASOURCE_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+#      - BASE_API_URL=$BASE_API
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "8080:8080"

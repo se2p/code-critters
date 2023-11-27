@@ -4,7 +4,7 @@ package org.codecritters.code_critters.web.controller;
  * #%L
  * Code Critters
  * %%
- * Copyright (C) 2019 Michael Gruber
+ * Copyright (C) 2019 - 2023 Code Critter contributors
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,6 +26,7 @@ import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.application.service.UserService;
 import org.codecritters.code_critters.web.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,9 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+
+    @Value("#{environment.BASE_API_URL}")
+    private String baseUrl;
 
     @Autowired
     public UserController(UserService userService) {
@@ -209,8 +213,12 @@ public class UserController {
      * @throws MalformedURLException Thrown if the request URL is not well formatted.
      */
     private String getBaseURL(HttpServletRequest request) throws MalformedURLException {
-        URL requestURL = new URL(request.getRequestURL().toString());
-        String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
-        return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
+        if(baseUrl != null && !baseUrl.isEmpty()) {
+            return baseUrl;
+        } else {
+            URL requestURL = new URL(request.getRequestURL().toString());
+            String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
+            return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
+        }
     }
 }
