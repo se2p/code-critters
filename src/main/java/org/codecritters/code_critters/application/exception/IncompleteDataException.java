@@ -4,7 +4,7 @@ package org.codecritters.code_critters.application.exception;
  * #%L
  * Code Critters
  * %%
- * Copyright (C) 2019 Michael Gruber
+ * Copyright (C) 2019 - 2023 Code Critter contributors
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
