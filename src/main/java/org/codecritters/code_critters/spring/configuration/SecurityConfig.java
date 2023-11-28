@@ -10,12 +10,12 @@ package org.codecritters.code_critters.spring.configuration;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -83,12 +83,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/level-generator", "/xml-generator", "/manage-levels").hasRole("ADMIN")
                 .antMatchers("/profile").hasRole("USER")
+                .antMatchers("/game").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .headers().frameOptions().sameOrigin()
                 .and()
                 .addFilterBefore(cookieAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .authenticationProvider(authenticationProvider);
+                .authenticationProvider(authenticationProvider)
+                .formLogin()
+                .failureUrl("/login.html");
     }
 
     @Override
@@ -100,7 +103,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/style/**")
                 .antMatchers("/translation/**")
                 .antMatchers("/favicon.ico")
-                .antMatchers("/game")
                 .antMatchers("/");
     }
 }

@@ -56,15 +56,14 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             <style>
                 #username_bar{
                     min-width: 180px;
-                    display: inline-block;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: flex-end;
                 }
             
                 #username_bar *{
                     float: left;
-                }
-            
-                iron-icon{
-                    margin: 10px 0px 0px;
                 }
             
                 .center{
@@ -186,7 +185,7 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
     _onLoginSuccess(e) {
         this._globalData.user = e.detail.__data.response;
-        window.dispatchEvent(new CustomEvent('_refresh', {detail: {}, bubbles: true, composed: true}));
+        window.dispatchEvent(new CustomEvent('_refresh', {detail: { user: this._globalData.user }, bubbles: true, composed: true}));
         this.showSuccessToast("login_successful");
         this.$.login_dialog.close();
     }
@@ -234,7 +233,7 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
             this._globalData.user = undefined;
             this._globalData.setNewCookie();
             this.showLogin = true;
-            window.dispatchEvent(new CustomEvent('_refresh', {detail: {}, bubbles: true, composed: true}));
+            window.dispatchEvent(new CustomEvent('_refresh', {detail: { user: undefined }, bubbles: true, composed: true}));
             this.showSuccessToast("logout_successful");
         });
         req.addEventListener('error', (e) => this._onError(e));

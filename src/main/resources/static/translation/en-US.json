@@ -114,6 +114,7 @@
   "row_not_added": "Could not add row",
   "error": "Error",
   "error_text": "The page you are looking for can not be found or you do not have the right to access the page.",
+  "please_login": "To access this page please login or register first.",
   "show_mutants": "Show Mutants",
   "show_mutants_info": "This page displays the mutated code of all mutants for",
   "show_mutants_code": "You can see the mutated code for a specific mutant by clicking on one of the mutant tabs.",
