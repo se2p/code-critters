@@ -632,21 +632,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._globalData.deleteMines();
         this._mines = [];
         this._isSpeedUp = this._interval === speedyInterval;
-        this._killedMutantsList.forEach(critter => {
-            critter.remove();
-        });
         this._killedMutantsList = [];
-        this._killedHumansList.forEach(critter => {
-            critter.remove();
-        });
         this._killedHumansList = [];
-        this._finishedMutantsList.forEach(critter => {
-            critter.remove();
-        });
         this._finishedMutantsList = [];
-        this._finishedHumansList.forEach(critter => {
-            critter.remove();
-        });
         this._finishedHumansList = [];
         this.$.gameboard.removeAllMines();
         this.$.send_button.shape = "play";
@@ -665,7 +653,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._gameTime += (Date.now() - this._startGameTime);
 
         if (this._paused) {
-            this._totalTime += (Date.now() -  this._startTime);
+            this._totalTime += (Date.now() - this._startTime);
             this._gameTime += (Date.now() - this._startGameTime);
 
             this._paused = false;
