@@ -8,19 +8,19 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 import '../critter-level-selector/critter-level-selector-simple.js';
@@ -34,13 +34,12 @@ import '../critter-test-popup/critter-test-popup.js';
 import '../critter-timeout/critter-timeout-manager.js';
 import '../critter-score/critter-score.js';
 import '../critter-header/critter-header.js';
+import '../critter-data-store/critter-data-store.js';
 import './critter-game-image.js'
-
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 import {critterStyle} from '/style/critter-botstrap.js'
 import {normalInterval, speedyInterval} from "../constants.js";
-
 
 
 /*
@@ -63,253 +62,288 @@ window.Core.GameRoot = window.Core.GameRoot || [];
 class CritterGame extends I18n(Level(PolymerElement)) {
     static get template() {
         return html`
-        ${critterStyle}
+            ${critterStyle}
 
-        <style>
-            :host {
-                display: block;
-            }
-            
-            /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the
-            fixed-size gameboard. */
-            @media only screen and (max-width: 1350px) and (min-width: 1150px) {
-                #board_container {
-                    max-width: 62%;
+            <style>
+                :host {
+                    display: block;
                 }
-                
-                #blockly_container {
-                    max-width: 38%;
-                    margin-left: 2%;
+
+                /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the
+                fixed-size gameboard. */
+                @media only screen and (max-width: 1350px) and (min-width: 1150px) {
+                    #board_container {
+                        max-width: 62%;
+                    }
+
+                    #blockly_container {
+                        max-width: 38%;
+                        margin-left: 2%;
+                    }
+
+                    .full_blockly {
+                        width: 100%;
+                    }
                 }
-                
-                .full_blockly{
-                    width: 95%;
-                    margin-right: 5%;
+
+                /* Causes the blockly_container to be positioned below the gameboard. */
+                @media only screen and (max-width: 1149px) {
+                    #board_container {
+                        max-width: 100%;
+                        width: 100%;
+                    }
+
+                    #blockly_container {
+                        max-width: 100vw;
+                        width: 100vw;
+                    }
+
+                    .full_blockly {
+                        max-width: 640px;
+                        width: 90vw;
+                    }
+
+                    .heads {
+                        margin-bottom: 1%;
+                    }
+                }
+
+                #critter_container {
+                    position: absolute;
+                    top: -1px;
+                    left: 36px;
+                    pointer-events: none;
+                }
+
+                #critter_container critter-critter {
+                    pointer-events: all;
+                }
+
+                #send_button,
+                #speedUp_button,
+                #speedDown_button,
+                #reload_button {
+                    padding: 0 1%;
+                    margin: 0 1%;
                     float: left;
                 }
-            }
-            
-            /* Causes the blockly_container to be positioned below the gameboard. */
-            @media only screen and (max-width: 1149px) {
-                #board_container {
-                    max-width: 100%;
-                    width: 100%;
+
+                #game_containers {
+                    padding: 2%;
                 }
-                
-                #blockly_container {
-                    max-width: 100vw;
-                    width: 100vw;
-                }
-                
-                .full_blockly{
-                    max-width: 640px;
-                    width: 90vw;
-                }
-                
-                #heads {
+
+                #coordinate_container {
+                    visibility: hidden;
+                    float: right;
+                    margin-top: 1%;
                     margin-bottom: 1%;
                 }
-            }
 
-            #critter_container {
-                position: absolute;
-                top: -1px;
-                left: 36px;
-                pointer-events: none;
-            }
+                #finished_container *, #killed_container * {
+                    padding: 1%;
+                    margin: 0;
+                    float: left;
+                }
 
-            #critter_container critter-critter {
-                pointer-events: all;
-            }
+                #healed_container * {
+                    padding: 1%;
+                    margin: 0;
+                    float: left;
+                }
 
-            #send_button,
-            #speedUp_button,
-            #speedDown_button,
-            #reload_button {
-                padding: 0 1%;
-                margin: 0 1%;
-                float: left;
-            }
-
-            #game_containers {
-                padding: 2%;
-            }
-
-            #coordinate_container {
-                visibility: hidden;
-                float: right;
-                margin-top: 1%;
-                margin-bottom: 1%;
-            }
-            
-            #finished_container *, #killed_container * {
-                padding: 1%;
-                margin: 0;
-                float: left;
-            }
-
-            #send_button {
-                clear: both;
-            }
+                #send_button {
+                    clear: both;
+                }
 
 
-            #blockly_CUT {
-                margin-bottom: 5px;
-            }
+                #blockly_CUT {
+                    margin-bottom: 5px;
+                }
 
-            #star_container {
-                color: gold;
-                height: 50px;
-                width: fit-content;
-                margin: auto;
-            }
-            
-            #star_container iron-icon {
-                width: 100px;
-                height: 100px;
-                visibility: hidden;
-                transition: width 100ms, height 100ms;
-            }
-            
-            #star_container .star {
-                width: 50px;
-                height: 50px;
-                position: relative;
-                margin: 20px 8px 0 8px;
-                float: left;
-            }
-            
-            #star_container .visibleStar {
-                width: 50px;
-                height: 50px;
-                visibility: visible;
-            }
-            
-             #star_container .star.star2 {
-                margin-top: 0;
-            }
+                #star_container {
+                    color: gold;
+                    height: 50px;
+                    width: fit-content;
+                    margin: auto;
+                }
 
-            #dialog_text {
-                margin-top: 40px;
-                font-size: 1.5em;
-                text-align: center;
-            }
+                #star_container iron-icon {
+                    width: 100px;
+                    height: 100px;
+                    visibility: hidden;
+                    transition: width 100ms, height 100ms;
+                }
 
-            #selector_container {
-                margin-top: 60px;
-                text-align: center;
-            }
+                #star_container .star {
+                    width: 50px;
+                    height: 50px;
+                    position: relative;
+                    margin: 20px 8px 0 8px;
+                    float: left;
+                }
 
-            #selector_container critter-level-selector-simple {
-                --margin-selector-button: auto;
-            }
-            
-            critter-button {
-                min-width: 100px;
-                min-height: 40px;
-            }
-            
-            critter-store {
-                font-size: 0.85em;
-            }
-            
-            #header hr {
-                color: #FFA600;
-                background-color: #FFA600;
-                height: 3px;
-                margin: 0;
-            }
-            
-            #buttons, #heads {
-                border-radius: 15px;
-                border: 2px solid #FFA600;
-                padding: 1%;
-                max-width: 660px;
-                background-color: white;
-            }
-            
-            #heads {
-                margin-top: 1%;
-            }
-            
-            #mutant_button {
-                margin-left: auto;
-                margin-right: auto;
-            }
-        </style>
+                #star_container .visibleStar {
+                    width: 50px;
+                    height: 50px;
+                    visibility: visible;
+                }
 
-        
-        <critter-timeout-manager></critter-timeout-manager>
+                #star_container .star.star2 {
+                    margin-top: 0;
+                }
+
+                #dialog_text {
+                    margin-top: 40px;
+                    font-size: 1.5em;
+                    text-align: center;
+                }
+
+                #selector_container {
+                    margin-top: 60px;
+                    text-align: center;
+                }
+
+                #selector_container critter-level-selector-simple {
+                    --margin-selector-button: auto;
+                }
+
+                .text {
+                    text-align: left;
+                    font-size: 1.3em;
+                }
+
+                critter-button {
+                    min-width: 100px;
+                    min-height: 40px;
+                }
+
+                critter-store {
+                    font-size: 0.85em;
+                }
+
+                #header hr {
+                    color: #FFA600;
+                    background-color: #FFA600;
+                    height: 3px;
+                    margin: 0;
+                }
+
+                #buttons, .heads {
+                    border-radius: 15px;
+                    border: 2px solid #FFA600;
+                    padding: 1%;
+                    max-width: 660px;
+                    background-color: white;
+                }
+
+                #healed_critters {
+                    border-radius: 15px;
+                    border: 2px solid #2d833b;
+                    padding: 1%;
+                    background-color: white;
+                    margin: 0;
+                    min-height: 100px;
+                }
+
+                .heads {
+                    margin-top: 1%;
+                }
+
+                #mutant_button {
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            </style>
 
 
-        <critter-dialog id="score_dialog">
-            <div id="star_container">
-                <div class="star">
-                    <iron-icon id="star1" icon="icons:star"></iron-icon>
-                </div>
-                <div class="star star2">
-                    <iron-icon id="star2" icon="icons:star"></iron-icon>
-                </div>
-                <div class="star">
-                    <iron-icon id="star3" icon="icons:star"></iron-icon>
-                </div>
-            </div>
-            <div id="dialog_text">
-                <critter-score id="dialog_score"></critter-score>
-                <critter-button id="mutant_button">[[__('show_mutants')]]</critter-button>
-            </div>
-            <div id="selector_container">
-                <h3>[[__('select_next')]]</h3>
-                <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>
-            </div>
-        </critter-dialog>
-        
-        <div class="row">
-            <div class="col-sm-12" id="header">
-                <critter-header></critter-header>
-                <hr>
-            </div>
-        </div>
-        <div class="row" id="game_containers">
-            <div id="board_container" class="col-sm-6">
-            <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
-                <div class="row">
-                    <critter-gameboard id="gameboard" show-grid="{{showGrid}}"></critter-gameboard>
-                    <div id="critter_container"></div>
-                    <critter-test-popup id="mine_popup" block-size="{{_blockSize}}" board-height="{{ _boardHeight }}"
-                                        popup-height="{{ _popupHeight}}">
-                    </critter-test-popup>
-                </div>
-                <br>
-                <div class="row" id="buttons">
-                    <div class="col-sm-12">
-                        <critter-control-button id="send_button" class="game_button" shape="play">
-                        </critter-control-button>
-                        <critter-control-button id="speedUp_button" class="game_button" shape="fastforward" hidden="{{_isSpeedUp}}" disabled>
-                        </critter-control-button>
-                        <critter-control-button id="speedDown_button" class="game_button" shape="normalSpeed" hidden="{{!_isSpeedUp}}">
-                        </critter-control-button>
-                        <critter-control-button id="reload_button" class="game_button" shape="reload">
-                        </critter-control-button>
-                        <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+            <critter-data-store></critter-data-store>
+            <critter-timeout-manager></critter-timeout-manager>
+
+
+            <critter-dialog id="score_dialog">
+                <div id="star_container">
+                    <div class="star">
+                        <iron-icon id="star1" icon="icons:star"></iron-icon>
+                    </div>
+                    <div class="star star2">
+                        <iron-icon id="star2" icon="icons:star"></iron-icon>
+                    </div>
+                    <div class="star">
+                        <iron-icon id="star3" icon="icons:star"></iron-icon>
                     </div>
                 </div>
-                <div class="row" id="heads">
-                    <div class="col-sm-12">
-                        <div id="finished_container"></div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div id="killed_container"></div>
-                    </div>
+                <div id="dialog_text">
+                    <critter-score id="dialog_score"></critter-score>
+                    <critter-button id="mutant_button">[[__('show_mutants')]]</critter-button>
+                </div>
+                <div id="selector_container">
+                    <h3>[[__('select_next')]]</h3>
+                    <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>
+                </div>
+            </critter-dialog>
+
+            <div class="row">
+                <div class="col-sm-12" id="header">
+                    <critter-header></critter-header>
+                    <hr>
                 </div>
             </div>
-            <div id="blockly_container" class="col-sm-6">
-            <!--<div id="blockly_container" class="col-lg mt-3">-->
-                <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true" cut
-                                 read-only>
-                </critter-blockly>
+            <div class="row" id="game_containers">
+                <div id="board_container" class="col-sm-6">
+                    <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
+                    <div class="row">
+                        <critter-gameboard id="gameboard" show-grid="{{showGrid}}"></critter-gameboard>
+                        <div id="critter_container"></div>
+                        <critter-test-popup id="mine_popup" block-size="{{_blockSize}}"
+                                            board-height="{{ _boardHeight }}"
+                                            popup-height="{{ _popupHeight}}">
+                        </critter-test-popup>
+                    </div>
+                    <br>
+                    <div class="row" id="buttons">
+                        <div class="col-sm-12">
+                            <critter-control-button id="send_button" class="game_button" shape="play">
+                            </critter-control-button>
+                            <critter-control-button id="speedUp_button" class="game_button" shape="fastforward"
+                                                    hidden="{{_isSpeedUp}}" disabled>
+                            </critter-control-button>
+                            <critter-control-button id="speedDown_button" class="game_button" shape="normalSpeed"
+                                                    hidden="{{!_isSpeedUp}}">
+                            </critter-control-button>
+                            <critter-control-button id="reload_button" class="game_button" shape="reload">
+                            </critter-control-button>
+                            <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row heads">
+                            <div class="col-12 text">
+                                <p>[[__("allCritters")]]</p>
+                            </div>
+                            <div class="col-12">
+                                <div id="finished_container"></div>
+                            </div>
+                            <div class="col-12">
+                                <div id="killed_container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="blockly_container" class="col-sm-6">
+                    <!--<div id="blockly_container" class="col-lg mt-3">-->
+                    <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true"
+                                     cut
+                                     read-only>
+                    </critter-blockly>
+                    <div class="col row" id="healed_critters">
+                        <div class="col-12 text">
+                            <p>[[__("healedCritters")]]</p>
+                        </div>
+                        <div id="healed_container" class="col-12"></div>
+                    </div>
+                    
+                </div>
             </div>
-        </div>
         `;
     }
 
@@ -553,7 +587,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     _speedUpGame() {
-        if(this._crittersSent) {
+        if (this._crittersSent) {
             this._critterList.forEach((critter) => {
                 critter.speedy = true;
             });
@@ -563,7 +597,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     }
 
     _speedDownGame() {
-        if(this._crittersSent) {
+        if (this._crittersSent) {
             this._critterList.forEach((critter) => {
                 critter.speedy = false;
             });
@@ -855,10 +889,16 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             let killed = this._killedCritters;
             let alive = this._globalData.numberOfCritters - this._killedCritters;
             this.$.killed_container.innerHTML = "";
+            this.$.healed_container.innerHTML = "";
             while (killed > 0) {
-                let image = document.createElement("critter-game-image");
-                image.name = "mutant_gray.png";
-                this.$.killed_container.appendChild(image);
+                let imageGrey = document.createElement("critter-game-image");
+                imageGrey.name = "mutant_gray.png";
+                this.$.killed_container.appendChild(imageGrey);
+
+                let imageHealed = document.createElement("critter-game-image");
+                imageHealed.name = "critter_head.png";
+                this.$.healed_container.appendChild(imageHealed);
+
                 killed--;
             }
             while (alive > 0) {

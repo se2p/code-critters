@@ -121,5 +121,7 @@
   "show_mutants_critter": "The Critter tab contains the original code you have to test.",
   "mutant_code_warning": "Updating the CUT or changing the language will cause the mutant code to be overwritten!",
   "incomplete_assert_block": "Your assert block must have two values!",
-  "empty_test": "You have to create a test first!"
+  "empty_test": "You have to create a test first!",
+  "allCritters": "All critters:",
+  "healedCritters": "Healed Critters:"
 }

@@ -121,5 +121,7 @@
   "show_mutants_critter": "Der Critter-Tab enthält den ursprünglichen Code, den du testen sollst.",
   "mutant_code_warning": "Eine Veränderung des CUTs oder das Umstellen der Sprache führt dazu, dass der Mutanten-Code überschrieben wird!",
   "incomplete_assert_block": "Dein 'Überprüfe, ob' Block muss zwei Werte beinhalten!",
-  "empty_test": "Erstelle zuerst einen Test, bevor du speicherst!"
+  "empty_test": "Erstelle zuerst einen Test, bevor du speicherst!",
+  "allCritters": "Alle Critter:",
+  "healedCritters": "Geheilte Critter:"
 }

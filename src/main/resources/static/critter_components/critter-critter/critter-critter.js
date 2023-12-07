@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -460,6 +460,14 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
                 -webkit-animation-duration: 0.5s !important;
                 animation-duration: 0.5s !important;
             }
+
+            @keyframes throwOutLowerRight {
+                to {
+                    transform: translateX(140vh) translateY(100vh); /* Move the element out of the window */
+                    opacity: 0; /* Fade out while moving */
+                }
+            }
+            
         </style>
         <div id="critter_container" class$="{{_speedyString}}">
             <div id="critter"
@@ -774,23 +782,25 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     }
 
 
-    _killCritter(x, y, valueTarget, valuevalue) {
+    async _killCritter(x, y, valueTarget, valuevalue) {
         console.log('valuetarget: ' + valueTarget);
         console.log('valuevalue: ' + valuevalue);
         if (!this.animate) {
             return;
         }
+
+        await this._timeoutManager.add(() => {
+            this.animate = false;
+            this.updateStyles({
+                'animation': 'throwOutLowerRight 1s ease-out forwards',
+            });
+        }, this._interval * 0.1)
+
         this.dispatchEvent(new CustomEvent('_critterKilled', {
             detail: {x: x, y: y, human: this.human, critterCut: this.cut, critterId: this.id, critterInit: this.init},
             bubbles: true,
             composed: true
         }));
-        this._timeoutManager.add(() => {
-            this.animate = false;
-            this.updateStyles({
-                '--critter-display': 'none'
-            });
-        }, this._interval * 0.3);
     }
 
     _onHover() {
