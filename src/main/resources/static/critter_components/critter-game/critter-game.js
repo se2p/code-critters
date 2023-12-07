@@ -417,12 +417,17 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 value: 0
             },
 
-            _killedCritters: {
+            _killedMutants: {
                 type: Number,
                 value: 0
             },
 
             _finishedHumans: {
+                type: Number,
+                value: 0
+            },
+
+            _killedHumans: {
                 type: Number,
                 value: 0
             },
@@ -620,7 +625,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._startGameTime = 0;
         this._finishedHumans = 0;
         this._doneCritters = 0;
-        this._killedCritters = 0;
+        this._killedMutants = 0;
+        this._killedHumans = 0;
         this.score = 0;
         this._interval = normalInterval;
         this._critterList.forEach(critter => {
@@ -872,20 +878,15 @@ class CritterGame extends I18n(Level(PolymerElement)) {
     _onCritterKilled(e) {
         // this._updateScore(e.detail.human ? -100 : 50);
         if (!e.detail.human) {
-            this._killedCritters++;
+            this._killedMutants++;
             this._killedMutantsList.push(e.detail.critterId)
-            let killed = this._killedCritters;
-            let alive = this._globalData.numberOfCritters - this._killedCritters;
+            let killed = this._killedMutants;
+            let alive = this._globalData.numberOfCritters - this._killedMutants;
             this.$.killed_container.innerHTML = "";
-            this.$.healed_container.innerHTML = "";
             while (killed > 0) {
                 let imageGrey = document.createElement("critter-game-image");
                 imageGrey.name = "mutant_gray.png";
                 this.$.killed_container.appendChild(imageGrey);
-
-                let imageHealed = document.createElement("critter-game-image");
-                imageHealed.name = "critter_head.png";
-                this.$.healed_container.appendChild(imageHealed);
 
                 killed--;
             }
@@ -897,12 +898,20 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             }
         } else {
             // if human was killed
+            this._killedHumans++;
             let humanInitAndCode = {
                 init: `${e.detail.critterInit}`,
                 cut: `${e.detail.critterCut}`
             };
             this._killedHumansList.push(humanInitAndCode)
         }
+
+
+        let imageHealed = document.createElement("critter-game-image");
+        imageHealed.name = "critter_head.png";
+        this.$.healed_container.appendChild(imageHealed);
+
+
         this._onCritterDone()
     }
 
@@ -962,7 +971,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         if(numMines > freeMines) {
             this.score = -25 * (numMines - freeMines); //TODO free mines
         }
-        this.score = (this._finishedHumans + this._killedCritters) * 50 +
+        this.score = (this._finishedHumans + this._killedMutants) * 50 +
             Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
         this.showScore(numMines);
         let stars = 0;
@@ -982,7 +991,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let dialogScore = this.$.dialog_score;
         let freeMines = this._globalData.freeMines;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
-        let killedCritterPercentage = Math.round((this._killedCritters / this._globalData.numberOfCritters) * 100);
+        let killedCritterPercentage = Math.round((this._killedMutants / this._globalData.numberOfCritters) * 100);
         dialogScore.overallScore = this.score;
         if(numMines > freeMines) {
             await dialogScore.insertData("mines_line", -25 * (numMines - freeMines), numMines);
@@ -990,7 +999,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             await dialogScore.insertData("mines_line", 0, numMines);
         }
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
-        await dialogScore.insertData("killed_critters_line", this._killedCritters * 50, killedCritterPercentage, "%");
+        await dialogScore.insertData("killed_critters_line", this._killedMutants * 50, killedCritterPercentage, "%");
         await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) +
             this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
     }
@@ -1022,6 +1031,15 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             image.name = "critter_gray.png";
             this.$.finished_container.appendChild(image);
             humans--;
+        }
+
+        this.$.healed_container.innerHTML = "";
+        let killedCritters = this._killedMutants + this._killedHumans;
+        while (killedCritters > 0) {
+            let imageHealed = document.createElement("critter-game-image");
+            imageHealed.name = "critter_head.png";
+            this.$.healed_container.appendChild(imageHealed);
+            killedCritters--;
         }
     }
 
@@ -1077,7 +1095,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
      * @private
      */
     _saveGame() {
-        this._game.mutantsKilled = this._killedCritters;
+        this._game.mutantsKilled = this._killedMutants;
         this._game.humansFinished = this._finishedHumans;
         this._game.gameTime = this._gameTime;
         this._game.score = this.score;
@@ -1144,7 +1162,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             event.preventDefault();
         }
 
-        this._game.mutantsKilled = this._killedCritters;
+        this._game.mutantsKilled = this._killedMutants;
         this._game.humansFinished = this._finishedHumans;
         this._gameTime += Date.now() - this._startGameTime;
         this._game.gameTime = this._gameTime;
