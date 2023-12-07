@@ -123,5 +123,5 @@
   "incomplete_assert_block": "Your assert block must have two values!",
   "empty_test": "You have to create a test first!",
   "allCritters": "All critters:",
-  "healedCritters": "Healed Critters:"
+  "healedCritters": "Collected critters for healing:"
 }

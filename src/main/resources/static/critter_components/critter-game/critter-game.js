@@ -896,6 +896,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 this.$.killed_container.appendChild(image);
                 alive--;
             }
+            let imageHealed = document.createElement("critter-game-image");
+            imageHealed.name = "mutant_head.png";
+            this.$.healed_container.appendChild(imageHealed);
+
         } else {
             // if human was killed
             this._killedHumans++;
@@ -904,12 +908,10 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 cut: `${e.detail.critterCut}`
             };
             this._killedHumansList.push(humanInitAndCode)
+            let imageHealed = document.createElement("critter-game-image");
+            imageHealed.name = "critter_head.png";
+            this.$.healed_container.appendChild(imageHealed);
         }
-
-
-        let imageHealed = document.createElement("critter-game-image");
-        imageHealed.name = "critter_head.png";
-        this.$.healed_container.appendChild(imageHealed);
 
 
         this._onCritterDone()
@@ -1034,12 +1036,19 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
 
         this.$.healed_container.innerHTML = "";
-        let killedCritters = this._killedMutants + this._killedHumans;
-        while (killedCritters > 0) {
+        let killedMutants = this._killedMutants;
+        while (killedMutants > 0) {
+            let imageHealed = document.createElement("critter-game-image");
+            imageHealed.name = "mutant_head.png";
+            this.$.healed_container.appendChild(imageHealed);
+            killedMutants--;
+        }
+        let killedHumans = this._killedHumans;
+        while (killedHumans > 0) {
             let imageHealed = document.createElement("critter-game-image");
             imageHealed.name = "critter_head.png";
             this.$.healed_container.appendChild(imageHealed);
-            killedCritters--;
+            killedHumans--;
         }
     }
 

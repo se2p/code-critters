@@ -123,5 +123,5 @@
   "incomplete_assert_block": "Dein 'Überprüfe, ob' Block muss zwei Werte beinhalten!",
   "empty_test": "Erstelle zuerst einen Test, bevor du speicherst!",
   "allCritters": "Alle Critter:",
-  "healedCritters": "Geheilte Critter:"
+  "healedCritters": "Gesammelte Critter zur Heilung:"
 }
