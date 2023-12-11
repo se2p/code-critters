@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -138,10 +138,16 @@ class CritterHighscore extends I18n(PolymerElement) {
         this.getHighscoreData();
 
         this._globalData = window.Core.CritterLevelData;
+        window.addEventListener("_refresh", this._callUserChanged.bind(this));
 
         afterNextRender(this, function () {
             this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
         });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("_refresh", this._callUserChanged.bind(this));
     }
 
     getHighscoreData() {
@@ -162,8 +168,17 @@ class CritterHighscore extends I18n(PolymerElement) {
         req.completes = genRequest.completes;
     }
 
+    // updates the user on login/logout before re-fetching data
+    _callUserChanged(event) {
+        this._globalData.user = event.detail.user;
+        this._userChanged();
+    }
+
     _userChanged() {
-        if (this._globalData.user !== undefined){
+        if (this._globalData.user !== undefined
+            && Object.keys(this._globalData.user).length > 0
+            && this._globalData.user.username !== 'admin'){ // do not fetch for admin, is not in db anyway
+
             let req = document.createElement('iron-ajax');
             req.url = "/highscore/me";
             req.method = "GET";
