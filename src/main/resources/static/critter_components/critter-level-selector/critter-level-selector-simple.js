@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -73,13 +73,14 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
             },
             initialSelectValue: {
                 type: String,
-                computed: '_nextLevelForSelector(initialValue)'
+                computed: '_nextLevelForSelector(initialValue, levelNamesList)'
             }
         }
     }
 
     connectedCallback() {
         super.connectedCallback();
+        this._initNames();
 
         afterNextRender(this, function () {
             this.$.load_button.addEventListener("click", this._loadLevel.bind(this));
@@ -113,22 +114,21 @@ class CritterLevelSelectorSimple extends I18n(PolymerElement) {
      * Returns the value of the next level for the selector. It is used to show a default selected option.
      * @param currentLevel Holds the current level, e.g. 'level_2'
      */
-    _nextLevelForSelector(currentLevel) {
-        this._initNames();
+    _nextLevelForSelector(currentLevel, levelNamesList) {
         if (currentLevel) {
-            if (this.levelNamesList.length > 0) {
+            if (levelNamesList?.length > 0) {
                 let currentLevelIndex = 0;
-                for (let i = 0; i < this.levelNamesList.length; i++) {
-                    if (this.levelNamesList[i].name === currentLevel) {
+                for (let i = 0; i < levelNamesList.length; i++) {
+                    if (levelNamesList[i].name === currentLevel) {
                         currentLevelIndex = i;
                     }
                 }
                 // If playing the last level, the selector defaults to the current, last level
-                if (this.levelNamesList.length - 1 === currentLevelIndex) {
-                    return this.levelNamesList[this.levelNamesList.length - 1].name;
+                if (levelNamesList.length - 1 === currentLevelIndex) {
+                    return levelNamesList[levelNamesList.length - 1].name;
                 } // in any other case select the next level from list
                 else {
-                    return this.levelNamesList[currentLevelIndex + 1].name;
+                    return levelNamesList[currentLevelIndex + 1].name;
                 }
             }
         }
