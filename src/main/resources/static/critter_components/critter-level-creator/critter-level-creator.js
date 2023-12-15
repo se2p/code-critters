@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -196,7 +196,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             <a href="manage-levels" id="level_button"><critter-button>[[__("show_levels")]]</critter-button></a>
         </div>
         <div id="number_inputs" class="table">
-            <critter-input id="mine_input" type="number" label="Free Mines: " value="{{setMines}}"></critter-input>
+            <critter-input id="mine_input" type="number" label="Free Portals: " value="{{setMines}}"></critter-input>
         </div>
         `;
     }
@@ -501,7 +501,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             return false;
         }
         if (isNaN(this.setMines)) {
-            this.showErrorToast("Please enter a number in the mine field!");
+            this.showErrorToast("Please enter a number in the portal field!");
             return false;
         }
         if (this.setMines <= 0 || this.setMines > 10) {
