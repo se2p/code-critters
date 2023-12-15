@@ -45,10 +45,12 @@ Blockly.Blocks['assert'] = {
     init: function() {
         this.appendValueInput("target")
             .setCheck(null)
-            .appendField("Überprüfe, ob");
+            .appendField("Nur Critter mit");
         this.appendValueInput("value")
             .setCheck(null)
             .appendField("gleich");
+        this.appendDummyInput()
+            .appendField("kommen durch")
         this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
