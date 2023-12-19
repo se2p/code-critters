@@ -121,7 +121,10 @@
   "show_mutants_critter": "The Critter tab contains the original code you have to test.",
   "mutant_code_warning": "Updating the CUT or changing the language will cause the mutant code to be overwritten!",
   "incomplete_assert_block": "Your 'only critters with ...' block must have two values!",
-  "empty_test": "You have to create a test first!",
+  "empty_test": "You cannot save an empty test!",
   "allCritters": "All critters:",
-  "healedCritters": "Collected critters for healing:"
+  "healedCritters": "Collected critters for healing:",
+  "really_delete_unsaved": "Do you want to close without saving?",
+  "no_first_save": "Save first",
+  "yes": "Close"
 }
