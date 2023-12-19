@@ -121,7 +121,10 @@
   "show_mutants_critter": "Der Critter-Tab enthält den ursprünglichen Code, den du testen sollst.",
   "mutant_code_warning": "Eine Veränderung des CUTs oder das Umstellen der Sprache führt dazu, dass der Mutanten-Code überschrieben wird!",
   "incomplete_assert_block": "Dein 'Nur Critter mit ...' Block muss zwei Werte beinhalten!",
-  "empty_test": "Erstelle zuerst einen Test, bevor du speicherst!",
+  "empty_test": "Ein leerer Test kann nicht gespeichert werden!",
   "allCritters": "Alle Critter:",
-  "healedCritters": "Gesammelte Critter zur Heilung:"
+  "healedCritters": "Gesammelte Critter zur Heilung:",
+  "really_delete_unsaved": "Schließen ohne zu speichern?",
+  "no_first_save": "Zuerst speichern",
+  "yes": "Schließen"
 }
