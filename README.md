@@ -59,7 +59,7 @@ Make sure to have build the most recent `Code-Critters-1.0.1.jar` via `maven pac
 
 - locally run ``maven package`` to get latest jar file `Code-Critters-1.0.1.jar` 
 - go on the hosting VM and replace the old jar from the VM with the new one 
-- execute ``docker-compose down`` and ``docker container prune``
+- execute ``docker-compose down``
 - git pull latest changes from master and run ``docker-compose up --build --detach``
 - NOTE: do not delete local files ``config/certbot`` from VM (responsible for ssl certificate)
 
