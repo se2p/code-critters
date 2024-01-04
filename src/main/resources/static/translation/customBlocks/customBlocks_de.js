@@ -6,7 +6,7 @@ Blockly.Blocks['properties'] = {
         this.setInputsInline(false);
         this.setOutput(true, null);
         this.setColour(330);
-        this.setTooltip("");
+        this.setTooltip("Eigenschaft eines Critters oder seiner Umgebung.");
         this.setHelpUrl("");
     }
 };
@@ -67,7 +67,7 @@ Blockly.Blocks['variable'] = {
             .appendField(new Blockly.FieldTextInput("Name"), "NAME");
         this.setOutput(true, null);
         this.setColour(270);
-        this.setTooltip("");
+        this.setTooltip("Eine Variable eines Critters.");
         this.setHelpUrl("");
     }
 };
@@ -78,7 +78,7 @@ Blockly.defineBlocksWithJsonArray([
         "message0": "Dreck",
         "output": null,
         "colour": 165,
-        "tooltip": "",
+        "tooltip": "Bezieht sich auf eine Spielfeld-Koordinate mit Dreck.",
         "helpUrl": "",
         "extensions": [
             "custom_text_quotes"
@@ -89,7 +89,7 @@ Blockly.defineBlocksWithJsonArray([
         "message0": "Gras",
         "output": null,
         "colour": 165,
-        "tooltip": "",
+        "tooltip": "Bezieht sich auf eine Spielfeld-Koordinate mit Gras.",
         "helpUrl": "",
         "extensions": [
             "custom_text_quotes"
@@ -100,7 +100,7 @@ Blockly.defineBlocksWithJsonArray([
         "message0": "Wasser",
         "output": null,
         "colour": 165,
-        "tooltip": "",
+        "tooltip": "Bezieht sich auf eine Spielfeld-Koordinate mit Wasser.",
         "helpUrl": "",
         "extensions": [
             "custom_text_quotes"
@@ -111,7 +111,7 @@ Blockly.defineBlocksWithJsonArray([
         "message0": "Lava",
         "output": null,
         "colour": 165,
-        "tooltip": "",
+        "tooltip": "Bezieht sich auf eine Spielfeld-Koordinate mit Lava.",
         "helpUrl": "",
         "extensions": [
             "custom_text_quotes"
@@ -122,7 +122,7 @@ Blockly.defineBlocksWithJsonArray([
         "message0": "Eis",
         "output": null,
         "colour": 165,
-        "tooltip": "",
+        "tooltip": "Bezieht sich auf eine Spielfeld-Koordinate mit Eis.",
         "helpUrl": "",
         "extensions": [
             "custom_text_quotes"
@@ -182,7 +182,7 @@ Blockly.Blocks['cut_head'] = {
     init: function() {
         this.appendDummyInput()
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("Zu testender Code");
+            .appendField("Ausgeführter Code auf jeder Kachel");
         this.appendStatementInput("Content")
             .setCheck(null);
         this.setColour(120);

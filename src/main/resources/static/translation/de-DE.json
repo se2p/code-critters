@@ -126,5 +126,6 @@
   "healedCritters": "Gesammelte Critter zur Heilung:",
   "really_delete_unsaved": "Schließen ohne zu speichern?",
   "no_first_save": "Zuerst speichern",
-  "yes": "Schließen"
+  "yes": "Schließen",
+  "my_behaviour": "Mein normales Verhalten:"
 }

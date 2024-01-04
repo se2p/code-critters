@@ -100,7 +100,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
                     .full_blockly {
                         max-width: 640px;
-                        width: 90vw;
                     }
 
                     .heads {
@@ -153,11 +152,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
                 #send_button {
                     clear: both;
-                }
-
-
-                #blockly_CUT {
-                    margin-bottom: 5px;
                 }
 
                 #star_container {
@@ -234,6 +228,35 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                     padding: 1%;
                     max-width: 660px;
                     background-color: white;
+                }
+                
+                .critterCodeDiv {
+                    border-radius: 15px;
+                    border: 2px solid #FFA600;
+                    border-top-width: 50px;
+                    padding: 1%;
+                    margin-bottom: 1%;
+                    z-index: 1;
+                }
+                
+                .critterImage {
+                    width: auto;
+                    height: auto;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: 2;
+                }
+                
+                .critterBehaviourText {
+                    position: absolute;
+                    top: 10px;
+                    left: 40px;
+                    z-index: 2;
+                }
+                
+                .critterCodeContainer {
+                    position: relative;
                 }
 
                 #healed_critters {
@@ -331,10 +354,16 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 </div>
                 <div id="blockly_container" class="col-sm-6">
                     <!--<div id="blockly_container" class="col-lg mt-3">-->
-                    <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true"
-                                     cut
-                                     read-only>
-                    </critter-blockly>
+                    <div class="critterCodeDiv">
+                        <img class="critterImage" src="[[importPath]]images/fullCritter.png" alt="Critter Image">
+                        <div class="critterBehaviourText text">[[__("my_behaviour")]]</div>
+                        <div class="critterCodeContainer">
+                            <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true"
+                                             cut
+                                             read-only>
+                            </critter-blockly>
+                        </div>
+                    </div>
                     <div class="col row" id="healed_critters">
                         <div class="col-12 text">
                             <p>[[__("healedCritters")]]</p>
@@ -346,6 +375,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             </div>
         `;
     }
+
+    static get importMeta() { return import.meta; }
 
     static get is() {
         return 'critter-game';
