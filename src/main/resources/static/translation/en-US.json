@@ -126,5 +126,6 @@
   "healedCritters": "Collected critters for healing:",
   "really_delete_unsaved": "Do you want to close without saving?",
   "no_first_save": "Save first",
-  "yes": "Close"
+  "yes": "Close",
+  "my_behaviour": "My usual behaviour:"
 }
