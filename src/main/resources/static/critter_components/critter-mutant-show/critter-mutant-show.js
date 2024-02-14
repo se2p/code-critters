@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -27,6 +27,7 @@ import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
 import '../critter-blockly/critter-blockly.js';
 import '../critter-tab/critter-tab.js';
+import '../critter-data-store/critter-data-store.js';
 
 /*
 # critter-mutant-show
@@ -69,19 +70,22 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
                     font-size: 1.3em;
                 }
                 
-                #levelName {
+                #level_display_name {
                     font-weight: bold;
                     color: #ffa600;
                 }
             </style>
-            
+
+            <critter-data-store></critter-data-store>
+
+
             <critter-tab id="tabs" tabs="{{tabs}}"></critter-tab>
             <div class="tab tab-0">
                 <div id="info">
                     <p>
                         {{__("show_mutants_info")}}
                     </p>
-                    <p id="levelName">{{levelName}}</p>
+                    <p id="level_display_name">{{levelDisplayName}}</p>
                     <p>
                         {{__("show_mutants_code")}}
                         <br>
@@ -107,6 +111,12 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
             levelName: {
                 type: String,
                 value: ''
+            },
+
+            levelDisplayName: {
+                type: String,
+                value: '',
+                notify: true
             },
 
             tabs: {
@@ -147,11 +157,17 @@ class CritterMutantShow extends Toaster(Level(I18n(PolymerElement))) {
         this._globalData = window.Core.CritterLevelData;
 
         afterNextRender(this, function () {
+            this.addEventListener("_levelDisplayNameChanged", () => this._setLevelDisplayName())
+
             this.levelName = new URL(window.location.href).searchParams.get("level");
             this._globalData.levelName = this.levelName;
             this._loadMutants();
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
         });
+    }
+
+    _setLevelDisplayName() {
+        this.levelDisplayName = this._globalData.levelDisplayName;
     }
 
     /**
