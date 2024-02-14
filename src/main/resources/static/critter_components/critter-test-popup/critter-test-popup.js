@@ -346,18 +346,22 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     _deleteMine() {
         let removedMine = this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y];
 
-        removedMine.creationStart = this._mineCreationStart;
-        removedMine.creationEnd = Date.now();
-        removedMine.deleted = true;
-        removedMine.deletionDateTime = Date.now();
+        if (removedMine) {
+            removedMine.creationStart = this._mineCreationStart;
+            removedMine.creationEnd = Date.now();
+            removedMine.deleted = true;
+            removedMine.deletionDateTime = Date.now();
 
-        this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = undefined;
+            this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = undefined;
 
-        this.dispatchEvent(new CustomEvent('_mineRemoved', {
-            detail: {position: this._selectedBlock, mine: removedMine},
-            bubbles: true,
-            composed: true
-        }));
+            this.dispatchEvent(new CustomEvent('_mineRemoved', {
+                detail: {position: this._selectedBlock, mine: removedMine},
+                bubbles: true,
+                composed: true
+            }));
+        }
+        // else, removedMine === undefined because the player uses the trashcan to remove a mine that she just
+        // started to create (-> no portal saved yet)
         this._popupClose();
     }
 
