@@ -153,10 +153,6 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                     color: #FFA600;
                 }
                 
-                #number_inputs {
-                    position: absolute;
-                    top: 920px;
-                }
             </style>
         </custom-style>
 
@@ -184,6 +180,9 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
         <div id="coordinate_container">Coordinates: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
         <div class="table">
             <critter-input id="name_input" label="Name: " value="{{levelName}}"></critter-input>
+            <critter-input id="display_name_input" label="Display Name: " value="{{levelDisplayName}}"></critter-input>
+            <critter-input id="mine_input" type="number" label="Free Portals: " value="{{setMines}}"></critter-input>
+
         </div>
         <div id="category" hidden$="[[showSaveButton]]">
             [[__("category")]]: <b id="current_row">[[currentRow]]</b>
@@ -194,9 +193,6 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             <critter-button id="save_button" hidden="[[!showSaveButton]]">[[__("save")]]</critter-button>
             <critter-button id="update_button" hidden="[[showSaveButton]]">[[__("update")]]</critter-button>
             <a href="manage-levels" id="level_button"><critter-button>[[__("show_levels")]]</critter-button></a>
-        </div>
-        <div id="number_inputs" class="table">
-            <critter-input id="mine_input" type="number" label="Free Portals: " value="{{setMines}}"></critter-input>
         </div>
         `;
     }
@@ -210,6 +206,11 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
         return {
 
             levelName: {
+                type: String,
+                value: ''
+            },
+
+            levelDisplayName: {
                 type: String,
                 value: ''
             },
@@ -330,6 +331,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
                 this.$.update_button.addEventListener("click", this._updateLevel.bind(this));
                 this.$.row_button.addEventListener("click", this._updateRow.bind(this));
                 this.addEventListener("_rowChanged", event => this._rowChange(event));
+                this.addEventListener("_levelDisplayNameChanged", () => this._setLevelDisplayName())
             }
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.$.tabs.addEventListener("tabChanged", (event) => this._onTabChanged(event));
@@ -337,6 +339,10 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
             this._initNames();
             this._initRows();
         });
+    }
+
+    _setLevelDisplayName() {
+        this.levelDisplayName = this._globalData.levelDisplayName;
     }
 
     /**
@@ -454,7 +460,12 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
      */
     _validateLevel() {
         if (this.levelName === '') {
-            this.showErrorToast("Please enter a valid name");
+            this.showErrorToast("Please enter a valid name in the format level_1.");
+            return false;
+        }
+
+        if (this.levelDisplayName === '') {
+            this.showErrorToast("Please enter the display name of a level.")
             return false;
         }
 
@@ -566,6 +577,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
         req.rejectWithRequest = true;
         req.body = {
             name: this.levelName,
+            displayName: this.levelDisplayName,
             level: this._globalData.level,
             tower: this._globalData.tower,
             spawn: this._globalData.spawn,
@@ -641,6 +653,7 @@ class CritterLevelCreator extends Toaster(Level(I18n(PolymerElement))) {
         req.body = {
             id: this._globalData.levelId,
             name: this.levelName,
+            displayLevel: this.levelDisplayName,
             level: this._globalData.level,
             tower: this._globalData.tower,
             spawn: this._globalData.spawn,

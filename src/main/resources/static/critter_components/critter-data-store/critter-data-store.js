@@ -56,6 +56,12 @@ class CritterDataStore extends PolymerElement {
                 observer: '_updateLevelData'
             },
 
+            levelDisplayName: {
+                type: String,
+                value: '',
+                notify: true
+            },
+
             levelId: {
                 type: String,
                 value: ''
@@ -155,11 +161,12 @@ class CritterDataStore extends PolymerElement {
 
     static get observers() {
         return [
-            '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*)',
+            '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*, levelDisplayName)',
             '_sizeChanged(width, height)',
             '_critterNumberChanged(numberOfCritters, numberOfHumans)',
             '_userChanged(user,*)',
             '_rowChanged(row, freeMines)',
+            '_levelDisplayNameChanged(levelDisplayName)'
         ]
     }
 
@@ -188,6 +195,10 @@ class CritterDataStore extends PolymerElement {
 
     _testCodeChanged() {
         this.dispatchEvent(new CustomEvent('_testCodeChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
+    _levelDisplayNameChanged() {
+        this.dispatchEvent(new CustomEvent('_levelDisplayNameChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
 
@@ -256,6 +267,7 @@ class CritterDataStore extends PolymerElement {
             this.toolbox = data.toolbox;
             this.row = data.row;
             this.freeMines = data.freeMines;
+            this.levelDisplayName = data.displayName;
         });
 
         let genRequest = req.generateRequest();
