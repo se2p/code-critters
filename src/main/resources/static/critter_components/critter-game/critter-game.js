@@ -1004,8 +1004,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         if(numMines > freeMines) {
             this.score = -25 * (numMines - freeMines); //TODO free mines
         }
-        this.score = (this._finishedHumans + this._killedMutants) * 50 +
-            Math.max((Math.round(- this._totalTime / 1000) + this._globalData.freeSeconds) * 10, 0);
+        this.score = (this._finishedHumans + this._killedMutants) * 50 + this._calculateTimeBonus();
         this.showScore(numMines);
         let stars = 0;
         if(this.score >= 950){
@@ -1018,6 +1017,38 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._storeResult(stars);
         this._saveGame();
         this.removeEventListener("beforeunload", this._saveGameData);
+    }
+
+    /**
+     * Calculates the time bonus points for a game. It can maximally be 10 % of the achieved score (i.e. 100)
+     * @returns {number}
+     */
+    _calculateTimeBonus() {
+        let baseScore = this.score;
+        const timeBonusPercentage = this._calculateTimeBonusRatio();
+        const timeBonusRatio = timeBonusPercentage / 100;
+
+        return Math.round((timeBonusRatio/10) * baseScore) // to achieve a maximum of 10 % time bonus
+    }
+
+    /**
+     * Calculates the time bonus percentage. It is 100 % if the playerTime is equal/less than freeSeconds,
+     * if playerTime is larger than freeSeconds the time bonus percentage linearly decreases from 100 to 0.
+     * @returns {number} from 0 to 100
+     */
+    _calculateTimeBonusRatio() {
+        let timeBonusRatio = 0;
+        const freeTime = this._globalData.freeSeconds;
+        const playerTime = (Math.round(this._totalTime / 1000));
+        if (playerTime <= freeTime) {
+            timeBonusRatio = 1.0;
+        } else if (playerTime <= freeTime * 2) {
+            timeBonusRatio = 1.0 - (playerTime - freeTime) / freeTime;
+        }
+
+        const timeBonusPercentage = timeBonusRatio * 100;
+
+        return Math.round(timeBonusPercentage);
     }
 
     async showScore(numMines) {
@@ -1033,8 +1064,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedMutants * 50, killedCritterPercentage, "%");
-        await dialogScore.insertData("time_line", Math.max((Math.round(- this._totalTime / 1000) +
-            this._globalData.freeSeconds) * 10, 0), this._globalData.freeSeconds, 's');
+        await dialogScore.insertData("time_line", this._calculateTimeBonus(), this._calculateTimeBonusRatio(), "%");
     }
 
     _showStar(number) {
