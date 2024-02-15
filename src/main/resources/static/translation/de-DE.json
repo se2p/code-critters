@@ -127,5 +127,12 @@
   "really_delete_unsaved": "Schließen ohne zu speichern?",
   "no_first_save": "Zuerst speichern",
   "yes": "Schließen",
-  "my_behaviour": "Mein normales Verhalten:"
+  "my_behaviour": "Mein normales Verhalten:",
+  "not_registered": "Noch nicht registriert?",
+  "to_login": "Zum Login",
+  "registration_email_text": "Du bekommst in Kürze eine Mail mit einem Aktivierungscode. Klicke auf den Link oder kopiere den Code hier, um dein Profil zu aktivieren.",
+  "activation_code": "Aktivierungscode",
+  "activate": "Aktivieren",
+  "check_checkboxes": "Checkboxes sind nicht bestätigt.",
+  "incorrect_secret": "Der Aktivierungscode ist falsch."
 }

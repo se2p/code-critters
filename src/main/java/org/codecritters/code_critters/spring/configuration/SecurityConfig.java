@@ -91,6 +91,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(cookieAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider)
                 .formLogin()
+                .loginPage("/login") // do not use Spring Boot default login but our own
+                .loginProcessingUrl("/login") // url where login data is submitted to
+                .permitAll()
                 .failureUrl("/login.html");
     }
 

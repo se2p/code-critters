@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -28,6 +28,7 @@ import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.web.dto.ActivationSecretDTO;
 import org.codecritters.code_critters.web.dto.UserDTO;
 import org.codecritters.code_critters.web.enums.Language;
 import org.codecritters.code_critters.web.enums.Role;
@@ -100,6 +101,7 @@ public class UserService {
         mailTemplateData.put("user", user.getUsername());
         mailTemplateData.put("secret", link);
         mailTemplateData.put("baseURL", url);
+        mailTemplateData.put("secretOnly", user.getSecret());
         mailService.sendMessageFromTemplate("register", mailTemplateData, user.getLanguage());
 
         userRepositiory.save(user);
@@ -165,6 +167,18 @@ public class UserService {
             return userRepositiory.save(user) != null;
         }
         return false;
+    }
+
+    public UserDTO activateAndReturnUser(ActivationSecretDTO secret) {
+        User user = userRepositiory.findBySecret(secret.getSecret());
+        if (user != null) {
+            user.setSecret(null);
+            user.setActive(true);
+            userRepositiory.save(user);
+
+            return userToDTO(user);
+        }
+        throw new NotFoundException("Incorrect Secret", "incorrect_secret");
     }
 
     private UserDTO userToDTO(User user) {
