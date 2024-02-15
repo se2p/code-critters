@@ -10,12 +10,12 @@ package org.codecritters.code_critters.spring.configuration;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -37,6 +37,8 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
         registry.addViewController("/profile").setViewName("forward:/profile.html");
         registry.addViewController("/resetPassword").setViewName("forward:/resetPassword.html");
         registry.addViewController("/forgotPassword").setViewName("forward:/forgotPassword.html");
+        registry.addViewController("/register").setViewName("forward:/register.html");
+        registry.addViewController("/login").setViewName("forward:/login.html");
         registry.addViewController("/manage-levels").setViewName("forward:/manageLevels.html");
         registry.addViewController("/xml-generator").setViewName("forward:/generators/xml-generator/xml-generator.html");
         registry.addViewController("/level-generator").setViewName("forward:/generators/level-generator/level-generator.html");

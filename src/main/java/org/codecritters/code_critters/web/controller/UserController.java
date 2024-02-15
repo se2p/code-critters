@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.controller;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -24,6 +24,7 @@ package org.codecritters.code_critters.web.controller;
 
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.application.service.UserService;
+import org.codecritters.code_critters.web.dto.ActivationSecretDTO;
 import org.codecritters.code_critters.web.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -159,8 +160,8 @@ public class UserController {
     }
 
     /**
-     * Used to activate a registered user. The user is sent a secret by mail on which they have to click to activate
-     * their profile.
+     * Used to activate a registered user. The user is sent a secret by mail. The user can click on the link
+     * (or copy the secret and send it via POST endpoint) to activate their profile.
      * @param secret The secret referring to a specific user.
      * @param httpServletResponse The response to rewrite the URL.
      * @param request The request data for computing the URL.
@@ -168,11 +169,31 @@ public class UserController {
      */
     @GetMapping(path = "/activate/{secret}")
     public void activateUser(@PathVariable(value = "secret") String secret, HttpServletResponse httpServletResponse, HttpServletRequest request) throws MalformedURLException {
-        String url = getBaseURL(request) + "?activated=";
-        url += userService.activateUser(secret);
+        boolean isActivated = userService.activateUser(secret);
+        String url = getBaseURL(request) + "/login?activated=";
+        if (isActivated) {
+            url = url + "true";
+        } else {
+            url = url + "false";
+        }
 
         httpServletResponse.setHeader("Location", url);
         httpServletResponse.setStatus(302);
+    }
+
+    /**
+     * Used to activate the user's profile given the correct secret the user received via mail.
+     * @param secret The secret the user got per mail
+     * @return The userDTO
+     */
+    @PostMapping(path="/activate")
+    public UserDTO activateUserViaUI(@RequestBody ActivationSecretDTO secret) {
+        try {
+            UserDTO user = userService.activateAndReturnUser(secret);
+            return user;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     /**

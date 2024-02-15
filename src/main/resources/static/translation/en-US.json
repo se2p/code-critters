@@ -127,5 +127,12 @@
   "really_delete_unsaved": "Do you want to close without saving?",
   "no_first_save": "Save first",
   "yes": "Close",
-  "my_behaviour": "My usual behaviour:"
+  "my_behaviour": "My usual behaviour:",
+  "not_registered": "Do you want to register?",
+  "to_login": "Back to Login",
+  "registration_email_text": "You will receive an email with a registration code. Click the link or copy the code in here to activate your profil.",
+  "activation_code": "Activation Code",
+  "activate": "activate",
+  "check_checkboxes": "Checkboxes are not confirmed.",
+  "incorrect_secret": "Wrong activation code."
 }

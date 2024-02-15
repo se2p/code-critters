@@ -24,20 +24,28 @@
 <html>
 
 <head>
-  <title>Code Critters - Profile</title>
+  <title>Code Critters - Login</title>
   <script src="/lib/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
   <script type=module src="critter_components/critter-header/critter-header.js"></script>
   <script type=module src="critter_components/critter-translator/critter-translator-escaped.js"></script>
   <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
-  <script type=module src="critter_components/critter-login/critter-login.js"></script>
+  <script type=module src="critter_components/critter-login-page/critter-login-page.js"></script>
+
 
   <script>
     window.Polymer = window.Polymer || {};
     window.Polymer.dom = 'shadow';
 
     function _routeToLastWanted(event) {
-      window.location.reload();
+      let level = new URL(window.location.href).searchParams.get("level");
+
+      if (level) { // route to the wanted level if given
+        window.location.reload();
+      } else { // otherwise route to index
+        window.location.href = "/";
+      }
+      window.dispatchEvent(new CustomEvent('_userChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     window.addEventListener("_refresh", (event) => _routeToLastWanted(event));
@@ -50,7 +58,7 @@
   <custom-style>
     <style>
       body {
-        height: 100vh;
+        font-family: Arial;
         font-size: 0.8em;
         margin: 0;
       }
@@ -68,27 +76,9 @@
         width: 100px;
       }
 
-      critter-login {
-        display: inline-block;
-      }
-
       .text{
         text-align: center;
         margin: 5% 0;
-      }
-
-      .content {
-        position: relative;
-        margin: 15px;
-      }
-
-      .col-sm-2 {
-        background-color: #f3f3f3;
-      }
-
-      .col-sm-8 {
-        padding: 2%;
-        height: 100%;
       }
 
       hr {
@@ -112,19 +102,16 @@
 
 </head>
 <body>
-<div id="foreground_container">
-  <div class="row">
-    <div class="col-sm-12">
-      <critter-header></critter-header>
-      <hr>
-    </div>
+<div class="row">
+  <div class="col-sm-12">
+    <critter-header hide-login-buttons="true"></critter-header>
+    <hr>
   </div>
-  <div class="row content justify-content-center">
-    <div class="col-sm-8 justify-content-center align-items-center text">
-      <critter-translator-escaped class="col-sm-8" key="please_login"></critter-translator-escaped>
-      <div class="col">
-        <critter-login></critter-login>
-      </div>
+</div>
+<div id="foreground_container">
+  <div class="row content justify-content-center align-items-center">
+    <div class="col-sm-10 text">
+        <critter-login-page></critter-login-page>
     </div>
   </div>
   <div class="row fixed-bottom">

@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -29,11 +29,6 @@ import '/lib/@polymer/polymer/lib/elements/dom-if.js';
 import '/lib/@polymer/iron-icons/social-icons.js';
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
-import '../critter-form/critter-form.js';
-import '../critter-button/critter-button.js';
-import '../critter-input/critter-input.js';
-import '../critter-dialog/critter-dialog.js';
-import '../critter-checkbox/critter-checkbox.js';
 import '../critter-data-store/critter-data-store.js';
 
 
@@ -77,21 +72,11 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
                 .username{
                     cursor: pointer;
                 }
-            
-                #login_dialog,
-                #register_dialog,
+                
                 critter-toaster{
                     color: #212529;
                 }
-           
-                .controls critter-button{
-                    margin: auto;
-                }
                 
-                #forgot_password {
-                    text-decoration: none;
-                    color: #ffa600;
-                }
             </style>
             
             <critter-data-store></critter-data-store>
@@ -104,33 +89,6 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
               <div id="login" class="center" hidden$="[[!showLogin]]">[[__("login")]]</div>
               <div id="register" class="center" hidden$="[[!showLogin]]">[[__("register")]]</div>
             </div>
-            
-            <critter-dialog id="login_dialog">
-                <critter-form id="login_form" method="POST" target="[[loginTarget]]" >
-                    <critter-input label="username" name="username"></critter-input><br>
-                    <critter-input label="password" name="password" type="password"></critter-input><br>
-                    <a href="forgotPassword" id="forgot_password">[[__("forgot_password")]]</a><br>
-                    <div class="controls" slot="controls">
-                        <critter-button submit>[[__("login")]]</critter-button>
-                    </div>
-                </critter-form>
-            </critter-dialog>
-            
-            <critter-dialog id="register_dialog">
-            <critter-form id="register_form" method="POST" target="[[registerTarget]]" >
-                <critter-input label="username" name="username"></critter-input><br> 
-                <critter-input label="Email" name="email"></critter-input><br>
-                <critter-input label="password" name="password" type="password"></critter-input><br>
-                <critter-input label="password_confirm" name="password" type="password" no-serialize match="password"></critter-input><br>
-                <critter-input name="language" type="hidden" value="[[language]]"></critter-input><br>
-                <div class="checkboxes" slot="checkboxes">
-                    <critter-checkbox >[[__("agree_privacy")]]</critter-checkbox>
-                </div>
-                <div class="controls" slot="controls">
-                    <critter-button submit>[[__("register")]]</critter-button>
-                </div>
-            </critter-form>
-            </critter-dialog>
         `;
     }
 
@@ -169,30 +127,12 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
         afterNextRender(this, function () {
             this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
-            this.$.login.addEventListener("click", this._openLoginDialog.bind(this));
+            this.$.login.addEventListener("click", this._goToLogin.bind(this));
             this.$.icon.addEventListener("click", this._onIconClick.bind(this));
-            this.$.register.addEventListener("click", this._openRegisterDialog.bind(this));
+            this.$.register.addEventListener("click", this._goToRegister.bind(this));
             this.$.logout.addEventListener("click", this._logout.bind(this));
             this.$.showProfile.addEventListener("click", this._showProfile);
-            this.$.login_form.preSubmit = this._onPreSubmit.bind(this);
-            this.$.login_form.onSuccess = this._onLoginSuccess.bind(this);
-            this.$.login_form.onError = this._onError.bind(this);
-            this.$.register_form.preSubmit = this._onPreSubmit.bind(this);
-            this.$.register_form.onSuccess = this._onRegisterSuccess.bind(this);
-            this.$.register_form.onError = this._onError.bind(this);
         });
-    }
-
-    _onLoginSuccess(e) {
-        this._globalData.user = e.detail.__data.response;
-        window.dispatchEvent(new CustomEvent('_refresh', {detail: { user: this._globalData.user }, bubbles: true, composed: true}));
-        this.showSuccessToast("login_successful");
-        this.$.login_dialog.close();
-    }
-
-    _onRegisterSuccess(e) {
-        this.showSuccessToast("registration_successful")
-        this.$.register_dialog.close();
     }
 
     _userChanged(){
@@ -204,7 +144,7 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
     _onIconClick() {
         if(this.showLogin){
-            this._openLoginDialog();
+            this._goToLogin();
         } else {
             this._showProfile();
         }
@@ -262,12 +202,12 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
         }
     }
 
-    _openLoginDialog(){
-        this.$.login_dialog.open();
+    _goToRegister(){
+        window.location.href = "/register";
     }
 
-    _openRegisterDialog(){
-        this.$.register_dialog.open();
+    _goToLogin() {
+        window.location.href = "/login";
     }
 
 }
