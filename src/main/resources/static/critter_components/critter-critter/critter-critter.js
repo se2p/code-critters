@@ -23,6 +23,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+import {critterTransitionDuration, normalCritterInterval, speedyCritterInterval} from "../constants.js";
 
 /*
 # critter-critter
@@ -605,7 +606,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
 
             _interval: {
                 type: Number,
-                value: 3000
+                value: normalCritterInterval
             },
 
             _backup: {
@@ -652,7 +653,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         this._numberOfStarts += 1;
         this.path = this._computePath();
         this.position = this.path.shift();
-        this.$.critter_container.style.transitionDuration = "3s";
+        this.$.critter_container.style.transitionDuration = critterTransitionDuration;
         this._timeoutManager.add(() => {
             this.init();
             this._doStep(this._numberOfStarts);
@@ -746,8 +747,10 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     /** computes the string value for weather speedy or not **/
     _isSpeedy(speedy) {
         if (speedy) {
-            this._interval = 1500;
+            this._interval = speedyCritterInterval;
             return "speedy";
+        } else {
+            this._interval = normalCritterInterval;
         }
         return "";
     }
@@ -879,11 +882,17 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     }
 
     resume() {
-        if(this.paused) {
+        if (this.paused) {
             this.animate = true;
             this.paused = false;
-            this.$.critter_container.style.transitionDuration = "3s";
-            if(window.matchMedia("(max-width: 600px)").matches) {
+            this.$.critter_container.style.transitionDuration = critterTransitionDuration;
+
+            if (!this.position || !this.position.x || !this.position.y) {
+                // critters that are still in the village/are just leaving it do not yet have a position,
+                // they should nonetheless resume
+                return;
+            }
+            if (window.matchMedia("(max-width: 600px)").matches) {
                 this.$.critter_container.style.top = (this.position.y * 20) + "px";
                 this.$.critter_container.style.left = (this.position.x * 20) + "px";
             } else {

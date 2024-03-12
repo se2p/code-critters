@@ -39,7 +39,7 @@ import './critter-game-image.js'
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 import {critterStyle} from '/style/critter-botstrap.js'
-import {normalInterval, speedyInterval} from "../constants.js";
+import {normalCritterInterval, speedyCritterInterval} from "../constants.js";
 
 
 /*
@@ -422,7 +422,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
             _interval: {
                 type: Number,
-                value: normalInterval
+                value: normalCritterInterval
             },
 
             _hoverX: {
@@ -627,9 +627,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this._critterList.forEach((critter) => {
                 critter.speedy = true;
             });
-            this._interval = speedyInterval;
+            this._interval = speedyCritterInterval;
         }
-        this._isSpeedUp = this._interval === speedyInterval;
+        this._isSpeedUp = this._interval === speedyCritterInterval;
     }
 
     _speedDownGame() {
@@ -637,9 +637,9 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this._critterList.forEach((critter) => {
                 critter.speedy = false;
             });
-            this._interval = normalInterval;
+            this._interval = normalCritterInterval;
         }
-        this._isSpeedUp = this._interval === speedyInterval;
+        this._isSpeedUp = this._interval === speedyCritterInterval;
     }
 
     _reloadGame() {
@@ -659,7 +659,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._killedMutants = 0;
         this._killedHumans = 0;
         this.score = 0;
-        this._interval = normalInterval;
+        this._interval = normalCritterInterval;
         this._critterList.forEach(critter => {
             critter.remove();
         });
@@ -668,7 +668,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._timeoutManager.clear();
         this._globalData.deleteMines();
         this._mines = [];
-        this._isSpeedUp = this._interval === speedyInterval;
+        this._isSpeedUp = this._interval === speedyCritterInterval;
         this._killedMutantsList = [];
         this._killedHumansList = [];
         this._finishedMutantsList = [];
@@ -676,6 +676,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this.$.gameboard.removeAllMines();
         this.$.send_button.shape = "play";
         this.$.speedUp_button.disabled = true;
+        this.$.speedUp_button.shape = "fastforward";
+
         this._onCritterNumberChanged();
         this._createGame();
     }
@@ -717,7 +719,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 this._sendCritters();
                 this._crittersSent = true;
                 this.$.speedUp_button.disabled = false;
-                this._isSpeedUp = this._interval === speedyInterval;
+                this._isSpeedUp = this._interval === speedyCritterInterval;
             } else {
                 this._timeoutManager.resumeAll();
                 this._critterList.forEach(critter => {
