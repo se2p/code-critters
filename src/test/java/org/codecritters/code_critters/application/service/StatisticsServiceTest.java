@@ -118,37 +118,27 @@ public class StatisticsServiceTest {
 
     @Test
     public void testGetMineHistory() {
-        mine = new Mine("id", game, "code", "code", LocalDateTime.now(), LocalDateTime.now(), xPos, yPos, false, null, false);
+        mine = new Mine("id", game, "code", "code", LocalDateTime.now(), LocalDateTime.now(), xPos, yPos, false, null, false, "someFrontEndID");
         mines = new ArrayList<>();
         mines.add(mine);
 
-        when(mineRepository.findByGameId(any())).thenReturn(mines);
+        when(mineRepository.findAllByFrontendId(any())).thenReturn(mines);
 
-        MineHistoryDTO result = statisticService.getMineHistory(xPos, yPos, gameId);
+        MineHistoryDTO result = statisticService.getMineHistory("someFrontEndID");
 
         assertAll(
-                () -> assertEquals(xPos, result.getxPosition()),
-                () -> assertEquals(yPos, result.getyPosition()),
+                () -> assertEquals("someFrontEndID", result.getFrontendId()),
                 () -> assertEquals(gameId, result.getGameId())
         );
     }
 
     @Test
-    public void testGetMineHistoryNoMinePlaced() {
-        mine = new Mine("id", game, "code", "code", LocalDateTime.now(), LocalDateTime.now(), xPos, yPos, false, null, false);
+    public void testGetMineHistoryNoSuchFrontendId() {
         mines = new ArrayList<>();
-        mines.add(mine);
-        when(mineRepository.findByGameId(any())).thenReturn(mines);
+        when(mineRepository.findAllByFrontendId(any())).thenReturn(mines);
 
-        MineHistoryDTO result = statisticService.getMineHistory(1, 1, gameId);
-
-        assertAll(
-                () -> assertEquals(1, result.getxPosition()),
-                () -> assertEquals(1, result.getyPosition()),
-                () -> assertEquals(gameId, result.getGameId()),
-                () -> assertEquals(false, result.isMinePlaced()),
-                () -> assertEquals(0, result.getMineHistoryList().size())
-        );
+        assertThrows(NotFoundException.class,
+                () -> statisticService.getMineHistory("someFrontendID123-123"));
     }
 
     @Test

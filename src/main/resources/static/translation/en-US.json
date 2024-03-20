@@ -134,5 +134,8 @@
   "activation_code": "Activation Code",
   "activate": "activate",
   "check_checkboxes": "Checkboxes are not confirmed.",
-  "incorrect_secret": "Wrong activation code."
+  "incorrect_secret": "Wrong activation code.",
+  "invalid_drop_field": "You can place a portal only along paths the critters can walk on.",
+  "portal_move_error": "The portal can not be moved.",
+  "drop_on_portal": "You cannot place a portal onto another portal."
 }

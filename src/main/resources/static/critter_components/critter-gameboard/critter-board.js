@@ -24,6 +24,7 @@ import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.j
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import './critter-board-field.js';
 import './critter-board-hover-field.js';
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
 
 /*
 # critter-gameboard
@@ -38,7 +39,7 @@ Renders the gameboard and its textures.
 @demo
 */
 
-class CritterGameboard extends Level(PolymerElement) {
+class CritterGameboard extends Toaster(Level(PolymerElement)) {
     static get template() {
         return html`
         <style>
@@ -206,6 +207,12 @@ class CritterGameboard extends Level(PolymerElement) {
             containsSnow: {
                 type: Boolean,
                 value: false
+            },
+
+            dragStartTime: {
+                type: Number,
+                notify: true,
+                value: 0
             }
         };
     }
@@ -223,6 +230,7 @@ class CritterGameboard extends Level(PolymerElement) {
                 rootNode.addEventListener("_levelDataChanged", this.renderBoard.bind(this));
                 rootNode.addEventListener("_mineSet", (event) => this.setMine(event));
                 rootNode.addEventListener("_mineRemoved", (event) => this.removeMine(event.detail.position));
+                rootNode.addEventListener("_portalDropped", (event) => this.movePortal(event));
             }
             this._globalData = window.Core.CritterLevelData;
             this.renderGrid();
@@ -262,6 +270,36 @@ class CritterGameboard extends Level(PolymerElement) {
         this.placeElements();
     }
 
+    /**
+     * renders the hoverfields only (required after moving of a portal)
+     */
+    renderHoverBoardOnly() {
+        if (!this._globalData || !this._globalData.level || this._globalData.level.length !== this._globalData.height) {
+            return;
+        }
+        if(window.matchMedia("(max-width: 600px)").matches) {
+            this.updateStyles({
+                '--board-width': (this._globalData.width * 20) + "px",
+                '--board-height': (this._globalData.width * 20) + "px"
+            });
+        } else {
+            this.updateStyles({
+                '--board-width': (this._globalData.width * 40) + "px",
+                '--board-height': (this._globalData.width * 40) + "px"
+            });
+        }
+
+        let gameboardOverlay = this.$.overlay;
+
+        gameboardOverlay.innerHTML = "";
+        for (let i = 0; i < this._globalData.width; ++i) {
+            for (let j = 0; j < this._globalData.height; ++j) {
+                this._addHoverField(i, j, gameboardOverlay);
+            }
+        }
+        this.placeElements();
+    }
+
     /** adds the elements (mines, towers, modders) to the gameboard **/
     placeElements() {
         this.placeMines();
@@ -269,17 +307,100 @@ class CritterGameboard extends Level(PolymerElement) {
 
     /** adds the mines to the gameboard **/
     placeMines() {
-        // this._globalData.mines.forEach((mine) => {
-        //     let mineField = this.shadowRoot.querySelector('#field-' + mine.x + "-" + mine.y);
-        //     mineField.class += " mine";
-        // });
+        const mines = this._globalData.mines;
+
+        for (let i = 0; i < mines.length; i++) {
+            for (let j = 0; j < mines[i].length; j++) {
+                if (mines[i][j] !== undefined) {
+                    let mineField = this.shadowRoot.querySelector('#field-' + i + "-" + j);
+                    let mineHoverField = this.shadowRoot.querySelector('#hover-field-' + i + "-" + j);
+
+                    mineField.mine = true;
+
+                    mineHoverField.draggable = true;
+                    mineHoverField.ondragstart = this._dragStartHandler.bind(this);
+                }
+            }
+        }
+    }
+
+    /**
+     * Moves a portal from one field to another.
+     * Shows an error if the drop-field is not valid (and if parameter event is not as expected)
+     *
+     * @param e event with detail containing coordinates of the old and new field
+     */
+    movePortal(e) {
+        if (e.detail.oldPosition && e.detail.newPosition) {
+            const oldPosition = e.detail.oldPosition;
+            const newPosition = e.detail.newPosition;
+
+            let isAllowed = true;
+            let errorMessage;
+
+            // check that drop-field is a valid terrain; and that it is not spawn or tower point
+            if (!this._isWalkableTerrain(newPosition) || this._isFieldWithBuilding(newPosition)) {
+                isAllowed = false;
+                errorMessage = "invalid_drop_field";
+            }
+
+            // check that there is no portal on the new field already
+            else if (this._globalData.mines && this._globalData.mines[newPosition.x][newPosition.y] !== undefined) {
+                isAllowed = false;
+                errorMessage = "drop_on_portal"
+            }
+
+            if (!isAllowed && errorMessage) {
+                this.showErrorToast(errorMessage);
+            } else {
+                let newPortalField = this.shadowRoot.querySelector('#field-' + newPosition.x + "-" + newPosition.y);
+                newPortalField.mine = true;
+                let movedMine = this._globalData.mines[oldPosition.x][oldPosition.y];
+                if (movedMine) {
+                    movedMine.updated = true;
+                    movedMine.xPosition = newPosition.x + 1;
+                    movedMine.yPosition = newPosition.y;
+                    movedMine.creationStart = this.dragStartTime;
+                    movedMine.creationEnd = Date.now();
+                    this._globalData.mines[oldPosition.x][oldPosition.y] = undefined;
+                    this._globalData.mines[newPosition.x][newPosition.y] = movedMine;
+                    this.dispatchEvent(new CustomEvent('_portalMoved', {
+                        detail: { mine: movedMine },
+                        bubbles: true,
+                        composed: true
+                    }));
+                }
+
+                const oldPortalField = this.shadowRoot.querySelector('#field-' + oldPosition.x + "-" + oldPosition.y);
+                oldPortalField.mine = false;
+
+                this.renderHoverBoardOnly();
+            }
+        } else { // Does usually not happen, but just in case
+            this.showErrorToast("portal_move_error");
+        }
     }
 
     setMine(e) {
         let position = e.detail.position;
+
         let mineField = this.shadowRoot.querySelector('#field-' + position.x + "-" + position.y);
+        let mineHoverField = this.shadowRoot.querySelector('#hover-field-' + position.x + "-" + position.y);
 
         mineField.mine = true;
+        mineHoverField.draggable = true;
+        mineHoverField.ondragstart = this._dragStartHandler.bind(this);
+    }
+
+    /**
+     * Called on start of dragging a portal/mine
+     */
+    _dragStartHandler(event) {
+        // add cursor pointer things to spawn and tower?
+        this.dragStartTime = Date.now();
+        const target = event.target;
+        event.dataTransfer.setData('text/plain', target.id);
+        event.dataTransfer.dropEffect = "move";
     }
 
     removeMine(position) {
@@ -348,6 +469,17 @@ class CritterGameboard extends Level(PolymerElement) {
             }));
         });
 
+        /*if (this._globalData.spawn && this._globalData.tower && hoverField.x === this._globalData.spawn.x
+            && hoverField.y === this._globalData.spawn.y
+            || hoverField.x === this._globalData.tower.x && hoverField.y === this._globalData.tower.y) {
+            console.log("WE EVER GOING IN HERE???")
+            let fieldElement = hoverField.querySelector('#field');
+            if (fieldElement) {
+                console.log("WE EVER GOING IN HERE for CONDITION!!!!!!!!!!???")
+                fieldElement.style.cursor = "default";
+            }
+        }*/
+
         hoverField.addEventListener("fieldClicked", (event) => this.addElement(event.detail));
 
         gameboardOverlay.append(hoverField);
@@ -362,6 +494,14 @@ class CritterGameboard extends Level(PolymerElement) {
         this._computeClass(i, j).forEach(elem => {
             field.classList.add(elem);
         });
+
+        /*if (this._globalData.spawn && this._globalData.tower && field.x === this._globalData.spawn.x
+            && field.y === this._globalData.spawn.y
+            || field.x === this._globalData.tower.x && field.y === this._globalData.tower.y) {
+            console.log("WE EVER GOING IN HERE???")
+            field.style.cursor = "default";
+        }*/
+
         gameboard.append(field);
     }
 
@@ -1207,6 +1347,36 @@ class CritterGameboard extends Level(PolymerElement) {
                 resolve(blob);
             }, "image/jpeg")
         });
+    }
+
+    /**
+     * Returns true if the given board position is the spawn or tower point.
+     *
+     * @param newPosition contains x and y
+     * @returns {boolean}
+     */
+    _isFieldWithBuilding(newPosition) {
+        return this._globalData.spawn && this._globalData.tower && (newPosition.x === this._globalData.spawn.x
+            && newPosition.y === this._globalData.spawn.y || newPosition.x === this._globalData.tower.x
+            && newPosition.y === this._globalData.tower.y)
+    }
+
+    /**
+     * Returns true if the given board position is a terrain the critters can walk on.
+     *
+     * @param newPosition contains x and y
+     * @returns {boolean}
+     */
+    _isWalkableTerrain(newPosition) {
+        if (this._globalData.level && this._globalData.level[newPosition.y]
+            && this._globalData.level[newPosition.y][newPosition.x]) {
+            let fieldClass = this._globalData.level[newPosition.y][newPosition.x];
+            return (fieldClass === "grass" || fieldClass === "dirt" ||
+                (fieldClass === "water" && this.canWalkOnWater) ||
+                fieldClass === "ice" || (fieldClass === "lava" && this.canWalkOnLava))
+        } else {
+            return false;
+        }
     }
 }
 

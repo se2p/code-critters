@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.dto;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -47,10 +47,16 @@ public class MineDTO {
 
     private boolean updated;
 
+    /**
+     * Holds the unique frontend id of the mine to identify the same mine after it has been moved,
+     * because then identification via x- and y- positions are no longer guaranteed
+     */
+    private String frontendId;
+
     public MineDTO() {}
 
     public MineDTO(String id, String game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
-                   int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated) {
+                   int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated, String frontendId) {
         this.id = id;
         this.game = game;
         this.code = code;
@@ -62,6 +68,7 @@ public class MineDTO {
         this.deleted = deleted;
         this.deletionDateTime = deletionDateTime;
         this.updated = updated;
+        this.frontendId = frontendId;
     }
 
     public String getId() {
@@ -150,5 +157,13 @@ public class MineDTO {
 
     public void setUpdated(boolean updated) {
         this.updated = updated;
+    }
+
+    public String getFrontendId() {
+        return frontendId;
+    }
+
+    public void setFrontendId(String frontendId) {
+        this.frontendId = frontendId;
     }
 }

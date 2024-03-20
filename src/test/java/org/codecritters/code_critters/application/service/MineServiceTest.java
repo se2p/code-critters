@@ -44,8 +44,8 @@ public class MineServiceTest {
     private static final String CODE = "code";
     private static final String XML = "xml";
     private Game game = new Game(ID, new Level(), LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID, new ArrayList<>());
-    private MineDTO mine1 = new MineDTO(ID, GAME, CODE + ID, XML + ID, LocalDateTime.now(), LocalDateTime.now(), 8, 2, false, LocalDateTime.now(), true);
-    private MineDTO mine2 = new MineDTO(ID2, GAME, CODE + ID2, XML + ID2, LocalDateTime.now(), LocalDateTime.now(), 5, 3, false, LocalDateTime.now(), true);
+    private MineDTO mine1 = new MineDTO(ID, GAME, CODE + ID, XML + ID, LocalDateTime.now(), LocalDateTime.now(), 8, 2, false, LocalDateTime.now(), true, "frontendID1");
+    private MineDTO mine2 = new MineDTO(ID2, GAME, CODE + ID2, XML + ID2, LocalDateTime.now(), LocalDateTime.now(), 5, 3, false, LocalDateTime.now(), true, "frontendID2");
     private MinesDTO minesDTO = new MinesDTO();
     private List<MineDTO> mines = new ArrayList<>();
 
