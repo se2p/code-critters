@@ -134,5 +134,8 @@
   "activation_code": "Aktivierungscode",
   "activate": "Aktivieren",
   "check_checkboxes": "Checkboxes sind nicht bestätigt.",
-  "incorrect_secret": "Der Aktivierungscode ist falsch."
+  "incorrect_secret": "Der Aktivierungscode ist falsch.",
+  "invalid_drop_field": "Du kannst ein Portal nur auf Wege setzen, auf denen die Critter gehen können.",
+  "portal_move_error": "Das Portal kann nicht verschoben werden.",
+  "drop_on_portal": "Du kannst ein Portal nicht auf bereits vorhandenes Portal setzen."
 }

@@ -8,23 +8,23 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import {htmlLiteral} from '/lib/@polymer/polymer/lib/utils/html-tag.js';
 import {Generator} from '../critter-generator-mixin/critter-generator-mixin.js';
 
 
 import '/static/rasterizehtml/dist/rasterizeHTML.allinone.js';
+import { _extractCoordinates } from "../common.js";
 
 
 /*
@@ -1589,7 +1589,7 @@ class CritterGameboardField extends Generator(PolymerElement) {
                 transform: rotate(180deg);
             }
         </style>
-        <div id="field" class$="[[class]]">
+        <div id="field" class$="[[class]]" on-drop="_dropHandler" on-dragover="_dragOverHandler" on-dragend="_dragEndHandler">
             <div id="mineField" class$="[[_mineString]]">
             </div>
         </div>
@@ -2213,6 +2213,40 @@ class CritterGameboardField extends Generator(PolymerElement) {
         }
 
         return coordinates;
+    }
+
+    _dragEndHandler(event) {
+        event.preventDefault();
+    }
+
+    _dragOverHandler(event) {
+        event.preventDefault();
+    }
+
+    _dropHandler(event) {
+        event.preventDefault();
+        const oldId = event.dataTransfer.getData('text/plain');
+
+        const oldPosition = _extractCoordinates(oldId);
+        let detail;
+        if (oldPosition) {
+            detail = {
+                oldPosition: {
+                    x: oldPosition.xPos,
+                    y: oldPosition.yPos
+                },
+                newPosition: {
+                    x: this.x,
+                    y: this.y
+                }
+            }
+        }
+
+        this.dispatchEvent(new CustomEvent('_portalDropped', {
+            detail: detail,
+            bubbles: true,
+            composed: true
+        }));
     }
 
 }

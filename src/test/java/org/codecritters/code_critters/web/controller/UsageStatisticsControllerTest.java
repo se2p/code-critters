@@ -59,6 +59,8 @@ public class UsageStatisticsControllerTest {
 
     private int yPos = 8;
 
+    private String frontendId = "someFrontendId";
+
 
     public void resetService() {
         reset(statisticService);
@@ -97,17 +99,14 @@ public class UsageStatisticsControllerTest {
     @Test
     public void testGetMineHistory() throws Exception {
         mineHistoryDTO.setGameId(gameId);
-        mineHistoryDTO.setxPosition(xPos);
-        mineHistoryDTO.setyPosition(yPos);
+        mineHistoryDTO.setFrontendId(frontendId);
 
-        when(statisticService.getMineHistory(xPos, yPos, gameId)).thenReturn(mineHistoryDTO);
+        when(statisticService.getMineHistory(frontendId)).thenReturn(mineHistoryDTO);
 
         mvc.perform(get("/statistics/mine")
                         .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
                         .param(csrfToken.getParameterName(), csrfToken.getToken())
-                        .param("xPosition", "" + xPos)
-                        .param("yPosition", "" + yPos)
-                        .param("gameId", gameId)
+                        .param("frontendId", frontendId)
                         .cookie(cookie)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

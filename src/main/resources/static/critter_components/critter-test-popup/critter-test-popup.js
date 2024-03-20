@@ -21,6 +21,7 @@
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
+import {v4 as uuidv4} from '../../node_modules/uuid/dist/esm-browser/index.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
 
@@ -328,6 +329,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         detail.deleted = false;
         detail.deletionDateTime = null;
         detail.updated = false;
+        detail.frontEndId = uuidv4();
 
         // if an existing mine is edited
         if (this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] != null) {

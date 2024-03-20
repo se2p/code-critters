@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -91,48 +91,43 @@ public class StatisticService {
     }
 
     /**
-     * Returns all operations of a mine of a given game, like its creation start, if or when it has been edited and
-     * deleted, its code.
-     * If on the given coordinates no mine has been placed, the history will be empty and the "minePlaced"
-     * flag is false.
-     * @param x x position in a game
-     * @param y y position in a game
-     * @param gameId the gameId
-     * @return if existing, a overview over all mine operations of these coordinates
+     * Returns all operations of the mine with given frontendId, like its creation start, if or when it has been edited and
+     * deleted, its code etc.
+     * Throws a NotFoundException if no mine can be found with the given frontendId
+     * @param frontendId the mine id assigned on frontend
+     * @return an overview over all mine operations
      */
-    public MineHistoryDTO getMineHistory(int x, int y, String gameId) {
+    public MineHistoryDTO getMineHistory(String frontendId) {
 
-        if (gameId == null || gameId.isEmpty()) {
-            throw new IncompleteDataException("Cannot find a game with empty game ID!");
+        if (frontendId == null || frontendId.isEmpty()) {
+            throw new IncompleteDataException("Cannot find a portal with empty frontend ID!");
         }
 
-        // Retrieve all mines from the game
-        List<Mine> minesInGame = mineRepository.findByGameId(gameId);
+        List<Mine> wantedMineAllOperations = mineRepository.findAllByFrontendId(frontendId);
 
-        // Filter to keep only those mine operations on the wanted coordinations x y
-        List<Mine> minesAtPosition = minesInGame.stream().filter(mine ->
-                mine.getxPosition() == x && mine.getyPosition() == y).collect(Collectors.toList());
-
-        if (minesAtPosition.isEmpty()) {
-            List<MineOperation> emptyHistory = new ArrayList<>();
-            MineHistoryDTO mineHistoryDTO = new MineHistoryDTO(gameId, x, y, false, false, false, emptyHistory);
-            return mineHistoryDTO;
+        if (wantedMineAllOperations.isEmpty()) {
+            throw new NotFoundException("Cannot find a portal with frontend ID " + frontendId);
         }
 
-        // Sort all operations on that position in ascending order according to their creation start
-        minesAtPosition.sort(Comparator.comparing(Mine::getCreationStart));
+        String gameId = wantedMineAllOperations.get(0).getGame().getId();
+
+        // Sort all operations in ascending order according to their creation start
+        wantedMineAllOperations.sort(Comparator.comparing(Mine::getCreationStart));
 
         List<MineOperation> mineOperationList = new ArrayList<>();
         MineOperation mineOperation;
 
         boolean updated = false;
         boolean deleted = false;
-        for (Mine mine : minesAtPosition) {
+        for (Mine mine : wantedMineAllOperations) {
             mineOperation = new MineOperation(Operation.CREATION, mine.getCreationStart(),
-                    mine.getCreationEnd(), mine.getXml(), mine.getCode());
+                    mine.getCreationEnd(), mine.getXml(), mine.getCode(), mine.getxPosition(), mine.getyPosition());
 
             if (!mine.isDeleted() && !mine.isUpdated()) {
                 // nothing happens
+            } else if (!mine.isDeleted() && mineWasMoved(wantedMineAllOperations, mine)) {
+                mineOperation.setOperation(Operation.MOVE);
+                updated = true;
             } else if (!mine.isDeleted() && mine.isUpdated()) {
                 mineOperation.setOperation(Operation.UPDATE);
                 updated = true;
@@ -144,11 +139,20 @@ public class StatisticService {
             mineOperationList.add(mineOperation);
         }
 
-        MineHistoryDTO mineHistoryDTO = new MineHistoryDTO(gameId, x, y, true, updated, deleted, mineOperationList);
+        MineHistoryDTO mineHistoryDTO = new MineHistoryDTO(gameId, frontendId, true, updated, deleted, mineOperationList);
 
         return mineHistoryDTO;
     }
 
+    private boolean mineWasMoved(List<Mine> mines, Mine currentMineChange) {
+        int firstXPosition = mines.get(0).getxPosition();
+        int firstYPosition = mines.get(0).getyPosition();
+
+        if (firstXPosition != currentMineChange.getxPosition() || firstYPosition != currentMineChange.getyPosition()) {
+            return true;
+        }
+        return  false;
+    }
 
     /**
      * Gets details of a specified game like the level, game duration, mutant and human details,...
@@ -176,7 +180,10 @@ public class StatisticService {
         String levelId = curGame.getLevel().getId();
         LocalDateTime gameStart = curGame.getStart();
         LocalDateTime gameEnd = curGame.getEnd();
-        long gameDuration = Duration.between(gameStart, gameEnd).toMillis();
+        long gameDuration = 0;
+        if (gameStart != null && gameEnd != null) {
+            gameDuration = Duration.between(gameStart, gameEnd).toMillis();
+        }
         boolean paused = !curGame.getPauseTimeList().isEmpty();
         List<PauseDetails> pauses = getPauseDetailsList(curGame);
 
@@ -289,22 +296,21 @@ public class StatisticService {
 
         List<Mine> minesList = mineRepository.findByGameId(game.getId());
 
-        // Create map with key "x,y" coordinates and list of corresponding mines as values
-        Map<String, List<Mine>> groupedByCoordinates = minesList.stream().collect(Collectors.groupingBy(m -> {
-            StringBuilder s = new StringBuilder();
-            s.append(m.getxPosition()).append(", ").append(m.getyPosition());
-            return s.toString();
-            }, Collectors.mapping(m -> m, Collectors.toList())));
+        // Create map with key frontendId and list of corresponding mines as values
+        Map<String, List<Mine>> groupedByFrontendId =
+                minesList.stream().collect(Collectors.groupingBy(Mine::getFrontendId, Collectors.mapping(m -> m, Collectors.toList())));
 
-        Set<String> coordinatesWithMines = groupedByCoordinates.keySet();
+        // Group the mines by equal frontendIds (equal frontendId means it is the same mine,
+        // but a different operation on it)
+        Set<String> uniqueFrontendIds = groupedByFrontendId.keySet();
+
+        // Keep only the latest state of a mine
         List<MineDetails> mineDetailsList = new ArrayList<>();
-
-        // Keep only the latest state of every coordinate with a mine
-        for (String coor : coordinatesWithMines) {
-            Mine lastMine = getLastStateOfMine(groupedByCoordinates.get(coor));
+        for (String frondendId : uniqueFrontendIds) {
+            Mine lastMine = getLastStateOfMine(groupedByFrontendId.get(frondendId));
             MineDetails curMineDetails = new MineDetails(lastMine.getId(),
                     lastMine.getCode(), lastMine.getxPosition(), lastMine.getyPosition(),
-                    lastMine.isDeleted(), lastMine.isUpdated());
+                    lastMine.isDeleted(), lastMine.isUpdated(), lastMine.getFrontendId());
             mineDetailsList.add(curMineDetails);
         }
 

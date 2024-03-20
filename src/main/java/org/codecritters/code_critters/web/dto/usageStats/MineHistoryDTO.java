@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.dto.usageStats;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -36,14 +36,9 @@ public class MineHistoryDTO {
     private String gameId;
 
     /**
-     * Holds the x position of a mine.
+     * Holds the unique id of a mine assigned in the frontend.
      */
-    private int xPosition;
-
-    /**
-     * Holds the y position of a mine.
-     */
-    private int yPosition;
+    private String frontendId;
 
     /**
      * States whether at those coordinates a mine has been placed.
@@ -69,11 +64,10 @@ public class MineHistoryDTO {
     private List<MineOperation> mineOperationList;
 
 
-    public MineHistoryDTO(String gameId, int xPosition, int yPosition, boolean minePlaced, boolean updated, boolean deleted,
+    public MineHistoryDTO(String gameId, String frontendId, boolean minePlaced, boolean updated, boolean deleted,
                           List<MineOperation> mineOperationList) {
         this.gameId = gameId;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
+        this.frontendId = frontendId;
         this.minePlaced = minePlaced;
         this.updated = updated;
         this.deleted = deleted;
@@ -91,20 +85,20 @@ public class MineHistoryDTO {
         this.gameId = gameId;
     }
 
-    public int getxPosition() {
-        return xPosition;
+    public String getFrontendId() {
+        return frontendId;
     }
 
-    public void setxPosition(int xPosition) {
-        this.xPosition = xPosition;
+    public void setFrontendId(String frontendId) {
+        this.frontendId = frontendId;
     }
 
-    public int getyPosition() {
-        return yPosition;
+    public List<MineOperation> getMineOperationList() {
+        return mineOperationList;
     }
 
-    public void setyPosition(int yPosition) {
-        this.yPosition = yPosition;
+    public void setMineOperationList(List<MineOperation> mineOperationList) {
+        this.mineOperationList = mineOperationList;
     }
 
     public boolean isMinePlaced() {
@@ -129,13 +123,5 @@ public class MineHistoryDTO {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public List<MineOperation> getMineHistoryList() {
-        return mineOperationList;
-    }
-
-    public void setMineHistoryList(List<MineOperation> mineOperationList) {
-        this.mineOperationList = mineOperationList;
     }
 }

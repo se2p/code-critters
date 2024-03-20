@@ -580,6 +580,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.addEventListener("_firstStarReached", () => this._showStar(1));
             this.addEventListener("_mineSet", (event) => this._updateMine(event));
             this.addEventListener("_mineRemoved", (event) => this._updateMine(event));
+            this.addEventListener("_portalMoved", (event) => this._updateMine(event));
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
             this.currentLevelName = this._globalData.levelName;
@@ -605,14 +606,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             xml: mine.xml,
             deleted: mine.deleted,
             deletionDateTime: mine.deletionDateTime ? new Date(mine.deletionDateTime) : null,
-            updated: mine.updated
-        }
-
-        let mineData = [];
-        mineData.push(mineDtoObject);
-        let data = {
-            game: this._game.id,
-            mines: mineData
+            updated: mine.updated,
+            frontendId: mine.frontEndId
         }
 
         let req = this._generateRequest("/game/mine", mineDtoObject, "POST");

@@ -189,7 +189,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("http://localhost?activated=true"));
+                .andExpect(redirectedUrl("http://localhost/login?activated=true"));
         verify(userService, times(1)).activateUser(anyString());
     }
 

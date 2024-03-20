@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -61,23 +61,15 @@ public class Mine {
 
     private boolean updated;
 
+    /**
+     * Assigned on the frontend to clearly identify a mine and all its operations
+     */
+    private String frontendId;
+
     public Mine() {}
 
-    public Mine(Game game, String code, String xml) {
-        this.game = game;
-        this.code = code;
-        this.xml = xml;
-    }
-
-    public Mine(String id, Game game, String code, String xml) {
-        this.id = id;
-        this.game = game;
-        this.code = code;
-        this.xml = xml;
-    }
-
     public Mine(String id, Game game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
-                int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated) {
+                int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated, String frontendId) {
         this.id = id;
         this.game = game;
         this.code = code;
@@ -89,6 +81,7 @@ public class Mine {
         this.deleted = deleted;
         this.deletionDateTime = deletionDateTime;
         this.updated = updated;
+        this.frontendId = frontendId;
     }
 
     public String getId() {
@@ -177,5 +170,13 @@ public class Mine {
 
     public void setUpdated(boolean updated) {
         this.updated = updated;
+    }
+
+    public String getFrontendId() {
+        return frontendId;
+    }
+
+    public void setFrontendId(String frontendId) {
+        this.frontendId = frontendId;
     }
 }
