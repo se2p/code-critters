@@ -20,7 +20,6 @@
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
-import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {critterStyle} from '/style/critter-botstrap.js'
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
 
@@ -50,53 +49,20 @@ class CritterHeader extends I18n(PolymerElement) {
                     height: 0;
                 }
                 
-                @media only screen and (max-width: 660px) {
-                    #image span {
-                        font-size: 2em;
-                    }
-                    
-                    #flags, #login_container, #image {
-                        width: 33%;
-                        padding: 1%;
-                        margin: 0;
-                    }
+                .image-container {
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .large-image {
+                    display: block;
+                }
+
+                .small-image {
+                    display: none;
                 }
                 
-                @media only screen and (max-width: 760px) {
-                    img {
-                        display: none;
-                    }
-                }
-                
-                @media only screen and (max-width: 920px) and (min-width: 661px) {
-                    #image span {
-                        font-size: 2.5em;
-                    }
-                    
-                    #flags, #login_container, #image {
-                        padding: 1%;
-                        margin: 0;
-                    }
-                }
-                
-                @media only screen and (min-width: 921px) {
-                    #image span {
-                        font-size: 3em;
-                        height: 100%;
-                    }
-                }
-                
-                #image {
-                    text-align: center;
-                }
-                
-                #image span{
-                    text-decoration: none;
-                    color: black;
-                    vertical-align: middle !important;
-                }
-                
-                #image a:hover {
+                .image a:hover {
                     color: #ffa600 !important;
                     text-decoration: none;
                 }
@@ -109,24 +75,45 @@ class CritterHeader extends I18n(PolymerElement) {
                 #header {
                     background-color: white;
                     color: black;
+                    height: 100px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                @media only screen and (max-width: 820px) {
+                    .image-container {
+                        justify-content: center;
+                    }
+
+                    .large-image {
+                        display: none;
+                    }
+
+                    .small-image {
+                        display: block;
+                    }
                 }
                 
             </style>
             
             ${critterStyle}
             
-            <div class="navbar navbar-dark navbar-fixed-top" id="header">
-                <div class="col-sm-4" id="flags">
+            <div id="header">
+                <div class="col-md-2 col-sm-1" id="flags">
                     <critter-i18n></critter-i18n>
                     <critter-parameter-handler></critter-parameter-handler>
                 </div>
-                <div class="col-sm-4" id="image" class="container mx-auto" style="width: fit-content;">
-                    <a href="/">
-                        <img src="[[importPath]]images/logo.png">
-                        <span>Code Critters</span>
+                <div class="col-md-8 col-sm-10 image-container">
+                    <a href="/" class="large-image image">
+                        <img src="[[importPath]]images/largeLogo.png">
+                    </a>
+                    <a href="/" class="small-image image">
+                    <img src="[[importPath]]images/smallLogo.png">
                     </a>
                 </div>
-                <div class="col-sm-4" id="login_container">
+                <div class="col-md-2 col-sm-1" id="login_container">
                     <critter-login hidden$="[[hideLoginButtons]]"></critter-login>
                 </div>
             </div>

@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -34,29 +34,43 @@ class CritterI18n extends PolymerElement {
     static get template() {
         return html`
         <style>
-    
+
             :host {
                 --display-dialog: none;
             }
-    
-          #flag_container{
-              position: relative;
-              width: 100%;
-              height: 15px;
-          }
-          
-          #flag_container img{
-              float: left;
-              margin: 0 5px;
-              cursor: pointer;
-          }
-          
+
+            #flag_container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                position: relative;
+                width: 100%;
+            }
+
+            #flag_container img {
+                margin: 1px 1px 1px 1px;
+                cursor: pointer;
+            }
+
+            @media only screen and (max-width: 560px) {
+                #flag_container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: space-evenly;
+                    position: relative;
+                    width: 100%;
+                }
+            }
+
+
         </style>
     
     
         <div id="flag_container">
-             <img src="/translation/flags/de-DE.png" on-click="_selectLanguage" lang="de-DE">
-             <img src="/translation/flags/en-GB.png" on-click="_selectLanguage" lang="en-US">
+             <img src="/translation/flags/de-DE.png" on-click="_selectLanguage" lang="de-DE" class="col">
+             <img src="/translation/flags/en-GB.png" on-click="_selectLanguage" lang="en-US" class="col">
         </div>
         `;
     }
