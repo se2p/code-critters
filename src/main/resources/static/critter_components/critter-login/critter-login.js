@@ -50,31 +50,46 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
         return html`
             <style>
                 #username_bar{
-                    min-width: 180px;
                     display: flex;
                     flex-direction: row;
                     align-items: center;
                     justify-content: flex-end;
                 }
             
-                #username_bar *{
-                    float: left;
-                }
-            
-                .center{
-                    padding: .8rem .5rem;
-                }
-            
                 #login,
                 #logout,
                 #register,
-                iron-icon,
-                .username{
+                #showProfile,
+                iron-icon {
                     cursor: pointer;
+                    padding: .8rem .5rem;
+                }
+                
+                iron-icon {
+                    min-width: 24px;
                 }
                 
                 critter-toaster{
                     color: #212529;
+                }
+
+                @media only screen and (max-width: 900px) {
+                    #login,
+                    #logout,
+                    #register,
+                    #showProfile,
+                    iron-icon {
+                        cursor: pointer;
+                        padding: .8rem .3rem;
+                    }
+                }
+
+                @media only screen and (max-width: 560px) {
+                    #login,
+                    #register,
+                    #showProfile {
+                        display: none;
+                    }
                 }
                 
             </style>
@@ -83,11 +98,11 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
 
             
             <div id="username_bar">
-              <iron-icon id="icon" icon="social:person"></iron-icon>
-              <div id="showProfile" class="username center" hidden$="[[showLogin]]">[[username]]</div>
-              <div id="logout" class="center" hidden$="[[showLogin]]">[[__("logout")]]</div>
-              <div id="login" class="center" hidden$="[[!showLogin]]">[[__("login")]]</div>
-              <div id="register" class="center" hidden$="[[!showLogin]]">[[__("register")]]</div>
+                <iron-icon id="icon" icon="social:person" class="col"></iron-icon>
+                <div id="showProfile" class="col" hidden$="[[showLogin]]">[[username]]</div>
+                <div id="logout" class="col" hidden$="[[showLogin]]">[[__("logout")]]</div>
+                <div id="login" class="col" hidden$="[[!showLogin]]">[[__("login")]]</div>
+                <div id="register" class="col" hidden$="[[!showLogin]]">[[__("register")]]</div>
             </div>
         `;
     }
