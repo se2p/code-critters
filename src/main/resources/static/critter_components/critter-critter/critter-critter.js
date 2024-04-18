@@ -873,7 +873,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     pause() {
         if(this.animate) {
             this.animate = false;
-            this.paused = true;
+            this._paused = true;
             let computedStyle = window.getComputedStyle(this.$.critter_container);
             this.$.critter_container.style.top = computedStyle.getPropertyValue('top');
             this.$.critter_container.style.left = computedStyle.getPropertyValue('left');
@@ -882,9 +882,9 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     }
 
     resume() {
-        if (this.paused) {
+        if (this._paused) {
             this.animate = true;
-            this.paused = false;
+            this._paused = false;
             this.$.critter_container.style.transitionDuration = critterTransitionDuration;
 
             if (!this.position || !this.position.x || !this.position.y) {
