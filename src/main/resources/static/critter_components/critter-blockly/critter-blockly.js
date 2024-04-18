@@ -23,6 +23,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import {afterNextRender} from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+import {blocklyVariableTranslations} from "../constants.js";
 
 
 /*
@@ -318,6 +319,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     async _onLanguageChanged() {
         let langTag = this.language.substr(0, 2);
         if (this.$.blockly_frame.contentWindow.changeLanguage) {
+            this._globalData.xml = this.translateVariableNames(this._globalData.xml, langTag);
             await this.$.blockly_frame.contentWindow.changeLanguage(langTag, this.cut);
             this._codeChanged();
         }
@@ -328,6 +330,22 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             const { curBlockType, comparedWith } = event?.detail
             window.dispatchEvent(new CustomEvent('_showValidationWarning', {detail: { curBlockType, comparedWith }, bubbles: true, composed: true}));
         }
+    }
+
+    /**
+     * Extract variable names of a level XML (for now: "count") and replace with translation in current language.
+     */
+    translateVariableNames(xmlString, language) {
+        for (const originalName in blocklyVariableTranslations) {
+            if (blocklyVariableTranslations.hasOwnProperty(originalName)) {
+                const translatedName = blocklyVariableTranslations[originalName][language];
+                if (translatedName) {
+                    // replace all occurrences of variable names with translated names in xml string
+                    xmlString = xmlString.split(`<field name="NAME">${originalName}</field>`).join(`<field name="NAME">${translatedName}</field>`);
+                }
+            }
+        }
+        return xmlString;
     }
 }
 

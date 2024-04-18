@@ -91,3 +91,13 @@ export const warningMessages = {
         number: "invalid_compare_num_bool"
     }
 };
+
+// Names of fix variable blocks in CUTs (blocks are defined in the level XMLs)
+export const blocklyVariableTranslations = {
+    'count' : {
+        'de': 'Zähler',
+    },
+    'Zähler' : {
+        'en': 'count',
+    },
+};
