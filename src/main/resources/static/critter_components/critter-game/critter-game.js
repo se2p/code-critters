@@ -570,7 +570,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.addEventListener("hoverOver", (event) => this._handleHoverField(event));
             this.addEventListener("fieldClicked", (event) => this._onFieldClicked(event));
 
-            this.addEventListener("_levelFinished", () => this._onLevelFinished());
+            this.addEventListener("_levelFinished", async () => await this._onLevelFinished());
             this.addEventListener("_critterKilled", (event) => this._onCritterKilled(event));
             this.addEventListener("_critterFinished", (event) => this._onCritterFinished(event));
             this.addEventListener("_critterNumberChanged", (event) => this._onCritterNumberChanged(event));
@@ -989,7 +989,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         }
     }
 
-    _onLevelFinished() {
+    async _onLevelFinished() {
         // this.score -= 25 * (this._globalData.countMines());
         // this.score = (this.score < 0 ? 0 : this.score);
         this._gameTime += (Date.now() - this._startGameTime);
@@ -1002,7 +1002,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.score = -25 * (numMines - freeMines); //TODO free mines
         }
         this.score = (this._finishedHumans + this._killedMutants) * 50 + this._calculateTimeBonus();
-        this.showScore(numMines);
+        await this.showScore(numMines);
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
