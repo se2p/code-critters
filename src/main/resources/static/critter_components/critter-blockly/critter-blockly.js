@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -148,6 +148,8 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             rootNode.addEventListener("_testCodeChanged", this._codeChanged.bind(this));
             rootNode.removeEventListener("_xmlCodeChanged", this._codeChanged.bind(this));
         }
+
+        this.$.blockly_frame.contentWindow.addEventListener("_invalidComparison", (event) => this._dispatchInvalidBlocklyAssertWarning(event));
         this.$.blockly_frame.contentWindow.addEventListener("_blocklyReady", () => this._updateIFrame());
         rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
     }
@@ -174,23 +176,23 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             return;
         }
         if (((window.Core.Generator || !this.cut ))) {
-            this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox);
+            this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox, this.cut);
         } else {
-            this.$.blockly_frame.contentWindow.setToolbox("");
+            this.$.blockly_frame.contentWindow.setToolbox("", this.cut);
         }
     }
 
     /** updates the trashcan symbol of the IFrame **/
     _trashcanChanged() {
         if (this.$.blockly_frame.contentWindow.setTrashcan) {
-            this.$.blockly_frame.contentWindow.setTrashcan(this.trashcan);
+            this.$.blockly_frame.contentWindow.setTrashcan(this.trashcan, this.cut);
         }
     }
 
     /** updates the controls of the IFrame **/
     _controlsChanged() {
         if (this.$.blockly_frame.contentWindow.setControls) {
-            this.$.blockly_frame.contentWindow.setControls(this.controls);
+            this.$.blockly_frame.contentWindow.setControls(this.controls, this.cut);
         }
     }
 
@@ -265,7 +267,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     /** sets the blockly code**/
     setCode(code){
         if (this.$.blockly_frame.contentWindow.setCode) {
-            this.$.blockly_frame.contentWindow.setCode(code);
+            this.$.blockly_frame.contentWindow.setCode(code, this.cut);
         }
     }
 
@@ -273,7 +275,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     /** disables changing the blockly code **/
     _readOnlyChanged() {
         if (this.$.blockly_frame.contentWindow.setReadOnly) {
-            this.$.blockly_frame.contentWindow.setReadOnly(this.readOnly);
+            this.$.blockly_frame.contentWindow.setReadOnly(this.readOnly, this.cut);
         }
     }
 
@@ -316,8 +318,15 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     async _onLanguageChanged() {
         let langTag = this.language.substr(0, 2);
         if (this.$.blockly_frame.contentWindow.changeLanguage) {
-            await this.$.blockly_frame.contentWindow.changeLanguage(langTag);
+            await this.$.blockly_frame.contentWindow.changeLanguage(langTag, this.cut);
             this._codeChanged();
+        }
+    }
+
+    _dispatchInvalidBlocklyAssertWarning(event) {
+        if (event.detail && event.detail.curBlockType && event.detail.comparedWith) {
+            const { curBlockType, comparedWith } = event?.detail
+            window.dispatchEvent(new CustomEvent('_showValidationWarning', {detail: { curBlockType, comparedWith }, bubbles: true, composed: true}));
         }
     }
 }

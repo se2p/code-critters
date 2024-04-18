@@ -28,3 +28,66 @@ export const speedyCritterInterval = 1000;
 export const normalCritterInterval = 3000;
 
 export const critterTransitionDuration = "3s";
+
+// Object to organise warnings about invalid data type comparisons when building portals
+export const warningMessages = {
+    shirtcolor_prop: {
+        size_prop: "invalid_compare_size_shirt",
+        number: "invalid_compare_num_shirt",
+        math_arithmetic: "invalid_compare_num_shirt",
+        math_number_property: "invalid_compare_bool_shirt",
+        hair_picker: "invalid_compare_hair_shirt",
+        haircolor_prop: "invalid_compare_hair_shirt"
+    },
+    haircolor_prop: {
+        size_prop: "invalid_compare_size_hair",
+        number: "invalid_compare_num_hair",
+        math_arithmetic: "invalid_compare_num_hair",
+        math_number_property: "invalid_compare_bool_hair",
+        shirt_picker: "invalid_compare_hair_shirt",
+        shirtcolor_prop: "invalid_compare_hair_shirt"
+    },
+    size_prop: {
+        hair_picker: "invalid_compare_size_hair",
+        shirt_picker: "invalid_compare_size_shirt",
+        math_number_property: "invalid_compare_size_bool",
+        shirtcolor_prop: "invalid_compare_size_shirt",
+        haircolor_prop: "invalid_compare_size_hair"
+    },
+    shirt_picker: {
+        number: "invalid_compare_num_shirt",
+        size_prop: "invalid_compare_size_shirt",
+        math_number_property: "invalid_compare_bool_shirt",
+        hair_picker: "invalid_compare_hair_shirt",
+        haircolor_prop: "invalid_compare_hair_shirt"
+    },
+    hair_picker: {
+        number: "invalid_compare_num_hair",
+        math_number_property: "invalid_compare_bool_hair",
+        size_prop: "invalid_compare_size_hair",
+        shirt_picker: "invalid_compare_hair_shirt",
+        shirtcolor_prop: "invalid_compare_hair_shirt"
+    },
+    math_number: {
+        shirt_picker: "invalid_compare_num_shirt",
+        hair_picker: "invalid_compare_num_hair",
+        math_number_property: "invalid_compare_num_bool",
+        shirtcolor_prop: "invalid_compare_num_shirt",
+        haircolor_prop: "invalid_compare_num_hair"
+    },
+    math_arithmetic: {
+        shirt_picker: "invalid_compare_num_shirt",
+        hair_picker: "invalid_compare_num_hair",
+        math_number_property: "invalid_compare_num_bool",
+        shirtcolor_prop: "invalid_compare_num_shirt",
+        haircolor_prop: "invalid_compare_num_hair"
+    },
+    math_number_property: {
+        shirt_picker: "invalid_compare_bool_shirt",
+        hair_picker: "invalid_compare_bool_hair",
+        shirtcolor_prop: "invalid_compare_bool_shirt",
+        haircolor_prop: "invalid_compare_bool_hair",
+        size_prop: "invalid_compare_size_bool",
+        number: "invalid_compare_num_bool"
+    }
+};

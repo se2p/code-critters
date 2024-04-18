@@ -137,5 +137,16 @@
   "incorrect_secret": "Der Aktivierungscode ist falsch.",
   "invalid_drop_field": "Du kannst ein Portal nur auf Wege setzen, auf denen die Critter gehen können.",
   "portal_move_error": "Das Portal kann nicht verschoben werden.",
-  "drop_on_portal": "Du kannst ein Portal nicht auf bereits vorhandenes Portal setzen."
+  "drop_on_portal": "Du kannst ein Portal nicht auf bereits vorhandenes Portal setzen.",
+  "invalid_compare_num_shirt": "Achtung: Hier wird die Shirtfarbe mit einer Zahl verglichen!",
+  "invalid_compare_num_hair": "Achtung: Hier wird die Haarfarbe mit einer Zahl verglichen!",
+  "invalid_compare_size_color": "Achtung: Hier wird die Größe (Zahl) mit einer Farbe verglichen!",
+  "invalid_compare_size_shirt": "Achtung: Hier wird die Shirtfarbe mit der Größe (Zahl) verglichen!",
+  "invalid_compare_size_hair": "Achtung: Hier wird die Haarfarbe mit der Größe (Zahl) verglichen!",
+  "invalid_compare_bool_shirt": "Achtung: Hier wird die Shirtfarbe mit einem Wahrheitswert verglichen!",
+  "invalid_compare_bool_hair": "Achtung: Hier wird die Haarfarbe mit einem Wahrheitswert verglichen!",
+  "invalid_compare_bool_color": "Achtung: Hier wird eine Farbe mit einem Wahrheitswert verglichen!",
+  "invalid_compare_size_bool": "Achtung: Hier wird die Größe (Zahl) mit einem Wahrheitswert verglichen!",
+  "invalid_compare_num_bool": "Achtung: Hier wird eine Zahl mit einem Wahrheitswert verglichen!",
+  "invalid_compare_hair_shirt": "Achtung: Hier wird die Shirtfarbe mit der Haarfarbe verglichen!"
 }

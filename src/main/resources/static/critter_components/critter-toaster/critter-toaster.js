@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -103,6 +103,7 @@ class CritterToaster extends I18n(PolymerElement) {
             <div id="toaster">
                 <div id="icon">
                     <iron-icon id="error" icon="icons:cancel"></iron-icon>
+                    <iron-icon id="warning" icon="icons:report"></iron-icon>
                     <iron-icon id="info" icon="icons:error"></iron-icon>
                     <iron-icon id="success" icon="icons:check-circle"></iron-icon>
                 </div>
@@ -137,12 +138,20 @@ class CritterToaster extends I18n(PolymerElement) {
         if (this.type === 'static.error') {
             this.$.success.style.display = "none";
             this.$.error.style.display = "block";
+            this.$.warning.style.display = "none";
             this.$.info.style.display = "none";
         } else if (this.type === 'success') {
             this.$.success.style.display = "block";
             this.$.error.style.display = "none";
             this.$.info.style.display = "none";
+            this.$.warning.style.display = "none";
+        } else if (this.type === 'warning') {
+            this.$.success.style.display = "none";
+            this.$.error.style.display = "none";
+            this.$.info.style.display = "none";
+            this.$.warning.style.display = "block";
         } else {
+            this.$.warning.style.display = "none";
             this.$.success.style.display = "none";
             this.$.error.style.display = "none";
             this.$.info.style.display = "block";

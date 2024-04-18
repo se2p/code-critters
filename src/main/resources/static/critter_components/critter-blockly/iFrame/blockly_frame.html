@@ -10,12 +10,12 @@
   it under the terms of the GNU General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -82,7 +82,8 @@
     blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
   };
 
-  var renderBlockly = function(){
+  // isCut to decide whether to attach validity check listener
+  var renderBlockly = function(isCut = true){
     this.blocklyDiv.innerHTML = '';
       this.workspace = Blockly.inject('blocklyDiv',
               {toolbox: this.showToolbox ? this.toolbox : null,
@@ -117,6 +118,10 @@
       Blockly.Xml.domToWorkspace(xml, this.workspace);
       this.workspace.scrollCenter();
     }
+
+    if (!isCut) { // add validity check listener only to tests
+      this.workspace.addChangeListener(this._onWorkspaceChange);
+    }
   };
 
   renderBlockly();
@@ -126,33 +131,33 @@
   window.dispatchEvent(new CustomEvent("_blocklyReady", {detail: {}, bubbles: true, composed: true}));
   ready = true;
 
-  var setToolbox = function(newToolbox){
+  var setToolbox = function(newToolbox, isCut = false){
     toolbox.innerHTML = newToolbox;
     if(newToolbox){
       showToolbox = true;
     }
-    renderBlockly();
+    renderBlockly(isCut);
   };
 
 
-  var setControls = function(controls){
+  var setControls = function(controls, isCut = false){
     showControls = controls;
-    renderBlockly();
+    renderBlockly(isCut);
   };
 
-  var setTrashcan = function(trashcan){
+  var setTrashcan = function(trashcan, isCut = false){
     showTrashcan = trashcan;
-    renderBlockly();
+    renderBlockly(isCut);
   };
 
-  var setCode = function(newCode){
+  var setCode = function(newCode, isCut = false){
     blocklyCode = newCode;
-    renderBlockly();
+    renderBlockly(isCut);
   };
 
-  var setReadOnly = function(disabled){
+  var setReadOnly = function(disabled, isCut = false){
       readOnly = disabled;
-      renderBlockly();
+      renderBlockly(isCut);
   };
 
   var getCode = function() {
@@ -170,7 +175,7 @@
       return  workspace.getBlockById(id);
   };
 
-  var changeLanguage = async function(langTag) {
+  var changeLanguage = async function(langTag, isCut = false) {
     document.getElementById("lang_script").remove();
     //document.getElementById("customBlocks").remove();
     var scriptLang = document.createElement("script");
@@ -201,9 +206,286 @@
 
     await Promise.all(promises);
     workspace.dispose();
-    renderBlockly();
-
+    renderBlockly(isCut);
   };
+
+
+  /**
+   * Checks validity of an assertion. It takes the current block as input.
+   * @param currentBlock block (child of assert-block) that is moved/changed right now
+   */
+  const _checkAssertValidity = function (currentBlock) {
+    const parentBlock = currentBlock.parentBlock_;
+
+    if (parentBlock && parentBlock.childBlocks_ && parentBlock.childBlocks_.length === 2) { // assert stmt is complete
+      const childBlocks = parentBlock.childBlocks_;
+      let secondOperandBlock;
+      if (childBlocks[0].id === currentBlock.id) {
+        secondOperandBlock = childBlocks[1];
+      } else {
+        secondOperandBlock = childBlocks[0];
+      }
+
+      const operandsCode = getAssertOperandsJsCode();
+
+      let firstOperand = "";
+      let secondOperand = "";
+      if (operandsCode.length === 2) {
+        firstOperand = operandsCode[0];
+        secondOperand = operandsCode[1]
+      }
+
+      // Initialize the Blockly JavaScript code generator to safely call Javascript
+      Blockly.JavaScript.init(workspace);
+      const jsCodeOfCurrentBlock = Blockly.JavaScript.blockToCode(currentBlock) ?
+              removeBlocklyOrderFromBlockCode(Blockly.JavaScript.blockToCode(currentBlock).toString()) : "";
+
+      // Find out which jsCode corresponds to which operand block
+      let currentOperand;
+      let otherOperand;
+      if (firstOperand.includes(jsCodeOfCurrentBlock)) {
+        currentOperand = firstOperand;
+        otherOperand = secondOperand;
+      } else if (secondOperand.includes(jsCodeOfCurrentBlock)) {
+        currentOperand = secondOperand;
+        otherOperand = firstOperand;
+      } else { // not building an assertion with the current block
+        return;
+      }
+      checkValidityOfOperands(currentOperand, otherOperand, currentBlock, secondOperandBlock);
+    } else {
+      // do nothing, assert stmt is not complete yet
+    }
+  }
+
+  /**
+   * Highlights the affected blocks temporarily. They blink in red for two times.
+   * @param firstOperandBlock
+   * @param secondOperandBlock
+   */
+  const highlightAssertBlocks = function (firstOperandBlock, secondOperandBlock) {
+    // Save the original colors to revert back later
+    firstOperandBlock.originalColour = firstOperandBlock.originalColour ? firstOperandBlock.originalColour : firstOperandBlock.getColour();
+    secondOperandBlock.originalColour = secondOperandBlock.originalColour ? secondOperandBlock.originalColour : secondOperandBlock.getColour();
+
+    let blinkCount = 3; // Number of times to blink
+    let blinkToggle = true;
+
+    firstOperandBlock.setColour('#ff0000');
+    secondOperandBlock.setColour('#ff0000');
+
+    const blinkInterval = setInterval(() => {
+      // Toggle between original color and red
+      if (blinkToggle) {
+        firstOperandBlock.setColour(firstOperandBlock.originalColour);
+        secondOperandBlock.setColour(secondOperandBlock.originalColour);
+      } else {
+        firstOperandBlock.setColour('#ff0000');
+        secondOperandBlock.setColour('#ff0000');
+      }
+      blinkToggle = !blinkToggle;
+      workspace.render();
+      blinkCount--;
+
+      if (blinkCount === 0) {
+        // Clear interval after blinking is done and revert color of blocks to original
+        clearInterval(blinkInterval);
+        firstOperandBlock.setColour(firstOperandBlock.originalColour);
+        secondOperandBlock.setColour(secondOperandBlock.originalColour);
+        workspace.render();
+      }
+    }, 500);
+  };
+
+  /**
+   * Returns an array of max length of 2 containing the js code of the assert operands
+   */
+  const getAssertOperandsJsCode = function () {
+    const jsCode = getCode();
+    const jsString = jsCode.toString();
+    const regex = /if\s*\((.*?)\s*!==\s*(.*?)\)\s*{/g; // look only at code inside assert (i.e. the two operands of the if-condition)
+
+    let matches = [];
+    let match;
+    while ((match = regex.exec(jsString)) !== null) {
+      matches.push(match[1], match[2]);
+    }
+    return matches;
+  }
+
+  /**
+   * Checks validity of asserts. Checks the two inputs of the assert for matching types
+   * and throws events if comparison is invalid
+   * @param currentOperandCode js code of the currently moved block in the assert
+   * @param otherOperandCode js code of the other assert operand
+   * @param currentBlock current block
+   * @param otherOperandBlock other assert operand block
+   */
+  const checkValidityOfOperands =  function (currentOperandCode, otherOperandCode, currentBlock, otherOperandBlock) {
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+
+    if (currentOperandCode.match(/\b(color)\b/)) { // is critter.shirtColor block
+      validityCheckWithColor(otherOperandCode, "shirtcolor_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\b(hair)\b/)) { // is critter.haircolor block
+      validityCheckWithColor(otherOperandCode, "haircolor_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\b(size)\b/)) { // is critter.size block
+      validityCheckWithNumber(otherOperandCode, "size_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(allColorsRegex)) { // is hair or shirt color picker block
+      validityCheckWithColor(otherOperandCode, currentBlock.type, otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\d+/)) {
+      if (currentOperandCode.match(allNumPropertiesRegex)) { // is number props block, e.g. '3 is even'
+        validityCheckWithBools(otherOperandCode, otherOperandBlock.type, currentBlock, otherOperandBlock)
+      } else { // is simple number block
+        validityCheckWithNumber(otherOperandCode, currentBlock.type, otherOperandBlock.type, currentBlock, otherOperandBlock);
+      }
+    }
+  }
+
+  /**
+   * Throws event if current block (boolean type) causes invalid assert comparision
+   * @param otherOperand js code of the other assert operand
+   * @param otherOperandBlockType block type of the other operand
+   * @param currentBlock current block
+   * @param otherOperandBlock other assert operand block
+   */
+  const validityCheckWithBools = function (otherOperand, otherOperandBlockType, currentBlock, otherOperandBlock) {
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+
+    if (otherOperand.match(/\b(color)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(hair)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(allColorsRegex)) {
+      if (otherOperandBlockType === "hair_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "hair_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperandBlockType === "shirt_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "shirt_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    }
+
+    // if compared to numbers (not inside a num_property boolean)
+    if (!otherOperand.match(allNumPropertiesRegex)) {
+      if (otherOperand.match(/\d+/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "number" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperand.match(/\b(size)\b/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "size_prop"}, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    }
+  }
+
+  /**
+   * Throws event if current block (number type, i.e. either number of size) causes invalid assert comparision
+   * @param otherOperand js code of the other assert operand
+   * @param curBlockType current block type
+   * @param otherOperandBlockType block type of the other operand
+   * @param currentBlock current block
+   * @param otherOperandBlock other assert operand block
+   */
+  const validityCheckWithNumber = function (otherOperand, curBlockType, otherOperandBlockType, currentBlock, otherOperandBlock) {
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+
+    if (otherOperand.match(/\b(color)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(hair)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(allColorsRegex)) {
+      if (otherOperandBlockType === "hair_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "hair_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperandBlockType === "shirt_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "shirt_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    } else if (otherOperand.match(allNumPropertiesRegex)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "math_number_property" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    }
+  }
+
+  /**
+   * Throws event if current block (hair or shirt color type) causes invalid assert comparison
+   * @param otherOperand js code of the other assert operand
+   * @param curBlockType block type of the current block
+   * @param otherOperandBlockType block type of the other operand
+   * @param currentBlock current block
+   * @param otherOperandBlock other assert operand block
+   */
+  const validityCheckWithColor = function (otherOperand, curBlockType, otherOperandBlockType, currentBlock, otherOperandBlock) {
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
+
+    if (otherOperand.match(/\b(size)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "size_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\d+/)) {
+      if (otherOperand.match(allNumPropertiesRegex)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "math_number_property" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "number" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    } else if (curBlockType === "haircolor_prop" || curBlockType === "hair_picker") {
+      if (otherOperand.match(allColorsRegex) && otherOperandBlockType === "shirt_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "shirt_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperand.match(/\b(color)\b/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    } else if (curBlockType === "shirtcolor_prop" || curBlockType === "shirt_picker"){
+      if (otherOperand.match(allColorsRegex) && otherOperandBlockType === "hair_picker") {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "hair_picker" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperand.match(/\b(hair)\b/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      }
+    }
+  }
+
+
+  // Helper method to remove 'BlocklyOrder' number from the js string.
+  // E.g. '"red",99' is returned as '"red"'
+  const removeBlocklyOrderFromBlockCode = function (str) {
+    const lastIndex = str.lastIndexOf(',');
+    if (lastIndex !== -1) {
+      return str.substring(0, lastIndex);
+    } else {
+      return str;
+    }
+  }
+
+  /**
+   * Checks if currently an assertion test is built and compares its input types
+   * for validity.
+   * @param event Blockly event on block moves or changes
+   */
+  var _onWorkspaceChange = function (event) {
+    if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
+      let parentBlock;
+      const currentBlockId = event.blockId;
+      const currentBlock = workspace.getBlockById(currentBlockId);
+      if (currentBlock) {
+        parentBlock = currentBlock.parentBlock_;
+      }
+      if (parentBlock && parentBlock.type === "assert") {
+        _checkAssertValidity(currentBlock)
+      }
+    }
+  }
+
 
 </script>
 

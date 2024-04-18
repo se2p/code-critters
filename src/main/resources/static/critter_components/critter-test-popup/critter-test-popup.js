@@ -31,7 +31,7 @@ import '../critter-blockly/critter-blockly.js';
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 import '/lib/@polymer/iron-iconset-svg/iron-iconset-svg.js';
-import {leftEmptyAssertBlockly, rightEmptyAssertBlockly} from "../constants.js";
+import {leftEmptyAssertBlockly, rightEmptyAssertBlockly, warningMessages} from "../constants.js";
 
 /*
 # critter-popup
@@ -290,8 +290,26 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
             this.$.paste_button.addEventListener("click", () => this._pasteCode());
             this.$.close_without_save.addEventListener("click", () => this._popupClose());
             this.$.first_save.addEventListener("click", () => this._saveMine());
+            window.addEventListener("_showValidationWarning", (event) => this._showWarning(event))
         });
     }
+
+
+    /**
+     * Shows a warning if the test contains an invalid comparison of different data types,
+     * e.g. shirt color and a number
+     * @param event holds the two block types being compared
+     */
+    _showWarning(event) {
+        if (event.detail.curBlockType && event.detail.comparedWith) {
+            const { curBlockType, comparedWith } = event.detail;
+            const warningMessage = warningMessages[curBlockType]?.[comparedWith];
+            if (warningMessage) {
+                this.showWarningToast(warningMessage);
+            }
+        }
+    }
+
 
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
