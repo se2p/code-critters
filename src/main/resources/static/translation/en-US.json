@@ -137,5 +137,16 @@
   "incorrect_secret": "Wrong activation code.",
   "invalid_drop_field": "You can place a portal only along paths the critters can walk on.",
   "portal_move_error": "The portal can not be moved.",
-  "drop_on_portal": "You cannot place a portal onto another portal."
+  "drop_on_portal": "You cannot place a portal onto another portal.",
+  "invalid_compare_num_shirt": "Attention: The shirt color and a number are compared!",
+  "invalid_compare_num_hair": "Attention: A hair color and a number are compared!",
+  "invalid_compare_size_color": "Attention: The size (number) and a color are compared!",
+  "invalid_compare_size_shirt": "Attention: The shirt color and the size (number) are compared!",
+  "invalid_compare_size_hair": "Attention: The hair color and the size (number) are compared!",
+  "invalid_compare_bool_shirt": "Attention: The shirt color and a true/false value are compared!",
+  "invalid_compare_bool_hair": "Attention: A hair color and a true/false value are compared!",
+  "invalid_compare_bool_color": "Attention: A color and a true/false value are compared!",
+  "invalid_compare_size_bool": "Attention: The size (number) and a true/false value are compared!",
+  "invalid_compare_num_bool": "Attention: A number and a true/false value are compared!",
+  "invalid_compare_hair_shirt": "Attention: A shirt color and a hair color are compared!"
 }
