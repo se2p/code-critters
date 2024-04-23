@@ -267,7 +267,7 @@ class CritterGameboardHoverField extends PolymerElement {
                     background-color: rgba(128, 0, 0, 0.65);
                  }
             </style>
-            <div id="field" class$="[[state]] [[element]]" on-drop="_dropHandler" on-dragover="_dragOverHandler" on-dragend="_dragEndHandler"></div>
+            <div id="field" style$="[[getHoverStyle()]]" class$="[[state]] [[element]]" on-drop="_dropHandler" on-dragover="_dragOverHandler" on-dragend="_dragEndHandler"></div>
         `;
     }
 
@@ -292,6 +292,10 @@ class CritterGameboardHoverField extends PolymerElement {
 
             element: {
                 type: String
+            },
+
+            isClickable: {
+                type: Boolean
             }
         };
     }
@@ -310,15 +314,23 @@ class CritterGameboardHoverField extends PolymerElement {
                 }));
             });
 
-            this.addEventListener("click", () => {
-                this.dispatchEvent(new CustomEvent('fieldClicked', {
-                    detail: {x: this.x, y: this.y},
-                    bubbles: true,
-                    composed: true
-                }));
-            });
-
+            if (this.isClickable) {
+                this.addEventListener("click", () => {
+                    this.dispatchEvent(new CustomEvent('fieldClicked', {
+                        detail: {x: this.x, y: this.y},
+                        bubbles: true,
+                        composed: true
+                    }));
+                });
+            }
         });
+    }
+
+    getHoverStyle() {
+        if (this.isClickable) {
+            return "cursor: pointer;";
+        }
+        return "cursor: default;";
     }
 
     _dragEndHandler(event) {
