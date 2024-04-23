@@ -25,6 +25,7 @@ import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import './critter-board-field.js';
 import './critter-board-hover-field.js';
 import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+import {_isFieldWithBuilding, _isWalkableTerrain} from "../common.js";
 
 /*
 # critter-gameboard
@@ -339,7 +340,7 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
             let errorMessage;
 
             // check that drop-field is a valid terrain; and that it is not spawn or tower point
-            if (!this._isWalkableTerrain(newPosition) || this._isFieldWithBuilding(newPosition)) {
+            if (!_isWalkableTerrain(newPosition, this._globalData.level) || _isFieldWithBuilding(newPosition, this._globalData.spawn, this._globalData.tower)) {
                 isAllowed = false;
                 errorMessage = "invalid_drop_field";
             }
@@ -396,7 +397,6 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
      * Called on start of dragging a portal/mine
      */
     _dragStartHandler(event) {
-        // add cursor pointer things to spawn and tower?
         this.dragStartTime = Date.now();
         const target = event.target;
         event.dataTransfer.setData('text/plain', target.id);
@@ -468,17 +468,11 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
                 composed: true
             }));
         });
+        hoverField.isClickable = true;
 
-        /*if (this._globalData.spawn && this._globalData.tower && hoverField.x === this._globalData.spawn.x
-            && hoverField.y === this._globalData.spawn.y
-            || hoverField.x === this._globalData.tower.x && hoverField.y === this._globalData.tower.y) {
-            console.log("WE EVER GOING IN HERE???")
-            let fieldElement = hoverField.querySelector('#field');
-            if (fieldElement) {
-                console.log("WE EVER GOING IN HERE for CONDITION!!!!!!!!!!???")
-                fieldElement.style.cursor = "default";
-            }
-        }*/
+        if (_isFieldWithBuilding(hoverField, this._globalData.spawn, this._globalData.tower) || !_isWalkableTerrain(hoverField, this._globalData.level)) {
+            hoverField.isClickable = false;
+        }
 
         hoverField.addEventListener("fieldClicked", (event) => this.addElement(event.detail));
 
@@ -494,13 +488,6 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
         this._computeClass(i, j).forEach(elem => {
             field.classList.add(elem);
         });
-
-        /*if (this._globalData.spawn && this._globalData.tower && field.x === this._globalData.spawn.x
-            && field.y === this._globalData.spawn.y
-            || field.x === this._globalData.tower.x && field.y === this._globalData.tower.y) {
-            console.log("WE EVER GOING IN HERE???")
-            field.style.cursor = "default";
-        }*/
 
         gameboard.append(field);
     }
@@ -1347,36 +1334,6 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
                 resolve(blob);
             }, "image/jpeg")
         });
-    }
-
-    /**
-     * Returns true if the given board position is the spawn or tower point.
-     *
-     * @param newPosition contains x and y
-     * @returns {boolean}
-     */
-    _isFieldWithBuilding(newPosition) {
-        return this._globalData.spawn && this._globalData.tower && (newPosition.x === this._globalData.spawn.x
-            && newPosition.y === this._globalData.spawn.y || newPosition.x === this._globalData.tower.x
-            && newPosition.y === this._globalData.tower.y)
-    }
-
-    /**
-     * Returns true if the given board position is a terrain the critters can walk on.
-     *
-     * @param newPosition contains x and y
-     * @returns {boolean}
-     */
-    _isWalkableTerrain(newPosition) {
-        if (this._globalData.level && this._globalData.level[newPosition.y]
-            && this._globalData.level[newPosition.y][newPosition.x]) {
-            let fieldClass = this._globalData.level[newPosition.y][newPosition.x];
-            return (fieldClass === "grass" || fieldClass === "dirt" ||
-                (fieldClass === "water" && this.canWalkOnWater) ||
-                fieldClass === "ice" || (fieldClass === "lava" && this.canWalkOnLava))
-        } else {
-            return false;
-        }
     }
 }
 
