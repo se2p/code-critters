@@ -43,29 +43,29 @@ class CritterToaster extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
-    
+
                 #toaster {
                     border: 1px solid grey;
                     position: fixed;
-                    top: 50%;
+                    top: 15%;
                     left: 50%;
                     margin: auto;
                     -ms-transform: translateX(-50%) translateY(-50%);
-                    -webkit-transform: translate(-50%,-50%);
-                    transform: translate(-50%,-50%);
+                    -webkit-transform: translate(-50%, -50%);
+                    transform: translate(-50%, -50%);
                     transition: 500ms;
                     z-index: 9999;
                 }
-    
+
                 #toaster * {
                     float: left;
                 }
-    
+
                 iron-icon {
                     height: 30px;
                     width: 30px;
                 }
-    
+
                 #icon {
                     height: 40px;
                     width: 40px;
@@ -75,7 +75,7 @@ class CritterToaster extends I18n(PolymerElement) {
                     display: flex;
                     background-color: white;
                 }
-    
+
                 #msg {
                     height: 30px;
                     cursor: default;
@@ -86,19 +86,23 @@ class CritterToaster extends I18n(PolymerElement) {
                     padding: 5px 10px;
                     background-color: ghostwhite;
                 }
-    
+
                 #info {
                     color: #039BE5
                 }
-    
+
                 #error {
                     color: #e5424a
                 }
-    
+
                 #success {
                     color: #7ae561
                 }
-    
+
+                #warning {
+                    color: #FFDE37FF
+                }
+
             </style>
             <div id="toaster">
                 <div id="icon">
