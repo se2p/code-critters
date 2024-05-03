@@ -436,7 +436,6 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         let hasBeenChanged = this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y]
             && code.toString() !== this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y].js.toString();
         return justCreated || hasBeenChanged;
-        return false;
     }
 
     _showHelp() {

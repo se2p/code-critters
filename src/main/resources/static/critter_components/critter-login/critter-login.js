@@ -141,13 +141,20 @@ class CritterLogin extends Toaster(I18n(PolymerElement)) {
         this._globalData = window.Core.CritterLevelData;
 
         afterNextRender(this, function () {
-            this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
+            window.addEventListener("_userChanged", this._userChanged.bind(this));
             this.$.login.addEventListener("click", this._goToLogin.bind(this));
             this.$.icon.addEventListener("click", this._onIconClick.bind(this));
             this.$.register.addEventListener("click", this._goToRegister.bind(this));
             this.$.logout.addEventListener("click", this._logout.bind(this));
             this.$.showProfile.addEventListener("click", this._showProfile);
+
+            this._userChanged();
         });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("_userChanged", this._userChanged.bind(this));
     }
 
     _userChanged(){

@@ -174,6 +174,9 @@ class CritterDataStore extends PolymerElement {
         super.connectedCallback();
         window.Core.CritterLevelData = this;
         this.cookie = this.getCookie();
+        if(this.cookie) {
+            this.getMe();
+        }
     }
 
     _userChanged(){
@@ -284,16 +287,8 @@ class CritterDataStore extends PolymerElement {
 
     getCookie() {
         let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf('id') == 0) {
-                this.getMe();
-                return c.substring(3, c.length);
-            }
+        if(decodedCookie){
+            return decodedCookie
         }
         return this.setNewCookie();
     }
@@ -310,7 +305,7 @@ class CritterDataStore extends PolymerElement {
         return ('0' + dec.toString(16)).substr(-2)
     }
 
-    getMe() {
+    getMe(attempts = 3, delay = 500) {
         let req = document.createElement('iron-ajax');
         req.url = "/users/me";
         req.method = "GET";
@@ -325,7 +320,11 @@ class CritterDataStore extends PolymerElement {
         });
 
         req.addEventListener('static.error', () => {
-            this.user = undefined;
+            if (attempts <= 1) {
+                this.user = undefined;
+            } else {
+                this.getMe(attempts--, delay);
+            }
         });
 
         let genRequest = req.generateRequest();
