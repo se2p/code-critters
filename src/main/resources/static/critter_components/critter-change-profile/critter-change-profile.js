@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -135,12 +135,21 @@ class CritterChangeProfile extends I18n(PolymerElement) {
         afterNextRender(this, function () {
             this.$.form.onSuccess = this._onSuccess;
             this.$.form.onError = this._onError;
-            this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
+            window.addEventListener("_userChanged", this._userChanged.bind(this));
             this.$.preDeleteButton.addEventListener("click", this.openDeleteDialog.bind(this));
             this.$.breakDeleteButton.addEventListener("click", this.closeDeleteDialog.bind(this));
             this.$.deleteButton.addEventListener("click", this.deleteAccount.bind(this));
             this.$.changePasswordButton.addEventListener("click", this.showChangePassword.bind(this));
+
+            if (this._globalData.user) {
+                this.user = this._globalData.user;
+            }
         });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("_userChanged", this._userChanged.bind(this));
     }
 
     _userChanged(){

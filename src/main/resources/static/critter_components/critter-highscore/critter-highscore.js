@@ -141,12 +141,13 @@ class CritterHighscore extends I18n(PolymerElement) {
         window.addEventListener("_refresh", this._callUserChanged.bind(this));
 
         afterNextRender(this, function () {
-            this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
+            window.addEventListener("_userChanged", this._userChanged.bind(this));
         });
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        window.removeEventListener("_userChanged", this._userChanged.bind(this));
         window.removeEventListener("_refresh", this._callUserChanged.bind(this));
     }
 

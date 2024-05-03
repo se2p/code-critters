@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -131,7 +131,7 @@ class CritterRegisterPage extends Toaster(I18n(PolymerElement)) {
         this._globalData = window.Core.CritterLevelData;
 
         afterNextRender(this, function () {
-            this._globalData.addEventListener("_userChanged", this._userChanged.bind(this));
+            window.addEventListener("_userChanged", this._userChanged.bind(this));
             this.$.login.addEventListener("click", this._goToLoginForm.bind(this));
             this.$.register_form.preSubmit = this._onPreSubmit.bind(this);
             this.$.register_form.onSuccess = this._onRegisterSuccess.bind(this);
@@ -139,6 +139,11 @@ class CritterRegisterPage extends Toaster(I18n(PolymerElement)) {
             this.$.activate_form.onSuccess = this._onActivateSuccess.bind(this);
             this.$.activate_form.onError = this._onActivateError.bind(this);
         });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("_userChanged", this._userChanged.bind(this));
     }
 
     _delay(ms) {
