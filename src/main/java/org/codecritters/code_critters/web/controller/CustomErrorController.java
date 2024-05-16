@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolve
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -42,11 +43,21 @@ public class CustomErrorController extends BasicErrorController {
     @Override
     public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView();
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        Object requestUri = request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
 
-        if (!request.isUserInRole("USER")) {
-            modelAndView.setViewName("forward:/login.html");
-        } else {
-            modelAndView.setViewName("forward:/error.html");
+        if (status instanceof Integer && requestUri instanceof String) {
+            Integer statusCode = (Integer) status;
+
+            if (statusCode == 403) {
+                if (requestUri.equals("/game")) { // forward to login page if non-loggedin user tries to access games
+                    modelAndView.setViewName("forward:/login.html");
+                } else { // forward to 403 error page
+                    modelAndView.setViewName("forward:/error-403.html");
+                }
+            } else { // forward to 404 error page in any other case
+                modelAndView.setViewName("forward:/error-404.html");
+            }
         }
         return modelAndView;
     }
