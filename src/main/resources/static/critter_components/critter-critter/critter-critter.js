@@ -23,7 +23,7 @@ import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 import {Level} from '../critter-level-mixin/critter-level-mixin.js';
 import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
-import {critterTransitionDuration, normalCritterInterval, speedyCritterInterval} from "../constants.js";
+import {blocklyVariableTranslations, critterTransitionDuration, normalCritterInterval, speedyCritterInterval} from "../constants.js";
 
 /*
 # critter-critter
@@ -632,6 +632,12 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         this._timeoutManager = window.Core.timeouts;
     }
 
+    static get observers() {
+        return [
+            '_onLanguageChanged(language)'
+        ]
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -868,6 +874,35 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
             }
             this.variables = temp;
         }
+    }
+
+    /**
+     * On language change translates the hard-coded variables in the critters CUT (e.g. count).
+     */
+    async _onLanguageChanged() {
+        let langTag = this.language.substr(0, 2);
+        this.init = new Function('return ' + this.translateVariableNames(this.init.toString(), langTag))();
+        this.cut = new Function('return ' + this.translateVariableNames(this.cut.toString(), langTag))();
+    }
+
+    translateVariableNames(jsString, language) {
+        for (const originalName in blocklyVariableTranslations) {
+            if (blocklyVariableTranslations.hasOwnProperty(originalName)) {
+                const translatedName = blocklyVariableTranslations[originalName][language];
+                if (translatedName) {
+
+                    // replace all occurrences of variable names with translated names in js string
+                    jsString = jsString.split(`${originalName}`).join(`${translatedName}`);
+
+                    // remove variable in other language from tooltip
+                    if (this.variables[originalName] !== undefined) {
+                        let span = this.variables[originalName];
+                        span.style.display = 'none';
+                    }
+                }
+            }
+        }
+        return jsString;
     }
 
     pause() {
