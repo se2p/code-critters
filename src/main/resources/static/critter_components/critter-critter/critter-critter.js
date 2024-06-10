@@ -693,13 +693,13 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         this._timeoutManager.add(() => {
             this.cut();
             this._updateTooltip();
-        }, this._interval * 0.5);
+        }, this._interval * 0.8);
 
 
         //runs tests
         this._timeoutManager.add(() => {
             this._doElements();
-        }, this._interval * 0.7);
+        }, this._interval * 0.9);
 
         if (this.path.length > 1) {
             this._timeoutManager.add(() => {
