@@ -1001,7 +1001,8 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         if(numMines > freeMines) {
             this.score = -25 * (numMines - freeMines); //TODO free mines
         }
-        this.score = (this._finishedHumans + this._killedMutants) * 50 + this._calculateTimeBonus();
+        this.score = (this._finishedHumans + this._killedMutants) * 50;
+        this.score = this.score + this._calculateTimeBonus();
         await this.showScore(numMines);
         let stars = 0;
         if(this.score >= 950){

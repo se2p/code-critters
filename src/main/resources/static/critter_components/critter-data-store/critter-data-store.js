@@ -132,7 +132,7 @@ class CritterDataStore extends PolymerElement {
 
             freeSeconds: {
                 type: Number,
-                value: 30
+                value: 60
             },
 
             toolbox: {
