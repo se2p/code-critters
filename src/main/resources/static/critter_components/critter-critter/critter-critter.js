@@ -623,6 +623,11 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
                 type: Boolean,
                 value: false
             },
+
+            _hasBeenKilled: {
+                type: Boolean,
+                value: false
+            }
         };
     }
 
@@ -796,6 +801,12 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         console.log('valuevalue: ' + valuevalue);
         if (!this.animate) {
             return;
+        }
+
+        if (this.hasBeenKilled) { // check if critter has been killed already by a previous assertion in the same test
+            return;
+        } else {
+            this.hasBeenKilled = true;
         }
 
         await this._timeoutManager.add(() => {
