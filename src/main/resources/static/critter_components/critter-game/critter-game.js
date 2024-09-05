@@ -998,12 +998,21 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let numMines = this._mines.length;
         let freeMines = this._globalData.freeMines;
         this.$.score_dialog.open();
+
+        let timeBonus = 0;
         if(numMines > freeMines) {
             this.score = -25 * (numMines - freeMines); //TODO free mines
         }
-        this.score = (this._finishedHumans + this._killedMutants) * 50;
-        this.score = this.score + this._calculateTimeBonus();
-        await this.showScore(numMines);
+
+        if (numMines < 1) {
+            this.score = 0;
+        } else {
+            this.score = (this._finishedHumans + this._killedMutants) * 50;
+            timeBonus = this._calculateTimeBonus();
+            this.score = this.score + timeBonus;
+        }
+
+        await this.showScore(numMines, timeBonus);
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
@@ -1049,20 +1058,26 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         return Math.round(timeBonusPercentage);
     }
 
-    async showScore(numMines) {
+    async showScore(numMines, timeBonus) {
         let dialogScore = this.$.dialog_score;
         let freeMines = this._globalData.freeMines;
         let finishedHumansPercentage = Math.round((this._finishedHumans / this._globalData.numberOfHumans) * 100);
         let killedCritterPercentage = Math.round((this._killedMutants / this._globalData.numberOfCritters) * 100);
         dialogScore.overallScore = this.score;
-        if(numMines > freeMines) {
-            await dialogScore.insertData("mines_line", -25 * (numMines - freeMines), numMines);
-        } else {
-            await dialogScore.insertData("mines_line", 0, numMines);
-        }
+
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 50, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedMutants * 50, killedCritterPercentage, "%");
-        await dialogScore.insertData("time_line", this._calculateTimeBonus(), this._calculateTimeBonusRatio(), "%");
+
+        if (numMines < 1) { // if no portal is on gameboard
+            const penaltyForPortalAbsence = this._finishedHumans * 50 + this._killedMutants * 50 + timeBonus;
+            await dialogScore.insertData("portal_absence_penalty", - penaltyForPortalAbsence, 100, "%")
+        } else if(numMines > freeMines) {
+            await dialogScore.insertData("mines_line", -25 * (numMines - freeMines), numMines);
+            await dialogScore.insertData("time_line", timeBonus, this._calculateTimeBonusRatio(), "%");
+        } else {
+            await dialogScore.insertData("mines_line", 0, numMines);
+            await dialogScore.insertData("time_line", timeBonus, this._calculateTimeBonusRatio(), "%");
+        }
     }
 
     _showStar(number) {

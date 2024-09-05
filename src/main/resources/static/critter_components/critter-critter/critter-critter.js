@@ -736,7 +736,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
 
     /** computes a path to the tower **/
     _computePath() {
-        let source = this.position = (this.position && this.position.x !== -1 && this.position !== -1 ? this.position : this._globalData.spawn);
+        let source = this.position = (this.position && this.position.x !== -1 && this.position.y !== -1 ? this.position : this._globalData.spawn);
         return this.findPath(source);
     }
 
