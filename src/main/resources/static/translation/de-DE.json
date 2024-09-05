@@ -12,6 +12,7 @@
   "killed_mutants": "Erkannte Mutanten",
   "needed_mines": "Benötigte Portale",
   "time_bonus": "Zeitbonus",
+  "penalty_no_portal": "Kein Portal: Punktabzug",
   "select_next": "Wähle das nächste Level:",
   "load_level": "Level laden",
   "activation_error": "Bitte aktiviere dein Profil",

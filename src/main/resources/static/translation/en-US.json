@@ -12,6 +12,7 @@
   "killed_mutants": "Detected Mutants",
   "needed_mines": "Placed Portals",
   "time_bonus": "Time Bonus",
+  "penalty_no_portal": "No portal: penalty of",
   "select_next": "Select the next level:",
   "load_level": "Load level",
   "activation_error": "Please activate your profile",

@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -49,8 +49,11 @@ class CritterScore extends I18n(PolymerElement) {
             width: 100%;
         }
         
-        critter-score-line,
-         .score_row{
+        critter-score-line {
+            display: none;
+        }
+        
+        .score_row {
             display: table-row;
         }
         
@@ -71,6 +74,7 @@ class CritterScore extends I18n(PolymerElement) {
             <critter-score-line id="killed_critters_line">[[__('killed_mutants')]]</critter-score-line>
             <critter-score-line id="mines_line">[[__('needed_mines')]]</critter-score-line>
             <critter-score-line id="time_line">[[__('time_bonus')]]</critter-score-line>
+            <critter-score-line id="portal_absence_penalty">[[__('penalty_no_portal')]]</critter-score-line>
             <div class="score_row" id="final_score_line">
                   <div class="score_cell"></div>
                   <div class="score_cell"></div>
@@ -118,6 +122,7 @@ class CritterScore extends I18n(PolymerElement) {
 
     insertData(id, score, percentage = -1, unit = "") {
         let scoreLine = this.shadowRoot.getElementById(id);
+        scoreLine.style.display = "table-row";
         scoreLine.score = score;
         scoreLine.unit = unit;
         scoreLine.percentage = percentage;
