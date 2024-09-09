@@ -37,9 +37,15 @@ import '../critter-header/critter-header.js';
 import '../critter-data-store/critter-data-store.js';
 import './critter-game-image.js'
 import '/lib/@polymer/iron-icons/iron-icons.js';
+import '../critter-hint-assistant/critter-hint-assistant.js';
+import '../critter-hint-speech-bubble/critter-hint-speech-bubble.js'
+import '../critter-arrow-popup/critter-arrow-popup.js'
+import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+
 
 import {critterStyle} from '/style/critter-botstrap.js'
 import {normalCritterInterval, speedyCritterInterval} from "../constants.js";
+import {translateVariableNames} from "../common.js";
 
 
 /*
@@ -59,7 +65,7 @@ Displays the game elements
 window.Core = window.Core || {};
 window.Core.GameRoot = window.Core.GameRoot || [];
 
-class CritterGame extends I18n(Level(PolymerElement)) {
+class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
     static get template() {
         return html`
             ${critterStyle}
@@ -67,44 +73,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             <style>
                 :host {
                     display: block;
-                }
-
-                /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the
-                fixed-size gameboard. */
-                @media only screen and (max-width: 1350px) and (min-width: 1150px) {
-                    #board_container {
-                        max-width: 62%;
-                    }
-
-                    #blockly_container {
-                        max-width: 38%;
-                        margin-left: 2%;
-                    }
-
-                    .full_blockly {
-                        width: 100%;
-                    }
-                }
-
-                /* Causes the blockly_container to be positioned below the gameboard. */
-                @media only screen and (max-width: 1149px) {
-                    #board_container {
-                        max-width: 100%;
-                        width: 100%;
-                    }
-
-                    #blockly_container {
-                        max-width: 100vw;
-                        width: 100vw;
-                    }
-
-                    .full_blockly {
-                        max-width: 640px;
-                    }
-
-                    .heads {
-                        margin-bottom: 1%;
-                    }
                 }
 
                 #critter_container {
@@ -276,6 +244,99 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                     margin-left: auto;
                     margin-right: auto;
                 }
+                
+                #hint_assistant_container {
+                    cursor: pointer;
+                }
+                
+                #hint_elements_container {
+                    display: flex;
+                    justify-content: end;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-bottom: 100px;
+                    left: 0.5%;
+                }
+                
+                #hint_container {
+                    display: block;
+                }
+
+                #dialog-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 8px 8px 0 8px;
+                }
+
+                .dialog-title {
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                }
+
+                #dialog-buttons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                }
+
+                #dialog-buttons critter-button {
+                    --critter-button-color-disabled: transparent;
+                    --critter-button-color: transparent;
+                    --critter-button-text-color: #666;
+                    --critter-button-text-color-disabled: whitesmoke;
+                    transition: 100ms
+
+                }
+
+                #close_intro_dialog:hover,
+                #start_intro:hover {
+                    font-size: 1.1em;
+                    --critter-button-text-color: #ffa600;
+                }
+
+                @media only screen and (min-width: 1650px) {
+                    #hint_elements_container {
+                        left: -1.0%;
+                    }
+                }
+                
+
+                @media only screen and (min-width: 1800px) {
+                    #hint_elements_container {
+                        left: -2.0%;
+                    }
+                }
+                
+                @media only screen and (min-width: 2000px) {
+                    #hint_elements_container {
+                        left: -4.5%;
+                    }
+                }
+                
+                
+                /* On small size screens Blockly Container goes in next row */
+                @media only screen and (max-width: 1100px) {
+                    #blockly_container {
+                        min-width: 100%;
+                    }
+                    #hint_elements_container {
+                        left: -5.5%;
+                        margin-bottom: 0px;
+                    }
+                }
+
+                /* On very small size screens the assistent must go into next row as well*/
+                @media only screen and (max-width: 875px) {
+                    #hint_elements_container {
+                        min-width: 100%;
+                    }
+                }
+
+                #board_container {
+                    min-width: 661px;
+                }
+                
             </style>
 
 
@@ -304,7 +365,6 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                     <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>
                 </div>
             </critter-dialog>
-
             <div class="row">
                 <div class="col-sm-12" id="header">
                     <critter-header></critter-header>
@@ -312,11 +372,14 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 </div>
             </div>
             <div class="row" id="game_containers">
-                <div id="board_container" class="col-sm-6">
+                <div id="board_container" class="col-sm-12 col-md-8 col-lg-6 col-xl-5">
                     <!--<div id="board_container" class=" col-lg mt-3 mx-auto" style="max-width: fit-content">-->
                     <div class="row">
                         <critter-gameboard id="gameboard" show-grid="{{showGrid}}"></critter-gameboard>
                         <div id="critter_container"></div>
+                        <critter-arrow-popup id="arrow_popup" block-size="{{_blockSize}}"
+                                             board-height="{{ _boardHeight }}">
+                        </critter-arrow-popup>
                         <critter-test-popup id="mine_popup" block-size="{{_blockSize}}"
                                             board-height="{{ _boardHeight }}"
                                             popup-height="{{ _popupHeight}}">
@@ -352,25 +415,47 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                         </div>
                     </div>
                 </div>
-                <div id="blockly_container" class="col-sm-6">
-                    <!--<div id="blockly_container" class="col-lg mt-3">-->
-                    <div class="critterCodeDiv">
-                        <img class="critterImage" src="[[importPath]]images/fullCritter.png" alt="Critter Image">
-                        <div class="critterBehaviourText text">[[__("my_behaviour")]]</div>
-                        <div class="critterCodeContainer">
-                            <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true"
-                                             cut
-                                             read-only>
-                            </critter-blockly>
-                        </div>
+                <div id="hint_elements_container" class="col-1">
+                    <div id="hint_container">
+                        <critter-hint-speech-bubble id="hint_speech_bubble"></critter-hint-speech-bubble>
                     </div>
+                    <div id="hint_assistant_container">
+                        <critter-hint-assistant></critter-hint-assistant>
+                    </div>
+                </div>
+                <div id="blockly_container" class="col">
+<!--                <div id="blockly_container" class="col-12 col-md-8 col-xl-5">-->
+                    <!--<div id="blockly_container" class="col-lg mt-3">-->
+                    <div id="blockly_cut_div">
+                        <div class="critterCodeDiv">
+                            <img class="critterImage" src="[[importPath]]images/fullCritter.png" alt="Critter Image">
+                            <div class="critterBehaviourText text">[[__("my_behaviour")]]</div>
+                            <div class="critterCodeContainer">
+                                <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _boardHeight}}" controls="true"
+                                                 cut
+                                                 read-only>
+                                </critter-blockly>
+                            </div>
+                        </div>  
+                    </div>
+                    
                     <div class="col row" id="healed_critters">
                         <div class="col-12 text">
                             <p>[[__("healedCritters")]]</p>
                         </div>
                         <div id="healed_container" class="col-12"></div>
                     </div>
-                    
+                </div>
+                <div>
+                    <critter-dialog id="start_intro_dialog">
+                        <div class="row" id="dialog-container">
+                            <div class="dialog-title">[[__("start_intro_question")]]</div>
+                            <div id="dialog-buttons">
+                                <critter-button id="close_intro_dialog" class="col-5">[[__("close_intro_confirm")]]</critter-button>
+                                <critter-button id="start_intro" class="col-5">[[__("start_intro_confirm")]]</critter-button>
+                            </div>
+                        </div>
+                    </critter-dialog>
                 </div>
             </div>
         `;
@@ -442,6 +527,12 @@ class CritterGame extends I18n(Level(PolymerElement)) {
                 type: Number,
                 value: 0
             },
+
+            baseScore: {
+                type: Number,
+                value: 0
+            },
+
 
             stars: {
                 type: Number,
@@ -543,6 +634,38 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             _isSpeedUp: {
                 type: Boolean,
                 value: false
+            },
+
+            _inPortalHintMode: {
+                type: Boolean,
+                value: false
+            },
+
+            _hintObject: {
+                type: Object
+            },
+
+            _stepNum: {
+                type: Number,
+                value: -1
+            },
+
+            _currentHintObject: {
+                type: Object
+            },
+
+            _tipsForFieldsActivated: {
+                type: Boolean,
+                value: false
+            },
+
+            portalsSolutionsObject: {
+                type: Object
+            },
+
+            _expectsUserSaveClick: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -558,6 +681,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._timeoutManager = window.Core.timeouts;
 
         afterNextRender(this, function () {
+
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
             this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
             this.$.speedDown_button.addEventListener("click", () => this._speedDownGame(this))
@@ -578,9 +702,27 @@ class CritterGame extends I18n(Level(PolymerElement)) {
             this.addEventListener("_thirdStarReached", () => this._showStar(3));
             this.addEventListener("_secondStarReached", () => this._showStar(2));
             this.addEventListener("_firstStarReached", () => this._showStar(1));
-            this.addEventListener("_mineSet", (event) => this._updateMine(event));
-            this.addEventListener("_mineRemoved", (event) => this._updateMine(event));
-            this.addEventListener("_portalMoved", (event) => this._updateMine(event));
+            this.addEventListener("_mineSet", (event) => this._updateMine(event?.detail?.mine));
+            this.addEventListener("_mineRemoved", (event) => this._updateMine(event?.detail?.mine));
+            this.addEventListener("_portalMoved", (event) => this._updateMine(event?.detail?.mine));
+            this.addEventListener("_hintClosed", (event) => this._resetHintSettingsOfStep(event.detail.stepNum, event.detail.hintObject, true));
+            this.addEventListener("_portalSolutionsClosed", () => this._resetPortalSolutionVisuals(true));
+            this.addEventListener("_showNextHint", (event) => this._showNextHintVisuals(event));
+            this.addEventListener("_firstPortalHintMode", (event) => this._activateHintMode(event));
+            this.addEventListener("_introPortalHintMode", (event) => this._activateHintMode(event));
+            this.addEventListener("_startIntroModeQuestion", (event) => this._openIntroDialog(event));
+            this.addEventListener("_giveHintForFieldMode", () => this._startFieldHintsMode());
+            this.addEventListener("_helpRequested", () => this._openHintAssistent());
+            this.addEventListener("_portalClosed", () => this._resetBlockColorsOnPortalClose());
+
+            this.$.hint_assistant_container.addEventListener("mouseover", () => this._showHelpInfo());
+            this.$.hint_assistant_container.addEventListener("mouseout", () => this._closeHelpInfo());
+            this.$.hint_assistant_container.addEventListener("click", () => this._openHintAssistent());
+
+            this.$.close_intro_dialog.addEventListener("click", () => this._closeAllHintDialogs());
+            this.$.start_intro.addEventListener("click", () => this._startIntroRemovePortals());
+
+            window.addEventListener("_userMovedBlockInHintMode", (event) => this._handleUserMovedBlockInHintMode(event));
 
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
             this.currentLevelName = this._globalData.levelName;
@@ -590,11 +732,429 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         });
     }
 
+    _hasBuiltPortals() {
+        let builtPortals = this._globalData.getMines();
+        return (builtPortals.length > 0);
+    }
+
+    _openIntroDialog() {
+        this.$.start_intro_dialog.open();
+    }
+
+    _closeIntroDialog() {
+        this.$.start_intro_dialog.close();
+    }
+
+    _closeAllHintDialogs() {
+        this.$.start_intro_dialog.close();
+        this._closeHelpInfo();
+    }
+
+    _startIntroRemovePortals() {
+        this._closeIntroDialog();
+        this._updateAllMinesDeleted();
+        this.dispatchEvent(new CustomEvent('_portalsDeletedBeforeIntro', {
+            detail: { target: {id: "introduction"} },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    _startFieldHintsMode() {
+        if (this.$.mine_popup._isOpen) { // if a portal is already open
+            this.$.mine_popup._popupClose();
+        }
+        this.portalsSolutionsObject = this._globalData.portalSolutions;
+        this._inPortalHintMode = true;
+        this._tipsForFieldsActivated = true;
+    }
+
+    _resetBlockColorsOnPortalClose() {
+        if (this._tipsForFieldsActivated && this._inPortalHintMode) {
+            this._resetPortalSolutionVisuals();
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+            speechBubble._showHintsTextForField("click_on_fields_for_hints");
+        }
+    }
+
+    /**
+     * On click of field checks whether the clicked field is a good spot for a portal.
+     * Gives feedback about the field.
+     */
+    _checkHintsOfField(event) {
+        const coords = event.detail;
+        if (this.$.mine_popup._isOpen) { // if a portal is already open
+            this.$.mine_popup._popupCloseSafely();
+        }
+        this._resetPortalSolutionVisuals();
+        let isOnGoodSpot = false;
+        if (this.portalsSolutionsObject && this.portalsSolutionsObject.length > 0) {
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+
+            this.portalsSolutionsObject.forEach(portalSolution => { // iterate over all portal solutions
+                const possibleCoordinates = portalSolution.possibleCoordinates;
+                for (let i = 0; i < possibleCoordinates.length; i++) {
+                    if (possibleCoordinates[i].x === coords.x && possibleCoordinates[i].y === coords.y) {
+                        isOnGoodSpot = true;
+                        if (this._globalData.mines[coords.x][coords.y]) {
+                            this.$.mine_popup.show(coords);
+                            speechBubble.hintPortalXml = portalSolution.portalSolutionXmls[0]; // adjust here if no list of xmls
+                            speechBubble._showHintsTextForField("portal_on_correct_field", false);
+                            const codeBlocksToBeTested = portalSolution.codeBlocksToBeTested;
+                            const associatedComponentIds = portalSolution.associatedComponentIds;
+                            this._highlightBlocks(codeBlocksToBeTested);
+                            this._addBorderToHtmlElements(associatedComponentIds);
+                            return;
+                        } else {
+                            this.$.mine_popup.show(coords);
+                            speechBubble.hintPortalXml = portalSolution.portalSolutionXmls[0];
+                            speechBubble._showHintsTextForField("good_field_for_portal", false);
+                            const associatedCutBlocks = portalSolution.codeBlocksToBeTested;
+                            const associatedComponentIds = portalSolution.associatedComponentIds;
+                            this._highlightBlocks(associatedCutBlocks);
+                            this._addBorderToHtmlElements(associatedComponentIds);
+                            return;
+                        }
+                    }
+                }
+            })
+
+
+            if (!isOnGoodSpot) {
+                speechBubble._showHintsTextForField("bad_field_for_portal");
+                this.portalsSolutionsObject.forEach(portalSolution => {
+                    this._highlightBlocks(portalSolution.keyCodeBlocks);
+                    this._addBorderToHtmlElements(portalSolution.associatedComponentIds);
+                })
+                return;
+            }
+        }
+    }
+
+    _deactivateHintMode() {
+        this._tipsForFieldsActivated = false;
+        this._inPortalHintMode = false;
+        const testPopup = this.$.mine_popup;
+        const blocklyTest = testPopup.$.blockly_test;
+        blocklyTest.reactOnBlockMove(false);
+    }
+
+    _activateHintMode(event) {
+        if (this.$.mine_popup._isOpen) {
+            this.$.mine_popup._popupClose(); // if a portal is already open
+        }
+        if (event.detail && event.detail.stepNum >= 0 && event.detail.hintObject) {
+            this._hintObject = event.detail.hintObject;
+            this._stepNum = event.detail.stepNum;
+            this._inPortalHintMode = true;
+        }
+    }
+
+    /**
+     * Adds a red arrow that points at a given coordinate of the board
+     * to show fields in the hint mode.
+     * @param step num of the current hint step
+     * @param hintObject object to hold the required coordinates
+     */
+    _pointAtGameboardItemsOfHintstep(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const associatedCoordinates = hintObject.associatedCoordinates[step];
+            if (associatedCoordinates) {
+                this.$.arrow_popup.show(associatedCoordinates);
+            }
+        }
+    }
+
+    _removePointAtGameboardItemsOfHintstep() {
+        this.$.arrow_popup.hide();
+    }
+
+    /**
+     * Adds a red border style to elements their id to highlight them
+     * in the hint mode.
+     * @param step num of current hint step
+     * @param hintObject object that holds the required element ids
+     */
+    _addBorderToComponentsOfStep(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const componentIdsToHighlight = hintObject.associatedComponentIds[step];
+            this._addBorderToHtmlElements(componentIdsToHighlight);
+        }
+    }
+
+    _addBorderToHtmlElements(elementIds) {
+        if (elementIds.length > 0) {
+            elementIds.forEach(id => {
+                if (id.length <= 0) {
+                    // nothing
+                } else {
+                    const component = this.$[id];
+                    if (component) {
+                        component.style.border = "3px solid red";
+                    } else {
+                        const shadowRootComponent = this.$.mine_popup.shadowRoot.querySelector('#' + id);
+                        if (shadowRootComponent) {
+                            shadowRootComponent.style.border = "3px solid red";
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Fills a test portal with blocks in the hint mode.
+     * @param step current step num
+     * @param hintObject object that holds the blocks to fill in the portal
+     */
+    _fillPortalWithTestHint(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            console.log("WHICH STEP: " + step)
+            let portalXml = hintObject.portalXmls[step];
+            if (portalXml) {
+                const testPopup = this.$.mine_popup;
+                const blocklyTest = testPopup.$.blockly_test;
+                if (blocklyTest) {
+                    if (!testPopup._isOpen && hintObject.expectedClickCoordinates.length >= step - 1
+                        && hintObject.expectedClickCoordinates[step - 1][0].x
+                        && hintObject.expectedClickCoordinates[step - 1][0].y) {
+                        testPopup.show(hintObject.expectedClickCoordinates[step - 1][0])
+                    }
+
+                    blocklyTest._setCodeInCurrentLanguage(portalXml)
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles interaction on block moves of a user during hint mode
+     * @param event
+     */
+    _handleUserMovedBlockInHintMode(event) {
+        // if last step, just close hint assistent
+        if (this._currentHintObject && this._currentHintObject.hintTexts
+            && this._currentHintObject.hintTexts.length - 1 === this._stepNum) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.close();
+        }
+        else if (event.detail && event.detail.xml && event.detail.jsCode) {
+            const currentPortalContent = event.detail.xml;
+            const currentJsCode = event.detail.jsCode;
+            const otherLanguageTag = this._getOtherLanguageTag();
+            const translatedCurrentJs = translateVariableNames(currentJsCode, otherLanguageTag);
+            if (this._stepNum >= 0 && this._currentHintObject && this._currentHintObject.expectedUserInteractions
+                && this._currentHintObject.expectedUserInteractions[this._stepNum]) {
+                const expectedInteraction = this._currentHintObject.expectedUserInteractions[this._stepNum];
+                if (expectedInteraction === "PORTAL_BUILD" && this._currentHintObject.expectedPortalJsCode
+                    && this._currentHintObject.expectedPortalJsCode[this._stepNum]) {
+                    const isAsExpected = (this._currentHintObject.expectedPortalJsCode[this._stepNum] === currentJsCode) || (this._currentHintObject.expectedPortalJsCode[this._stepNum] === translatedCurrentJs);
+
+                    if (isAsExpected) {
+                        this._expectsUserSaveClick = true;
+                        this._showNextHint();
+                    } else {
+                        this.showWarningToast("hint_wrong_portal_content");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Highlights blocks of the CUT in the hint mode.
+     * @param step current step num
+     * @param hintObject holds the block ids to highlight
+     */
+    _highlightBlocksOfHintstep(step, hintObject) {
+       if (step === undefined || step < 0 || hintObject === undefined) {
+           return;
+       } else {
+           const blockIdsToBeHighlighted = hintObject.associatedCutBlocks[step];
+           this._highlightBlocks(blockIdsToBeHighlighted);
+       }
+    }
+
+
+    /**
+     * Resets the UI changes in hint mode, e.g. to undo block highlighting.
+     * @param step current hint step num
+     * @param hintObject holds all required info, e.g. block ids to un-highlight
+     * @param closeAssistent if true, the hint mode is ended after resetting the UI
+     */
+    _resetHintSettingsOfStep(step, hintObject, closeAssistent = false) {
+        if (closeAssistent) { // close button click
+            this._deactivateHintMode();
+        }
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const blocks = hintObject.associatedCutBlocks[step];
+            this._resetBlockColors(blocks);
+            if (hintObject.associatedCoordinates[step]) {
+                this._removePointAtGameboardItemsOfHintstep()
+            }
+
+            const componentIds = hintObject.associatedComponentIds;
+            this._removeBorderAroundComponents(componentIds);
+        }
+    }
+
+    /**
+     * Highlighted components and code blocks are reset.
+     * @param stopHintMode if true: the portalHintMode is deactivated as well
+     */
+    _resetPortalSolutionVisuals(stopHintMode = false) {
+        if (this.portalsSolutionsObject.length > 0) {
+            this.portalsSolutionsObject.forEach(solution => {
+                this._resetBlockColors(solution.keyCodeBlocks);
+                this._resetBlockColors(solution.codeBlocksToBeTested);
+                this._removeBorderAroundComponents(solution.associatedComponentIds);
+            })
+        }
+        if (stopHintMode) {
+            this._deactivateHintMode();
+        }
+    }
+
+    /**
+     * Shows the next hints, resets UI changes of the last step such as block highlighting
+     * or arrows on the board, and applies UI changes for the current step
+     * @param event holds the required stepNum and hint object
+     */
+    _showNextHintVisuals(event) {
+        if (event && event.detail && event.detail.stepNum >= 0 && event.detail.hintObject !== null) {
+            const stepNum = event.detail.stepNum;
+            this._stepNum = stepNum;
+            const previousStepNum = event.detail.previousStepNum;
+            const hintObject = event.detail.hintObject;
+            this._currentHintObject = hintObject;
+
+            const testPopup = this.$.mine_popup;
+            const blocklyTest = testPopup.$.blockly_test;
+
+            let isLastStep =  hintObject.hintTexts && hintObject.hintTexts.length && hintObject.hintTexts.length - 1 === this._stepNum;
+
+            if ((hintObject.expectedUserInteractions && hintObject.expectedUserInteractions[stepNum]
+                && hintObject.expectedUserInteractions[stepNum] === "PORTAL_BUILD") || isLastStep) {
+                blocklyTest.reactOnBlockMove(true);
+            } else {
+                blocklyTest.reactOnBlockMove(false);
+            }
+
+            this._resetHintSettingsOfStep(previousStepNum, hintObject);
+            this._highlightBlocksOfHintstep(stepNum, hintObject);
+            this._pointAtGameboardItemsOfHintstep(stepNum, hintObject);
+            this._addBorderToComponentsOfStep(stepNum, hintObject);
+            this._fillPortalWithTestHint(stepNum, hintObject);
+        }
+    }
+
+    /**
+     * Opens the speech bubble of the hint assistent, only before a game is started
+     */
+    _openHintAssistent() {
+        if (!this._inPortalHintMode && !this._gameHasStarted()) {
+            const isForFirstPortal = !this._hasBuiltPortals();
+            this._inPortalHintMode = true;
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+            speechBubble.isOnHoverInfoText = false;
+            speechBubble.showHintOptions(isForFirstPortal);
+        }
+    }
+
+    /**
+     * Shows the "I can help" info on hover over the assistant if not
+     * already in hint mode or during game play.
+     */
+    _showHelpInfo() {
+        if (!this._inPortalHintMode) {
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+            speechBubble.showHoverText(this._gameHasStarted());
+        }
+    }
+
+    _closeHelpInfo() {
+        if (!this._inPortalHintMode) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.closeHoverText();
+        }
+    }
+
+    _showNextHint() {
+        const speechBubble = this.$.hint_speech_bubble;
+        while (speechBubble.firstChild) {
+            speechBubble.removeChild(speechBubble.firstChild);
+        }
+        speechBubble.showNext();
+    }
+
+    _highlightBlocks(blockIds) {
+        if (blockIds !== undefined && blockIds.length > 0) {
+            const cut = this.$.blockly_CUT;
+            blockIds.forEach(blockId => {
+                cut.highlightBlock(blockId, "#ff0000");
+            })
+        }
+    }
+
+    _removeBorderAroundComponents(componentIds) {
+        if (componentIds !== undefined && componentIds.length > 0) {
+            componentIds.forEach(componentId => {
+                if (componentId.length <= 0) {
+                    // nothing
+                }
+                else {
+                    const component = this.$[componentId];
+                    if (component) {
+                        component.style.border = "";
+                    } else {
+                        const shadowRootComponent = this.$.mine_popup.shadowRoot.querySelector('#' + componentId);
+                        if (shadowRootComponent) {
+                            shadowRootComponent.style.border = "";
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    _resetBlockColors(highlightedBlockIds) {
+        if (highlightedBlockIds !== undefined && highlightedBlockIds.length > 0) {
+            const cut = this.$.blockly_CUT;
+            highlightedBlockIds.forEach(blockId => {
+                cut.resetColorOfBlock(blockId);
+            })
+        }
+    }
+
+
     /**
      * Saves updates on mines to the database, i.e. on creation, editing or deletion of a mine.
      */
-    _updateMine(event) {
-        let mine = event.detail.mine;
+    _updateMine(mine) {
+        if (this._inPortalHintMode && this._expectsUserSaveClick) {
+            this._expectsUserSaveClick = false;
+            this._showNextHint();
+        }
 
         let mineDtoObject = {
             game: this._game.id,
@@ -615,6 +1175,18 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
         return req;
+    }
+
+    _updateAllMinesDeleted() {
+        const mines = this._globalData.getMines();
+        for (let mine of mines) {
+            mine.creationEnd = new Date();
+            mine.deleted = true;
+            mine.deletionDateTime = Date.now();
+            this._updateMine(mine)
+        }
+
+        this._globalData.deleteMines();
     }
 
     _speedUpGame() {
@@ -654,6 +1226,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         this._killedMutants = 0;
         this._killedHumans = 0;
         this.score = 0;
+        this.baseScore = 0;
         this._interval = normalCritterInterval;
         this._critterList.forEach(critter => {
             critter.remove();
@@ -880,12 +1453,57 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
     /**
      * Displays the mine-popup, when the user clicks on a gameboard-field.
+     * If the user is in the hint mode: Only clicks on wanted fields results
+     * in a portal popup, else a warning is displayed.
      * @param event The click event triggering the function.
      * @private
      */
     _onFieldClicked(event) {
-        let detail = event.detail;
-        this.$.mine_popup.show(detail);
+        if (this._inPortalHintMode) { // if in hint mode
+            if (this._tipsForFieldsActivated) {
+                this._checkHintsOfField(event);
+            } // else if it is the last step of hints, allow field click and end hint mode
+            else if (this._hintObject && this._hintObject.hintTexts && this._hintObject.hintTexts.length - 1 === this._stepNum) {
+                const speechBubble = this.$.hint_speech_bubble;
+                speechBubble.close();
+                let detail = event.detail;
+                this.$.mine_popup.show(detail);
+            }
+            else if (this._hintObject && this._hintObject.situation === "INTRODUCTION" && this._hintObject.expectedUserInteractions
+                && this._hintObject.expectedUserInteractions[this._stepNum] && this._hintObject.expectedUserInteractions[this._stepNum] === "FIELD_CLICK") {
+                // in introduction case it does not matter on which field is clicked
+                let detail = event.detail;
+                this.$.mine_popup.show(detail);
+                this._showNextHint();
+            }
+            else if (this._hintObject && this._hintObject.expectedUserInteractions
+                && this._hintObject.expectedUserInteractions[this._stepNum]
+                && this._hintObject.expectedUserInteractions[this._stepNum] === "FIELD_CLICK") { // only open if user interaction "Field click" is expected
+                if (this._hintObject.expectedClickCoordinates && this._hintObject.expectedClickCoordinates[this._stepNum].length > 0) { // if the next hint step involves a portal
+                    let detail = event.detail;
+                    const expectedCoords = this._hintObject.expectedClickCoordinates[this._stepNum];
+
+                    let isCorrectField = false;
+
+                    expectedCoords.forEach(coordinates => { // compare clicked field with all correct fields
+                       if (detail.x === coordinates.x && detail.y === coordinates.y) { // if player clicks on correct coords
+                           isCorrectField = true;
+                       }
+                    });
+
+                    if (isCorrectField) {
+                        this.$.mine_popup.show(detail);
+                        this._showNextHint();
+                    } else {
+                        this.showWarningToast("hint_wrong_field");
+                    }
+                }
+            }
+
+        } else {
+            let detail = event.detail;
+            this.$.mine_popup.show(detail);
+        }
     }
 
     /**
@@ -1001,15 +1619,16 @@ class CritterGame extends I18n(Level(PolymerElement)) {
 
         let timeBonus = 0;
         if(numMines > freeMines) {
-            this.score = -25 * (numMines - freeMines); //TODO free mines
+            this.baseScore = -25 * (numMines - freeMines);
         }
 
         if (numMines < 1) {
+            this.baseScore = 0;
             this.score = 0;
         } else {
-            this.score = (this._finishedHumans + this._killedMutants) * 50;
+            this.baseScore = this.baseScore + (this._finishedHumans + this._killedMutants) * 50;
             timeBonus = this._calculateTimeBonus();
-            this.score = this.score + timeBonus;
+            this.score = this.baseScore + timeBonus;
         }
 
         await this.showScore(numMines, timeBonus);
@@ -1031,7 +1650,7 @@ class CritterGame extends I18n(Level(PolymerElement)) {
      * @returns {number}
      */
     _calculateTimeBonus() {
-        let baseScore = this.score;
+        let baseScore = this.baseScore;
         const timeBonusPercentage = this._calculateTimeBonusRatio();
         const timeBonusRatio = timeBonusPercentage / 100;
 
@@ -1280,6 +1899,24 @@ class CritterGame extends I18n(Level(PolymerElement)) {
         req.body = data;
 
         return req;
+    }
+
+    /**
+     * Returns the language tag of the currently NOT used language.
+     * E.g. current language is german, it returns 'en'
+     */
+    _getOtherLanguageTag() {
+        const currentLangTag = this.language.substring(0, 2);
+        let otherLangTag = 'de';
+        if (currentLangTag === 'de') {
+            otherLangTag = 'en'
+        }
+
+        return otherLangTag;
+    }
+
+    _gameHasStarted() {
+        return this._crittersSent;
     }
 }
 

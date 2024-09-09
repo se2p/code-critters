@@ -10,23 +10,26 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import org.codecritters.code_critters.persistence.entities.hintSystem.Hint;
+import org.codecritters.code_critters.persistence.entities.hintSystem.PortalSolutionHint;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.HashMap;
+import java.util.List;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
@@ -69,7 +72,28 @@ public class Level {
     private CritterRow row;
     @Column(columnDefinition = "int default 2")
     private int freeMines;
+    @OneToMany(mappedBy = "level", cascade = CascadeType.ALL)
+    private List<Hint> levelHints;
+    @OneToMany(mappedBy = "level", cascade = CascadeType.ALL)
+    private List<PortalSolutionHint> portalSolutions;
 
+
+    public Level(CritterRow row, String name, String displayName, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level,
+                 int freeMines, List<Hint> levelHints, List<PortalSolutionHint> portalSolutions) {
+        this.row = row;
+        this.name = name;
+        this.displayName = displayName;
+        this.numberOfCritters = numberOfCritters;
+        this.numberOfHumans = numberOfHumans;
+        this.CUT = CUT;
+        this.test = test;
+        this.level = level;
+        this.init = init;
+        this.xml = xml;
+        this.freeMines = freeMines;
+        this.levelHints = levelHints;
+        this.portalSolutions = portalSolutions;
+    }
 
     public Level(CritterRow row, String name, String displayName, int numberOfCritters, int numberOfHumans, String CUT, String test, String xml, String init, String[][] level, int freeMines) {
         this.row = row;
@@ -202,5 +226,21 @@ public class Level {
 
     public void setFreeMines(int freeMines) {
         this.freeMines = freeMines;
+    }
+
+    public List<Hint> getLevelHints() {
+        return levelHints;
+    }
+
+    public void setLevelHints(List<Hint> levelHints) {
+        this.levelHints = levelHints;
+    }
+
+    public List<PortalSolutionHint> getPortalSolutions() {
+        return portalSolutions;
+    }
+
+    public void setPortalSolutions(List<PortalSolutionHint> portalSolutions) {
+        this.portalSolutions = portalSolutions;
     }
 }

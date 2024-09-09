@@ -29,6 +29,8 @@ import org.codecritters.code_critters.persistence.customDataTypes.SortByLevelNam
 import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.entities.CritterRow;
 import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.entities.hintSystem.Hint;
+import org.codecritters.code_critters.persistence.entities.hintSystem.PortalSolutionHint;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
 import org.codecritters.code_critters.persistence.repository.MutantRepository;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
@@ -38,6 +40,7 @@ import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.LevelNamesDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
 import org.codecritters.code_critters.web.dto.RowDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -148,8 +151,65 @@ public class LevelService {
         dto.setNumberOfHumans(level.getNumberOfHumans());
         dto.setRow(level.getRow().getName());
         dto.setFreeMines(level.getFreeMines());
+        dto.setHints(createHintDtoList(level));
+        dto.setPortalSolutions(createPortalSolutionsList(level));
 
         return dto;
+    }
+
+    private List<PortalSolutionHintDTO> createPortalSolutionsList(Level level) {
+        List<PortalSolutionHint> portalSolutionHintList = level.getPortalSolutions();
+        List<PortalSolutionHintDTO> portalSolutionsDTOs = new ArrayList<>();
+
+        if (portalSolutionHintList != null && portalSolutionHintList.size() > 0) {
+            portalSolutionHintList.forEach(portalSolutionHint -> {
+                PortalSolutionHintDTO portalSolutionHintDTO = new PortalSolutionHintDTO(portalSolutionHint.getId(),
+                        portalSolutionHint.getName(), portalSolutionHint.getCodeBlockToBeTested(),
+                        portalSolutionHint.getAssociatedComponentIds(), portalSolutionHint.getPortalSolutionXmls(),
+                        portalSolutionHint.getPossibleCoordinates(), portalSolutionHint.getKeyCodeBlocks());
+                portalSolutionsDTOs.add(portalSolutionHintDTO);
+            });
+        }
+
+        return portalSolutionsDTOs;
+    }
+
+    private List<HintDTO> createHintDtoList(Level level) {
+        List<Hint> levelHints = level.getLevelHints();
+        List<HintDTO> hintDTOList = new ArrayList<>();
+
+
+        if (levelHints != null && levelHints.size() > 0) {
+            levelHints.forEach(hint -> {
+                Map<Integer, CutBlocksDTO> cutBlocksDTOMap = new HashMap<>();
+                Map<Integer, ComponentsDTO> componentsDTOMap = new HashMap<>();
+                Map<Integer, ExpectedClickedCoordsDTO> clickedCoordsDTOMap = new HashMap<>();
+
+                hint.getExpectedClickedCoordinates().forEach((integer, coordinates) -> {
+                    ExpectedClickedCoordsDTO coordsDTO = new ExpectedClickedCoordsDTO(coordinates.getCoordinates());
+                    clickedCoordsDTOMap.put(integer, coordsDTO);
+                });
+
+                hint.getAssociatedComponentIds().forEach((integer, associatedComponentIds) -> {
+                    ComponentsDTO componentsDTO = new ComponentsDTO(associatedComponentIds.getComponentIds());
+                    componentsDTOMap.put(integer, componentsDTO);
+                });
+
+                hint.getAssociatedCutBlocks().forEach((integer, associatedCutBlocks) -> {
+                    CutBlocksDTO blocksDTO = new CutBlocksDTO(associatedCutBlocks.getBlockIds());
+                    cutBlocksDTOMap.put(integer, blocksDTO);
+                });
+
+                HintDTO hintDTO = new HintDTO(hint.getId(), hint.getHintSituation(),
+                        hint.getHintTexts(), hint.getAssociatedCoordinates(), cutBlocksDTOMap,  componentsDTOMap,
+                        hint.getPortalXmls(), clickedCoordsDTOMap, hint.getExpectedUserInteraction(), hint.getExpectedPortalJsCode());
+
+                hintDTOList.add(hintDTO);
+            });
+        }
+
+
+        return hintDTOList;
     }
 
     private Level createLevelDAO(LevelDTO dto) {

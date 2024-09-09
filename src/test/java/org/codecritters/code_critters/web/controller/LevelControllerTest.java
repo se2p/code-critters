@@ -4,6 +4,9 @@ import org.codecritters.code_critters.application.service.LevelService;
 import org.codecritters.code_critters.spring.configuration.SecurityTestConfig;
 import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.HintDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.PortalSolutionHintDTO;
+import org.codecritters.code_critters.web.enums.HintSituation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
@@ -21,10 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
@@ -46,6 +46,7 @@ public class LevelControllerTest {
     private LevelService levelService;
 
     private LevelDTO levelDTO;
+    private HintDTO hintDTO;
     private final String level = "level";
     private final MockCookie cookie = new MockCookie("id", "123");
     private final String TOKEN_ATTR_NAME = "org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN";
@@ -64,7 +65,26 @@ public class LevelControllerTest {
         HashMap<String, Integer> tower = new HashMap<>();
         tower.put("x", 14);
         tower.put("y", 8);
-        levelDTO = new LevelDTO("id1", "level_1", "Level 1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1", 2);
+        hintDTO = new HintDTO();
+        Map<Integer, String> hintTexts = new HashMap<>();
+        hintTexts.put(0, "Introduction text first step");
+        hintTexts.put(1, "Introduction text next step, show some portal");
+        Map<Integer, String> portalXmls = new HashMap<>();
+        portalXmls.put(1, "<xml bla bla> some example portal </xml>");
+
+        hintDTO.setPortalXmls(portalXmls);
+        hintDTO.setHintSituation(HintSituation.INTRODUCTION);
+        hintDTO.setHintTexts(hintTexts);
+        hintDTO.setId("hint_id_intro");
+        hintDTO.setAssociatedCoordinates(null);
+        hintDTO.setAssociatedCutBlocks(null);
+        hintDTO.setAssociatedComponentIds(null);
+        hintDTO.setExpectedClickedCoordinates(null);
+
+        List<HintDTO> hintslist = new ArrayList<>();
+        List<PortalSolutionHintDTO> portalSolutions = new ArrayList<>();
+        hintslist.add(hintDTO);
+        levelDTO = new LevelDTO("id1", "level_1", "Level 1", 10, 5, "cut1", "init", "xml", "test", levelArray, tower, spawn, "row1", 2, hintslist, portalSolutions);
     }
 
     @AfterEach
@@ -80,7 +100,8 @@ public class LevelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.init", is(levelDTO.getInit())))
                 .andExpect(jsonPath("$.cut", is(levelDTO.getCUT())))
-                .andExpect(jsonPath("$.test", is(levelDTO.getTest())));
+                .andExpect(jsonPath("$.test", is(levelDTO.getTest())))
+                .andExpect(jsonPath("$.hints[0].hintSituation", is("INTRODUCTION")));
         verify(levelService, times(1)).getLevel(level);
     }
 
