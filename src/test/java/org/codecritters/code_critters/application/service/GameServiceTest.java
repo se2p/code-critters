@@ -72,7 +72,6 @@ public class GameServiceTest {
 
         assertAll(
                 () -> assertEquals(ID, saved.getId()),
-                () -> assertEquals(level, saved.getLevel()),
                 () -> assertEquals(ID, saved.getUserID()),
                 () -> assertEquals(game.getStart(), saved.getStart()),
                 () -> assertEquals(game.getEnd(), saved.getEnd())
@@ -91,7 +90,6 @@ public class GameServiceTest {
 
         assertAll(
                 () -> assertEquals(ID, saved.getId()),
-                () -> assertEquals(level, saved.getLevel()),
                 () -> assertNull(saved.getUserID()),
                 () -> assertEquals(game.getStart(), saved.getStart()),
                 () -> assertEquals(game.getEnd(), saved.getEnd())

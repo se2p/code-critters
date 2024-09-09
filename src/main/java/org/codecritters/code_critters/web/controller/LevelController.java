@@ -92,6 +92,8 @@ public class LevelController {
         map.put("row", dto.getRow());
         map.put("freeMines", dto.getFreeMines());
         map.put("displayName", dto.getDisplayName());
+        map.put("hints", dto.getHints());
+        map.put("portalSolutions", dto.getPortalSolutions());
 
         return map;
     }

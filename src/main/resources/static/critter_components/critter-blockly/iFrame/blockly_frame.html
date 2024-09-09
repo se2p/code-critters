@@ -64,6 +64,7 @@
   var blocklyDiv = document.getElementById('blocklyDiv');
   var toolbox = document.getElementById('toolbox');
   var workspace = null;
+  var inHintMode = false;
 
   var onresize = function(e) {
     // Compute the absolute coordinates and dimensions of blocklyArea.
@@ -139,6 +140,96 @@
     renderBlockly(isCut);
   };
 
+  /**
+   * Sets the color of a block to its original color (if it has been modified before).
+   * @param blockId of the block to reset
+   */
+  var setDefaultBlockColor = function (blockId) {
+    const block = getBlockById(blockId);
+    if (block) {
+      if (block.originalColour) {
+        block.setColour(block.originalColour);
+        workspace.render();
+      }
+    }
+  }
+
+  /**
+   * Changes the color of a block.
+   * @param blockId of the wanted block
+   * @param newColor string of the color hex code
+   */
+  var highlightBlockWithColor = function (blockId, newColor) {
+    const block = getBlockById(blockId);
+    if (block) {
+      if (!newColor) {
+        block.originalColour = block.originalColour ? block.originalColour : block.getColour();
+        block.setColour(block.originalColour); // nothing changes
+      } else {
+        block.originalColour = block.originalColour ? block.originalColour : block.getColour();
+        block.setColour(newColor)
+        workspace.render();
+      }
+    }
+  }
+
+
+  /**
+   * Adds a border around a block with given id to highlight. If no color is given, the border is red.
+   * @param blockId
+   * @param borderColor
+   */
+  var highlightBlockWithBorder = function (blockId, borderColor) {
+    const block = getBlockById(blockId);
+    if (block) {
+      const svgGroup = block.getSvgRoot();
+      if (svgGroup) {
+        // remove any existing border first
+        const existingHighlight = svgGroup.getElementsByClassName('blocklyHighlightBorder');
+        if (existingHighlight.length > 0) {
+          existingHighlight[0].remove();
+        }
+
+        // add new border
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("class", "blocklyHighlightBorder");
+        rect.setAttribute("x", -2);
+        rect.setAttribute("y", -2);
+        rect.setAttribute("width", block.width + 4);
+        rect.setAttribute("height", block.height + 4);
+        rect.setAttribute("stroke", borderColor || "#FF0000"); // Default to red border
+        rect.setAttribute("stroke-width", 4);
+        rect.setAttribute("fill", "none");
+        svgGroup.insertBefore(rect, svgGroup.firstChild);
+      }
+      workspace.render();
+    }
+  };
+
+  /**
+   * Removes the highlighting border of a block with given id.
+   * @param blockId
+   */
+  var setDefaultBorderColor = function (blockId) {
+    const block = getBlockById(blockId);
+    if (block) {
+      const svgGroup = block.getSvgRoot();
+      if (svgGroup) {
+        const existingHighlight = svgGroup.getElementsByClassName('blocklyHighlightBorder');
+        if (existingHighlight.length > 0) {
+          existingHighlight[0].remove();
+        }
+      }
+      workspace.render();
+    }
+  }
+
+  /**
+   * During hint mode events are thrown to inform the game about user interactions in the blockly frame.
+   */
+  var setInHintMode = function(isHintMode) {
+    inHintMode = isHintMode;
+  }
 
   var setControls = function(controls, isCut = false){
     showControls = controls;
@@ -174,6 +265,10 @@
   var getBlockById = function(id) {
       return  workspace.getBlockById(id);
   };
+
+  var getMetrics = function () {
+    return workspace.getMetrics();
+  }
 
   var changeLanguage = async function(langTag, isCut = false) {
     document.getElementById("lang_script").remove();
@@ -474,6 +569,13 @@
    */
   var _onWorkspaceChange = function (event) {
     if (event.type === Blockly.Events.CHANGE || event.type === Blockly.Events.MOVE) {
+      const eventreasons = event.reason;
+      const isAutomaticallyCreateBlocksEvent = eventreasons && eventreasons[0] && eventreasons[0] === 'create';
+      if (inHintMode && !isAutomaticallyCreateBlocksEvent) { // only dispatch event if is not creation of blocks (happens automatically, not by user)
+        window.dispatchEvent(new CustomEvent("_userInteraction", {detail: { xml: getXML(), jsCode: getCode()}, bubbles: true, composed: true}));
+      } else if (inHintMode) {
+        return;
+      }
       let parentBlock;
       const currentBlockId = event.blockId;
       const currentBlock = workspace.getBlockById(currentBlockId);

@@ -10,19 +10,23 @@ package org.codecritters.code_critters.web.dto;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import org.codecritters.code_critters.web.dto.hintSystem.HintDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.PortalSolutionHintDTO;
+
 import java.util.HashMap;
+import java.util.List;
 
 public class LevelDTO {
 
@@ -40,6 +44,27 @@ public class LevelDTO {
     private HashMap<String, Integer> spawn;
     private String row;
     private int freeMines;
+    private List<HintDTO> hints;
+    private List<PortalSolutionHintDTO> portalSolutions;
+
+    public LevelDTO(String id, String name, String displayName, int numberOfCritters, int numberOfHumans, String CUT, String init, String xml, String test, String[][] level, HashMap<String, Integer> tower, HashMap<String, Integer> spawn, String row, int freeMines, List<HintDTO> hints, List<PortalSolutionHintDTO> portalSolutions) {
+        this.id = id;
+        this.name = name;
+        this.displayName = displayName;
+        this.numberOfCritters = numberOfCritters;
+        this.numberOfHumans = numberOfHumans;
+        this.CUT = CUT;
+        this.init = init;
+        this.xml = xml;
+        this.test = test;
+        this.level = level;
+        this.tower = tower;
+        this.spawn = spawn;
+        this.row = row;
+        this.freeMines = freeMines;
+        this.hints = hints;
+        this.portalSolutions = portalSolutions;
+    }
 
     public LevelDTO(String id, String name, String displayName, int numberOfCritters, int numberOfHumans, String CUT, String init, String xml, String test, String[][] level, HashMap<String, Integer> tower, HashMap<String, Integer> spawn, String row, int freeMines) {
         this.id = id;
@@ -197,5 +222,21 @@ public class LevelDTO {
 
     public void setFreeMines(int freeMines) {
         this.freeMines = freeMines;
+    }
+
+    public List<HintDTO> getHints() {
+        return hints;
+    }
+
+    public void setHints(List<HintDTO> hints) {
+        this.hints = hints;
+    }
+
+    public List<PortalSolutionHintDTO> getPortalSolutions() {
+        return portalSolutions;
+    }
+
+    public void setPortalSolutions(List<PortalSolutionHintDTO> portalSolutions) {
+        this.portalSolutions = portalSolutions;
     }
 }

@@ -19,6 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import {blocklyVariableTranslations} from "./constants.js";
+
 /**
  * Extracts the x- and y-coordinates of the id of a hover-field
  *
@@ -67,4 +69,25 @@ export function _isWalkableTerrain(position, level) {
     } else {
         return false;
     }
+}
+
+
+/**
+ * Translates the variables in the given string (a js code) into the given language.
+ * @param jsString
+ * @param language
+ * @returns String translated js code string
+ */
+export function translateVariableNames(jsString, language) {
+    for (const originalName in blocklyVariableTranslations) {
+        if (blocklyVariableTranslations.hasOwnProperty(originalName)) {
+            const translatedName = blocklyVariableTranslations[originalName][language];
+            if (translatedName) {
+
+                // replace all occurrences of variable names with translated names in js string
+                jsString = jsString.split(`${originalName}`).join(`${translatedName}`);
+            }
+        }
+    }
+    return jsString;
 }

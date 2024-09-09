@@ -151,6 +151,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         }
 
         this.$.blockly_frame.contentWindow.addEventListener("_invalidComparison", (event) => this._dispatchInvalidBlocklyAssertWarning(event));
+        this.$.blockly_frame.contentWindow.addEventListener("_userInteraction", (event) => this._dispatchUserInteractionEvent(event));
         this.$.blockly_frame.contentWindow.addEventListener("_blocklyReady", () => this._updateIFrame());
         rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
     }
@@ -265,6 +266,23 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         return code;
     }
 
+    setCodeAndCenter(code, tries = 0) {
+        this.setCode(code);
+        let viewHeight = 0;
+        if (this.$.blockly_frame.contentWindow.getMetrics) {
+            const metrics = this.$.blockly_frame.contentWindow.getMetrics();
+            viewHeight = metrics.viewHeight;
+        }
+
+        if (tries < 3 && viewHeight === 0) { // retry if blockly workspace is not fully initialized yet
+            setTimeout(() => {
+                return this.setCodeAndCenter(code, tries + 1)
+            }, 50)
+        } else {
+            return code;
+        }
+    }
+
     /** sets the blockly code**/
     setCode(code){
         if (this.$.blockly_frame.contentWindow.setCode) {
@@ -272,6 +290,35 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         }
     }
 
+    /**
+     * Changes the color of a block.
+     * @param blockId of the wanted block
+     * @param color string of the color hex code
+     */
+    highlightBlock(blockId, color) {
+        if (this.$.blockly_frame.contentWindow.highlightBlockWithColor) {
+            this.$.blockly_frame.contentWindow.highlightBlockWithColor(blockId, color)
+        }
+    }
+
+    /**
+     * Resets the color of a block.
+     * @param blockId
+     */
+    resetColorOfBlock(blockId) {
+        if (this.$.blockly_frame.contentWindow.setDefaultBlockColor) {
+            this.$.blockly_frame.contentWindow.setDefaultBlockColor(blockId)
+        }
+    }
+
+    /**
+     * If true, an event is thrown on each block move by a user (necessary during hint mode)
+     */
+    reactOnBlockMove(react) {
+        if (this.$.blockly_frame.contentWindow.setInHintMode) {
+            this.$.blockly_frame.contentWindow.setInHintMode(react);
+        }
+    }
 
     /** disables changing the blockly code **/
     _readOnlyChanged() {
@@ -325,10 +372,27 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         }
     }
 
+    async _setCodeInCurrentLanguage(code) {
+        let langTag = this.language.substr(0, 2);
+        if (this.$.blockly_frame.contentWindow.changeLanguage) {
+            const translatedCode = this.translateVariableNames(code, langTag);
+            await this.$.blockly_frame.contentWindow.changeLanguage(langTag, this.cut);
+            this.setCodeAndCenter(translatedCode);
+        }
+    }
+
     _dispatchInvalidBlocklyAssertWarning(event) {
         if (event.detail && event.detail.curBlockType && event.detail.comparedWith) {
             const { curBlockType, comparedWith } = event?.detail
             window.dispatchEvent(new CustomEvent('_showValidationWarning', {detail: { curBlockType, comparedWith }, bubbles: true, composed: true}));
+        }
+    }
+
+    _dispatchUserInteractionEvent(event) {
+        if (event.detail && event.detail.xml && event.detail.jsCode) {
+            const { xml, jsCode } = event.detail;
+
+            window.dispatchEvent(new CustomEvent('_userMovedBlockInHintMode', {detail: { xml, jsCode}, bubbles: true, composed: true}));
         }
     }
 

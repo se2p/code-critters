@@ -155,6 +155,16 @@ class CritterDataStore extends PolymerElement {
             freeMines: {
                 type: Number,
                 notify: true
+            },
+
+            hintObjectsArray: {
+               type: Array,
+               notify: true
+            },
+
+            portalSolutions: {
+                type: Array,
+                notify: true
             }
         }
     }
@@ -271,6 +281,8 @@ class CritterDataStore extends PolymerElement {
             this.row = data.row;
             this.freeMines = data.freeMines;
             this.levelDisplayName = data.displayName;
+            this.hintObjectsArray = this.transformHints(data.hints);
+            this.portalSolutions = data.portalSolutions;
         });
 
         let genRequest = req.generateRequest();
@@ -303,6 +315,82 @@ class CritterDataStore extends PolymerElement {
 
     dec2hex(dec) {
         return ('0' + dec.toString(16)).substr(-2)
+    }
+
+    // Transforms the hint object retrieved from the backend into the object to work with at the frontend
+    transformHints(hints) {
+        return hints.map(hint => {
+            function createArrayWithLength(length, defaultValue = null) {
+                return Array.from({ length }, () => defaultValue);
+            }
+
+            // Initialize arrays with the maximum index found in the data + 1
+            const hintTexts = createArrayWithLength(Math.max(...Object.keys(hint.hintTexts).map(Number)) + 1);
+            const associatedCoordinates = createArrayWithLength(hintTexts.length, null);
+            const associatedCutBlocks = createArrayWithLength(hintTexts.length, []);
+            const associatedComponentIds = createArrayWithLength(hintTexts.length, []);
+            const portalXmls = createArrayWithLength(hintTexts.length, null);
+            const expectedClickCoordinates = createArrayWithLength(hintTexts.length, []);
+            const expectedUserInteractions = createArrayWithLength(hintTexts.length, null);
+            const expectedPortalJsCode = createArrayWithLength(hintTexts.length, null);
+            // Fill the arrays with data from the hint object
+            for (let [index, text] of Object.entries(hint.hintTexts)) {
+                hintTexts[Number(index)] = text;
+            }
+
+            if (hint.associatedCoordinates) {
+                for (let [index, coord] of Object.entries(hint.associatedCoordinates)) {
+                    associatedCoordinates[Number(index)] = coord;
+                }
+            }
+
+            if (hint.associatedCutBlocks) {
+                for (let [index, blocks] of Object.entries(hint.associatedCutBlocks)) {
+                    associatedCutBlocks[Number(index)] = blocks.blockIds;
+                }
+            }
+
+            if (hint.associatedComponentIds) {
+                for (let [index, components] of Object.entries(hint.associatedComponentIds)) {
+                    associatedComponentIds[Number(index)] = components.componentIds;
+                }
+            }
+
+            if (hint.portalXmls) {
+                for (let [index, xml] of Object.entries(hint.portalXmls)) {
+                    portalXmls[Number(index)] = xml;
+                }
+            }
+
+            if (hint.expectedClickedCoordinates) {
+                for (let [index, coordinates] of Object.entries(hint.expectedClickedCoordinates)) {
+                    expectedClickCoordinates[Number(index)] = coordinates.coordinates;
+                }
+            }
+
+            if (hint.expectedUserInteraction) {
+                for (let [index, interaction] of Object.entries(hint.expectedUserInteraction)) {
+                    expectedUserInteractions[Number(index)] = interaction;
+                }
+            }
+            if (hint.expectedPortalJsCode) {
+                for (let [index, interaction] of Object.entries(hint.expectedPortalJsCode)) {
+                    expectedPortalJsCode[Number(index)] = interaction;
+                }
+            }
+
+            return {
+                situation: hint.hintSituation,
+                hintTexts: hintTexts,
+                associatedCoordinates: associatedCoordinates,
+                associatedCutBlocks: associatedCutBlocks,
+                associatedComponentIds: associatedComponentIds,
+                portalXmls: portalXmls,
+                expectedClickCoordinates: expectedClickCoordinates,
+                expectedUserInteractions: expectedUserInteractions,
+                expectedPortalJsCode: expectedPortalJsCode
+            };
+        });
     }
 
     getMe(attempts = 3, delay = 500) {

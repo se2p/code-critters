@@ -270,6 +270,11 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
             _mineCreationStart: {
                 type: Number,
                 value: Date.now()
+            },
+
+            _isOpen: {
+                type: Boolean,
+                value: false
             }
         }
     }
@@ -310,6 +315,10 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         }
     }
 
+    _isComplete(code) {
+        return !(code.toString().includes(leftEmptyAssertBlockly) || code.toString().includes(rightEmptyAssertBlockly));
+    }
+
 
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
@@ -330,7 +339,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
             return;
         }
 
-        if (code.toString().includes(leftEmptyAssertBlockly) || code.toString().includes(rightEmptyAssertBlockly)) {
+        if (!this._isComplete(code)) {
             this.$.close_mine_dialog.close();
             this.showErrorToast("incomplete_assert_block");
             return;
@@ -342,7 +351,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         detail.code = new Function('x', 'y', code);
         detail.js = code;
         detail.xml = this.$.blockly_test.getXML();
-        detail.xPosition = this._selectedBlock.x + 1;
+        detail.xPosition = this._selectedBlock.x;
         detail.yPosition = this._selectedBlock.y;
         detail.deleted = false;
         detail.deletionDateTime = null;
@@ -386,6 +395,12 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     }
 
     _popupClose() {
+        this.dispatchEvent(new CustomEvent('_portalClosed', {
+            detail: {position: this._selectedBlock },
+            bubbles: true,
+            composed: true
+        }));
+        this._isOpen = false;
         this.$.close_mine_dialog.close();
         this.$.mine_popup.hide();
     }
@@ -439,7 +454,11 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     }
 
     _showHelp() {
-        this.$.blockly_test.setCode(this._globalData.test);
+        this.dispatchEvent(new CustomEvent('_helpRequested', {
+            detail: { selectedBlock: this._selectedBlock, portalXml: this.$.blockly_test.getXML(), portalJs: this.$.blockly_test.getJavaScript() },
+            bubbles: true,
+            composed: true
+        }));
     }
 
     _copyCode() {
@@ -455,6 +474,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     show(detail) {
         this._selectedBlock = detail;
         this.$.mine_popup.show(detail);
+        this._isOpen = true;
         if (this._globalData.mines[detail.x][detail.y]) {
             // save mine creation or update start time
             this._mineCreationStart = Date.now();
@@ -472,6 +492,11 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
     _resetTrashcan() {
         let trashcanSVG = this.$.delete_button.shadowRoot.querySelector("slot").assignedNodes()[4].shadowRoot.querySelector("#delete_top");
         trashcanSVG.style.transform = "rotate(0) translate(0,0)";
+    }
+
+    _holdsCode() {
+        const code = this.$.blockly_test.getJavaScript();
+        return code.length > 0;
     }
 }
 

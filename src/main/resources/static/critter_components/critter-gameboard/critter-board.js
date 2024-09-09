@@ -359,7 +359,7 @@ class CritterGameboard extends Toaster(Level(PolymerElement)) {
                 let movedMine = this._globalData.mines[oldPosition.x][oldPosition.y];
                 if (movedMine) {
                     movedMine.updated = true;
-                    movedMine.xPosition = newPosition.x + 1;
+                    movedMine.xPosition = newPosition.x;
                     movedMine.yPosition = newPosition.y;
                     movedMine.creationStart = this.dragStartTime;
                     movedMine.creationEnd = Date.now();
