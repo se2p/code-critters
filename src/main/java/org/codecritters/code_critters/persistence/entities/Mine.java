@@ -22,6 +22,7 @@ package org.codecritters.code_critters.persistence.entities;
  * #L%
  */
 
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
@@ -61,10 +62,13 @@ public class Mine {
 
     private boolean updated;
 
-    /**
-     * Assigned on the frontend to clearly identify a mine and all its operations
-     */
+    // Assigned on the frontend to clearly identify a mine and all its operations
     private String frontendId;
+
+    // Only filled if the mine/portal was built during assistance mode
+    @ManyToOne
+    @JoinColumn(name = "assistant_info_id")
+    private AssistantInfo assistantInfo;
 
     public Mine() {}
 
@@ -82,6 +86,24 @@ public class Mine {
         this.deletionDateTime = deletionDateTime;
         this.updated = updated;
         this.frontendId = frontendId;
+    }
+
+    public Mine(String id, Game game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
+                int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated, String frontendId,
+                AssistantInfo assistantInfo) {
+        this.id = id;
+        this.game = game;
+        this.code = code;
+        this.xml = xml;
+        this.creationStart = creationStart;
+        this.creationEnd = creationEnd;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.deleted = deleted;
+        this.deletionDateTime = deletionDateTime;
+        this.updated = updated;
+        this.frontendId = frontendId;
+        this.assistantInfo = assistantInfo;
     }
 
     public String getId() {
@@ -178,5 +200,13 @@ public class Mine {
 
     public void setFrontendId(String frontendId) {
         this.frontendId = frontendId;
+    }
+
+    public AssistantInfo getAssistantInfo() {
+        return assistantInfo;
+    }
+
+    public void setAssistantInfo(AssistantInfo assistantInfo) {
+        this.assistantInfo = assistantInfo;
     }
 }

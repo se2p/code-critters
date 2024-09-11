@@ -165,7 +165,12 @@ class CritterDataStore extends PolymerElement {
             portalSolutions: {
                 type: Array,
                 notify: true
-            }
+            },
+
+            assistentUsageInfoObject: {
+                type: Object,
+                value: null
+            },
         }
     }
 

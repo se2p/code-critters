@@ -300,6 +300,17 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
             disableBackwardsButton: {
                 type: Boolean,
                 value: false
+            },
+
+            gameId: {
+                type: String,
+                value: ''
+            },
+
+            visitedStepsObject: {
+                type: Array,
+                value: [],
+                notify: true
             }
 
         }
@@ -354,6 +365,10 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                 composed: true
             }));
         } else {
+
+            // saves usage activity in backend
+            this.storeAssistentDetails(true);
+
             this.dispatchEvent(new CustomEvent('_hintClosed', {
                 detail: { stepNum: this.currentHintStep, hintObject: this.currentHintObject},
                 bubbles: true,
@@ -377,6 +392,8 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
         this.isLastHintStep = false;
         this.disableNextButton = false;
         this.disableBackwardsButton = false;
+        this.gameId = '';
+        this.visitedStepsObject = [];
     }
 
     hide() {
@@ -401,6 +418,8 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
             this.setFirstAndLastStep();
             this.disableNextButton = this.isUserInteractionRequested();
             this.disableBackwardsButton = this.canGoBack();
+
+            this.addAssistentInfoStep(this.currentHintStep);
 
             this.dispatchEvent(new CustomEvent('_showNextHint', {
                 detail: { stepNum: this.currentHintStep, hintObject: this.currentHintObject, previousStepNum: previousStep },
@@ -436,7 +455,7 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
     closeHoverText() {
         this.isOnHoverInfoText = false;
         this.isOnHoverTextDuringGame = false;
-        this.close();
+        this.hide();
     }
 
     _activateCompareWithPortalMode() {
@@ -490,6 +509,7 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                         composed: true
                     }));
                 }
+                this.storeAssistentDetails();
             }
         } else if (buttonId === "first_portal") {
 
@@ -504,9 +524,8 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                     bubbles: true,
                     composed: true
                 }));
+                this.storeAssistentDetails();
             }
-
-
         } else if (buttonId === "general_field_hints") {
 
             this._showHintsTextForField("click_on_fields_for_hints")
@@ -517,6 +536,46 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                 }));
             }
     };
+
+    /**
+     * Saves the usage activities of the hint assistent in the backend.
+     */
+    storeAssistentDetails(closeAssistent = false) {
+        let dto;
+
+        if (this._globalData.assistentUsageInfoObject !== null && closeAssistent) { // if updates existing info object
+            dto = {...this._globalData.assistentUsageInfoObject, visitedSteps: this.visitedStepsObject, timeClosed: new Date()};
+            this._globalData.assistentUsageInfoObject = null; // set info object to null on close of assistent
+        } else { // if first save
+            dto = {
+                gameId: this.gameId,
+                visitedSteps: this.visitedStepsObject,
+                hintSituation: this.currentHintObject.situation,
+            }
+        }
+
+        const url = `/game/${this.gameId}/assistant-details`;
+
+        let req = this._generateRequest(url, dto, "POST");
+
+        if (!closeAssistent) { // store initial info object in globaldata for further updates
+            req.addEventListener('response', e => {
+                this._globalData.assistentUsageInfoObject = e.detail.__data.response;
+            });
+        }
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
+    }
+
+    addAssistentInfoStep(currentHintStep) {
+        let details = {
+            timeSeen: new Date(),
+            hintStep: currentHintStep,
+        }
+        this.visitedStepsObject.push(details);
+    }
 
     isUserInteractionRequested() {
         return (this.currentHintObject && this.currentHintObject.expectedUserInteractions && this.currentHintObject.expectedUserInteractions[this.currentHintStep])
@@ -541,6 +600,27 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
 
     computeHidden(isFirstOrLastHintStep, hideContinueButton) {
         return isFirstOrLastHintStep || hideContinueButton;
+    }
+
+    /**
+     * Generates a post or get request with the given url and the given data to be submitted.
+     * @param url The url of the request.
+     * @param data The data to be transmitted.
+     * @param method The method to use (post or get).
+     * @returns {HTMLElement} The request to be sent to the database.
+     * @private
+     */
+    _generateRequest(url, data, method) {
+        let req = document.createElement('iron-ajax');
+        req.url = url;
+        req.method = method;
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.body = data;
+
+        return req;
     }
 }
 

@@ -25,18 +25,22 @@ package org.codecritters.code_critters.application.service;
 import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.*;
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.codecritters.code_critters.persistence.entities.hintSystem.CheckedField;
+import org.codecritters.code_critters.persistence.entities.hintSystem.VisitedStep;
 import org.codecritters.code_critters.persistence.repository.*;
 import org.codecritters.code_critters.web.dto.GameDTO;
 import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
 import org.codecritters.code_critters.web.dto.HumanDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantInfoDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.CheckedFieldDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.VisitedStepDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,14 +50,21 @@ public class GameService {
     private final UserRepositiory userRepositiory;
     private final GameRepository gameRepository;
     private final MutantRepository mutantRepository;
+    private final AssistantInfoRepository assistantInfoRepository;
+    private final MineRepository mineRepository;
+    private final VisitedStepRepository visitedStepRepository;
 
     @Autowired
     public GameService(LevelRepository levelRepository, UserRepositiory userRepositiory,
-                       GameRepository gameRepository, MutantRepository mutantRepository) {
+                       GameRepository gameRepository, MutantRepository mutantRepository,
+                       AssistantInfoRepository assistantInfoRepository, MineRepository mineRepository, VisitedStepRepository visitedStepRepository) {
         this.levelRepository = levelRepository;
         this.userRepositiory = userRepositiory;
         this.gameRepository = gameRepository;
         this.mutantRepository = mutantRepository;
+        this.assistantInfoRepository = assistantInfoRepository;
+        this.mineRepository = mineRepository;
+        this.visitedStepRepository = visitedStepRepository;
     }
 
     /**
@@ -131,6 +142,86 @@ public class GameService {
         gameRepository.save(curGame);
     }
 
+    /**
+     * Saves usage details of the hint assistant for a game.
+     * @param dto
+     * @param gameId
+     */
+    @Transactional
+    public AssistantInfoDTO saveAssistantUsageInformation(AssistantInfoDTO dto, String gameId) {
+        if (gameId == null || gameId.isEmpty()) {
+            throw new IncompleteDataException("Cannot save assistant information with an empty game ID!");
+        }
+
+        Optional<Game> curGameOptional = gameRepository.findById(gameId);
+        if (!curGameOptional.isPresent()) {
+            throw new NotFoundException("Could not find a game with id " + dto.getGameId());
+        }
+        dto.setGameId(gameId);
+        Game curGame = curGameOptional.get();
+
+        AssistantInfo assistantInfo;
+
+        if (dto.getId() != null) { // update existing assistantInfo entity
+            Optional<AssistantInfo> curAssistantInfoOptional = assistantInfoRepository.findById(dto.getId());
+            if (!curAssistantInfoOptional.isPresent()) {
+                throw new NotFoundException("Could not find an assistant info with given id " + dto.getId());
+            }
+            assistantInfo = curAssistantInfoOptional.get();
+        } else {
+            assistantInfo = new AssistantInfo();
+            curGame.addAssistantInfoToList(assistantInfo);
+        }
+
+        updateAssistantInfo(assistantInfo, dto, curGame);
+        AssistantInfo savedInfo = assistantInfoRepository.save(assistantInfo);
+        dto.setId(savedInfo.getId());
+        return dto;
+    }
+
+    /**
+     * Records the usage of the hint assistant to check fields. Saves a field checked by the user with the assistant.
+     * @param dto
+     * @param gameId
+     */
+    @Transactional
+    public CheckedField saveAssistantCheckedFields(CheckedFieldDTO dto, String gameId) {
+        if (gameId == null || gameId.isEmpty()) {
+            throw new IncompleteDataException("Cannot save checked fields of assistant with an empty game ID!");
+        }
+
+        Optional<Game> curGameOptional = gameRepository.findById(gameId);
+        if (!curGameOptional.isPresent()) {
+            throw new NotFoundException("Could not find a game with id " + gameId);
+        }
+        dto.setGameId(gameId);
+        Game curGame = curGameOptional.get();
+
+        CheckedField checkedField = new CheckedField();
+        checkedField.setxCoordinate(dto.getxCoordinate());
+        checkedField.setyCoordinate(dto.getyCoordinate());
+        checkedField.setTimeChecked(dto.getTimeChecked());
+        checkedField.setGame(curGame);
+
+        curGame.addCheckedField(checkedField);
+
+        gameRepository.save(curGame);
+        return checkedField;
+    }
+
+    private void updateAssistantInfo(AssistantInfo assistantInfo, AssistantInfoDTO dto, Game game) {
+        assistantInfo.setGame(game);
+        assistantInfo.setHintSituation(dto.getHintSituation());
+        assistantInfo.setTimeClosed(dto.getTimeClosed());
+
+        assistantInfo.getVisitedSteps().clear();
+
+        dto.getVisitedSteps().forEach(visitedStepDTO -> {
+            VisitedStep visitedStep = createVisitedStep(visitedStepDTO, assistantInfo);
+            assistantInfo.addVisitedStep(visitedStep);
+        });
+    }
+
     private GameDTO createGameDTO(Game game) {
         GameDTO dto = new GameDTO();
 
@@ -149,6 +240,14 @@ public class GameService {
         }
 
         return dto;
+    }
+
+    private VisitedStep createVisitedStep(VisitedStepDTO dto, AssistantInfo assistantInfo) {
+        VisitedStep visitedStep = new VisitedStep();
+        visitedStep.setHintStep(dto.getHintStep());
+        visitedStep.setTimeSeen(dto.getTimeSeen());
+        visitedStep.setAssistantInfo(assistantInfo);
+        return visitedStep;
     }
 
     private Game createGame(GameDTO dto) {

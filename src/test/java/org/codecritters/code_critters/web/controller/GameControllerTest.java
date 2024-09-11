@@ -8,6 +8,9 @@ import org.codecritters.code_critters.web.dto.GameDTO;
 import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
 import org.codecritters.code_critters.web.dto.MineDTO;
 import org.codecritters.code_critters.web.dto.MinesDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantInfoDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.CheckedFieldDTO;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
@@ -24,8 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,9 +50,10 @@ public class GameControllerTest {
     private MineService mineService;
 
     private MinesDTO minesDTO = new MinesDTO();
-
     private MineDTO mineDTO = new MineDTO();
-
+    private AssistantInfoDTO assistantInfoDTO = new AssistantInfoDTO();
+    private AssistantPortalSaveDTO assistantPortalSaveDTO = new AssistantPortalSaveDTO();
+    private CheckedFieldDTO checkedFieldDTO = new CheckedFieldDTO();
     private GamePauseTimeDTO gamePauseTimeDTO = new GamePauseTimeDTO();
     private final GameDTO gameDTO = new GameDTO();
     private final MockCookie cookie = new MockCookie("id", "123");
@@ -95,31 +98,18 @@ public class GameControllerTest {
     }
 
     @Test
-    public void testSaveMines() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        String mines = mapper.writeValueAsString(minesDTO);
-        mvc.perform(post("/game/mines")
-                        .content(mines)
-                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-                        .param(csrfToken.getParameterName(), csrfToken.getToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        verify(mineService).saveMines(any());
-    }
-
-    @Test
     public void testSaveMine() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         String mine = mapper.writeValueAsString(mineDTO);
-        mvc.perform(post("/game/mine")
+        String gameId = "testGameId";
+        mvc.perform(post("/game/{gameId}/portal", gameId)
                         .content(mine)
                         .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
                         .param(csrfToken.getParameterName(), csrfToken.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        verify(mineService).saveMine(any());
+        verify(mineService).saveMine(any(MineDTO.class), eq(gameId));
     }
 
     @Test
@@ -135,4 +125,50 @@ public class GameControllerTest {
                 .andExpect(status().isOk());
         verify(gameService).updatePauseTimes(any());
     }
+
+    @Test
+    public void testSaveAssistantInformation() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String assistantInfoDTOString = mapper.writeValueAsString(assistantInfoDTO);
+        String gameId = "testGameId";
+        mvc.perform(post("/game/{gameId}/assistant-details", gameId)
+                        .content(assistantInfoDTOString)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(gameService).saveAssistantUsageInformation(any(AssistantInfoDTO.class), eq(gameId));
+    }
+
+    @Test
+    public void testSaveAssistantBuiltPortal() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String assistantPortalSaveDTOString = mapper.writeValueAsString(assistantPortalSaveDTO);
+        String gameId = "testGameId";
+        mvc.perform(post("/game/{gameId}/assistant-portal", gameId)
+                        .content(assistantPortalSaveDTOString)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(mineService).savePortalDuringAssistance(any(AssistantPortalSaveDTO.class), eq(gameId));
+    }
+
+    @Test
+    public void testSaveAssistantCheckedFields() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String checkedFieldDTOString = mapper.writeValueAsString(checkedFieldDTO);
+        String gameId = "testGameId";
+        mvc.perform(post("/game/{gameId}/assistant-checked-fields", gameId)
+                        .content(checkedFieldDTOString)
+                        .sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+                        .param(csrfToken.getParameterName(), csrfToken.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(gameService).saveAssistantCheckedFields(any(CheckedFieldDTO.class), eq(gameId));
+    }
+
 }
