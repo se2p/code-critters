@@ -26,12 +26,16 @@ import org.codecritters.code_critters.application.exception.IncompleteDataExcept
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.Game;
 import org.codecritters.code_critters.persistence.entities.Mine;
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.codecritters.code_critters.persistence.repository.AssistantInfoRepository;
 import org.codecritters.code_critters.persistence.repository.GameRepository;
 import org.codecritters.code_critters.persistence.repository.MineRepository;
 import org.codecritters.code_critters.web.dto.MineDTO;
 import org.codecritters.code_critters.web.dto.MinesDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,83 +44,94 @@ public class MineService {
 
     private final GameRepository gameRepository;
     private final MineRepository mineRepository;
+    private final AssistantInfoRepository assistantInfoRepository;
 
     @Autowired
-    public MineService(GameRepository gameRepository, MineRepository mineRepository) {
+    public MineService(GameRepository gameRepository, MineRepository mineRepository, AssistantInfoRepository assistantInfoRepository) {
         this.gameRepository = gameRepository;
         this.mineRepository = mineRepository;
-    }
-
-    /**
-     * Saves all mines passed in the given mine dto list.
-     * @param mines The list containing the mines and game id.
-     */
-    public void saveMines(MinesDTO mines) {
-        if (mines.getGame() == null) {
-            throw new IncompleteDataException("Cannot save mines for game with id null!");
-        }
-
-        Optional<Game> game = gameRepository.findById(mines.getGame());
-
-        if (!game.isPresent()) {
-            throw new NotFoundException("Could not find game with id " + mines.getGame());
-        }
-
-        for (MineDTO dto : mines.getMines()) {
-            Mine mine = saveMine(dto);
-            mine.setGame(game.get());
-        }
+        this.assistantInfoRepository = assistantInfoRepository;
     }
 
     /**
      * Saves a mine given as a MineDto object.
+     *
      * @param dto The mine dto
      * @return The saved mine object
      */
-    public Mine saveMine(MineDTO dto) {
+    public Mine saveMine(MineDTO dto, String gameId) {
 
-        if (dto.getGame() == null) {
+        if (gameId == null || gameId.isEmpty()) {
             throw new IncompleteDataException("Cannot save mines for game with id null!");
         }
+        Optional<Game> gameOptional = gameRepository.findById(gameId);
 
-        Mine mine = new Mine();
-
-        Optional<Game> game = gameRepository.findById(dto.getGame());
-
-        if (!game.isPresent()) {
+        if (!gameOptional.isPresent()) {
             throw new NotFoundException("Could not find game with id " + dto.getGame());
         }
+        dto.setGame(gameId);
 
-        mine.setGame(game.get());
-
-        if (dto.getXml() != null) {
-            mine.setXml(dto.getXml());
-        }
-        if (dto.getCode() != null) {
-            mine.setCode(dto.getCode());
-        }
-
-        if (dto.getCreationStart() != null) {
-            mine.setCreationStart(dto.getCreationStart());
-        }
-
-        if (dto.getCreationEnd() != null) {
-            mine.setCreationEnd(dto.getCreationEnd());
-        }
-
-        if (dto.getDeletionDateTime() != null) {
-            mine.setDeletionDateTime(dto.getDeletionDateTime());
-        }
-        if (dto.getFrontendId() != null) {
-            mine.setFrontendId(dto.getFrontendId());
-        }
-
-        mine.setUpdated(dto.isUpdated());
-        mine.setDeleted(dto.isDeleted());
-        mine.setxPosition(dto.getxPosition());
-        mine.setyPosition(dto.getyPosition());
+        Game game = gameOptional.get();
+        Mine mine = createMineFromDTO(dto, game);
 
         mineRepository.save(mine);
+        return mine;
+    }
+
+    /**
+     * Saves a portal (i.e. mine) that has been built during the hint assistance mode.
+     * @param assistantPortalSaveDTO
+     * @param gameId
+     */
+    @Transactional
+    public void savePortalDuringAssistance(AssistantPortalSaveDTO assistantPortalSaveDTO, String gameId) {
+        MineDTO dto = assistantPortalSaveDTO.getMine();
+        String assistantInfoId = assistantPortalSaveDTO.getAssistantInfoId();
+
+        if (gameId == null || gameId.isEmpty()) {
+            throw new IncompleteDataException("Cannot save mines for game with id null or empty!");
+        }
+
+        Optional<Game> game = gameRepository.findById(dto.getGame());
+        if (!game.isPresent()) {
+            throw new NotFoundException("Could not find game with id " + gameId);
+        }
+        dto.setGame(gameId);
+        Game curGame = game.get();
+
+        Optional<AssistantInfo> assistantInfoOptional = assistantInfoRepository.findById(assistantInfoId);
+        if (!assistantInfoOptional.isPresent()) {
+            throw new NotFoundException("Could not find assistant info with id " + assistantInfoId);
+        }
+        AssistantInfo assistantInfo = assistantInfoOptional.get();
+
+        Mine mine = createMineFromDTO(dto, curGame, assistantInfo);
+
+        assistantInfo.addBuiltPortal(mine);
+    }
+
+    private Mine createMineFromDTO(MineDTO dto, Game game, AssistantInfo assistantInfo) {
+        Mine mine = createMineFromDTO(dto, game);
+        mine.setAssistantInfo(assistantInfo);
+
+        return mine;
+    }
+
+    private Mine createMineFromDTO(MineDTO dto, Game game) {
+        Mine mine = new Mine();
+        mine.setGame(game);
+
+        Optional.ofNullable(dto.getXml()).ifPresent(mine::setXml);
+        Optional.ofNullable(dto.getCode()).ifPresent(mine::setCode);
+        Optional.ofNullable(dto.getCreationStart()).ifPresent(mine::setCreationStart);
+        Optional.ofNullable(dto.getCreationEnd()).ifPresent(mine::setCreationEnd);
+        Optional.ofNullable(dto.getDeletionDateTime()).ifPresent(mine::setDeletionDateTime);
+        Optional.ofNullable(dto.getFrontendId()).ifPresent(mine::setFrontendId);
+        Optional.ofNullable(dto.isUpdated()).ifPresent(mine::setUpdated);
+        Optional.ofNullable(dto.isDeleted()).ifPresent(mine::setDeleted);
+        Optional.ofNullable(dto.getxPosition()).ifPresent(mine::setxPosition);
+        Optional.ofNullable(dto.getyPosition()).ifPresent(mine::setyPosition);
+
         return mine;
     }
 }

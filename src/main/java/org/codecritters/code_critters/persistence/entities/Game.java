@@ -10,18 +10,20 @@ package org.codecritters.code_critters.persistence.entities;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.codecritters.code_critters.persistence.entities.hintSystem.CheckedField;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -58,6 +60,12 @@ public class Game {
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<GameMutants> gameMutantsList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<AssistantInfo> assistantInfoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private List<CheckedField> checkedFields = new ArrayList<>();
 
     public Game() {}
 
@@ -109,6 +117,25 @@ public class Game {
         this.gameTime = gameTime;
         this.userID = userID;
         this.pauseTimeList = pauseTimeList;
+    }
+
+    public Game(String id, Level level, LocalDateTime start, LocalDateTime end, int score, int mutantsKilled, int humansFinished,
+                double gameTime, List<PauseTime> pauseTimeList, String userID, List<GameHumans> gameHumansList, List<GameMutants> gameMutantsList,
+                List<AssistantInfo> assistantInfoList, List<CheckedField> checkedFields) {
+        this.id = id;
+        this.level = level;
+        this.start = start;
+        this.end = end;
+        this.score = score;
+        this.mutantsKilled = mutantsKilled;
+        this.humansFinished = humansFinished;
+        this.gameTime = gameTime;
+        this.pauseTimeList = pauseTimeList;
+        this.userID = userID;
+        this.gameHumansList = gameHumansList;
+        this.gameMutantsList = gameMutantsList;
+        this.assistantInfoList = assistantInfoList;
+        this.checkedFields = checkedFields;
     }
 
     public String getId() {
@@ -209,6 +236,30 @@ public class Game {
 
     public void addPauseTimeToList(PauseTime pauseTime) {
         this.pauseTimeList.add(pauseTime);
+    }
+
+    public List<AssistantInfo> getAssistantInfoList() {
+        return assistantInfoList;
+    }
+
+    public void setAssistantInfoList(List<AssistantInfo> assistantInfoList) {
+        this.assistantInfoList = assistantInfoList;
+    }
+
+    public void addAssistantInfoToList(AssistantInfo assistantInfo) {
+        this.assistantInfoList.add(assistantInfo);
+    }
+
+    public List<CheckedField> getCheckedFields() {
+        return checkedFields;
+    }
+
+    public void setCheckedFields(List<CheckedField> checkedFields) {
+        this.checkedFields = checkedFields;
+    }
+
+    public void addCheckedField(CheckedField checkedField) {
+        this.checkedFields.add(checkedField);
     }
 
     @Override

@@ -475,9 +475,8 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         this._selectedBlock = detail;
         this.$.mine_popup.show(detail);
         this._isOpen = true;
+        this._mineCreationStart = Date.now();
         if (this._globalData.mines[detail.x][detail.y]) {
-            // save mine creation or update start time
-            this._mineCreationStart = Date.now();
             this.$.blockly_test.setCode(this._globalData.mines[detail.x][detail.y].xml);
         } else {
             this.$.blockly_test.setCode('<xml xmlns="http://www.w3.org/1999/xhtml"></xml>');

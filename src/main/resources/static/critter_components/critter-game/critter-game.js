@@ -797,6 +797,8 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 speechBubble.removeChild(speechBubble.firstChild);
             }
 
+            this._saveCheckedField(coords);
+
             this.portalsSolutionsObject.forEach(portalSolution => { // iterate over all portal solutions
                 const possibleCoordinates = portalSolution.possibleCoordinates;
                 for (let i = 0; i < possibleCoordinates.length; i++) {
@@ -824,7 +826,6 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                     }
                 }
             })
-
 
             if (!isOnGoodSpot) {
                 speechBubble._showHintsTextForField("bad_field_for_portal");
@@ -1073,6 +1074,7 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             while (speechBubble.firstChild) {
                 speechBubble.removeChild(speechBubble.firstChild);
             }
+            speechBubble.gameId = this._game.id;
             speechBubble.isOnHoverInfoText = false;
             speechBubble.showHintOptions(isForFirstPortal);
         }
@@ -1151,11 +1153,6 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
      * Saves updates on mines to the database, i.e. on creation, editing or deletion of a mine.
      */
     _updateMine(mine) {
-        if (this._inPortalHintMode && this._expectsUserSaveClick) {
-            this._expectsUserSaveClick = false;
-            this._showNextHint();
-        }
-
         let mineDtoObject = {
             game: this._game.id,
             xPosition: mine.xPosition,
@@ -1169,8 +1166,19 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             updated: mine.updated,
             frontendId: mine.frontEndId
         }
+        let req;
+        let url;
 
-        let req = this._generateRequest("/game/mine", mineDtoObject, "POST");
+        if (this._inPortalHintMode && this._expectsUserSaveClick) {
+            this._expectsUserSaveClick = false;
+            this._showNextHint();
+            url = `/game/${this._game.id}/assistant-portal`;
+            const dto = {mine: mineDtoObject, assistantInfoId: this._globalData.assistentUsageInfoObject.id}
+            req = this._generateRequest(url, dto, "POST");
+        } else {
+            url = `/game/${this._game.id}/portal`;
+            req = this._generateRequest(url, mineDtoObject, "POST");
+        }
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
@@ -1187,6 +1195,29 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         }
 
         this._globalData.deleteMines();
+    }
+
+    /**
+     * Saves the hint system interaction of checking a field in the backend.
+     * @param coords of the checked field
+     */
+    _saveCheckedField(coords) {
+        if (this._inPortalHintMode && this._tipsForFieldsActivated) {
+            let dto = {
+                xCoordinate: coords.x,
+                yCoordinate: coords.y,
+                timeChecked: new Date(),
+                gameId: this._game.id
+            }
+
+            const url = `/game/${this._game.id}/assistant-checked-fields`;
+
+            let req = this._generateRequest(url, dto, "POST");
+
+            let genRequest = req.generateRequest();
+            req.completes = genRequest.completes;
+            return req;
+        }
     }
 
     _speedUpGame() {
@@ -1797,6 +1828,13 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
      * @private
      */
     _saveGame() {
+
+        // if assistant is used, close it and store usage info
+        if (this._globalData.assistentUsageInfoObject !== null) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.close();
+        }
+
         this._game.mutantsKilled = this._killedMutants;
         this._game.humansFinished = this._finishedHumans;
         this._game.gameTime = this._gameTime;
@@ -1807,24 +1845,6 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         this._game.finishedHumansList = this._finishedHumansList;
 
         let req = this._generateRequest("/game/save", this._game, "POST");
-
-        let genRequest = req.generateRequest();
-        req.completes = genRequest.completes;
-        return req;
-    }
-
-    /**
-     * Saves the mine code for all mines present at the point of saving.
-     * @returns {HTMLElement}
-     * @private
-     */
-    _saveMines() {
-        let data = {
-            game: this._game.id,
-            mines: this._computeMineData()
-        }
-
-        let req = this._generateRequest("/game/mines", data, "POST");
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
@@ -1862,6 +1882,12 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
 
         if (event !== undefined) {
             event.preventDefault();
+        }
+
+        // if assistant is used, close it and store usage info
+        if (this._globalData.assistentUsageInfoObject !== null) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.close();
         }
 
         this._game.mutantsKilled = this._killedMutants;

@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.controller;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -29,13 +29,12 @@ import org.codecritters.code_critters.application.service.MineService;
 import org.codecritters.code_critters.web.dto.GameDTO;
 import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
 import org.codecritters.code_critters.web.dto.MineDTO;
-import org.codecritters.code_critters.web.dto.MinesDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantInfoDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.CheckedFieldDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping(value = "/game")
@@ -72,24 +71,13 @@ public class GameController {
     }
 
     /**
-     * NOTE: This endpoint is no longer called by the frontend. It saves only the final state of all mines in a game.
-     * Now the /mine endpoint is used on every mine update in order to track the individual mine histories.
-     *
-     * Saves the given mine data.
-     * @param mines The list of mines to save.
+     * Saves the given portal/mine data of a game.
+     * @param gameId
+     * @param mine
      */
-    @PostMapping(path = "/mines")
-    public void saveMines(@RequestBody MinesDTO mines) {
-        mineService.saveMines(mines);
-    }
-
-    /**
-     * Saves the given mine data.
-     * @param mine a MineDTO object
-     */
-    @PostMapping(path = "/mine")
-    public void saveMine(@RequestBody MineDTO mine) {
-        mineService.saveMine(mine);
+    @PostMapping(path = "/{gameId}/portal")
+    public void saveMine(@PathVariable String gameId, @RequestBody MineDTO mine) {
+        mineService.saveMine(mine, gameId);
     }
 
     /**
@@ -99,5 +87,36 @@ public class GameController {
     @PostMapping(path="/pause")
     public void savePauseTime(@RequestBody GamePauseTimeDTO dto) {
         gameService.updatePauseTimes(dto);
+    }
+
+
+    /**
+     * Saves details about the usage of the hint assistant in a game.
+     * @param gameId
+     * @param dto of the assistant information
+     */
+    @PostMapping(path="/{gameId}/assistant-details")
+    public AssistantInfoDTO saveAssistantInformation(@PathVariable String gameId, @RequestBody AssistantInfoDTO dto) {
+        return gameService.saveAssistantUsageInformation(dto, gameId);
+    }
+
+    /**
+     * Saves a portal that is built during the assistance mode.
+     * @param gameId
+     * @param dto DTO that holds the assistantInfoId and the portalDTO so save
+     */
+    @PostMapping(path="/{gameId}/assistant-portal")
+    public void saveAssistantBuiltPortal(@PathVariable String gameId, @RequestBody AssistantPortalSaveDTO dto) {
+        mineService.savePortalDuringAssistance(dto, gameId);
+    }
+
+    /**
+     * Saves the fields that have been checked with the hint assistant in a game.
+     * @param gameId
+     * @param checkedFieldDTO
+     */
+    @PostMapping(path="/{gameId}/assistant-checked-fields")
+    public void saveAssistantCheckedFields(@PathVariable String gameId, @RequestBody CheckedFieldDTO checkedFieldDTO) {
+        gameService.saveAssistantCheckedFields(checkedFieldDTO, gameId);
     }
 }
