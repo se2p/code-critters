@@ -21,9 +21,8 @@ services:
       MYSQL_PASSWORD: $MYSQLDB_ROOT_PASSWORD
       MYSQL_USER: $MYSQLDB_USER
       MYSQL_DATABASE: $MYSQLDB_DATABASE
-      # Used to seed database before flyway
-    # volumes:
-     # - ./init:/docker-entrypoint-initdb.d
+    volumes:
+      - db_data:/var/lib/mysql
   mailhog:
     container_name: "critter-mailhog"
     image: mailhog/mailhog:latest
@@ -67,3 +66,5 @@ services:
       - ./config/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 24h & wait $${!}; done;'"
 
+volumes:
+  db_data:
