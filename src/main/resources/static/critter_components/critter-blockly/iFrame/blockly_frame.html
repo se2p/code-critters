@@ -65,6 +65,30 @@
   var toolbox = document.getElementById('toolbox');
   var workspace = null;
   var inHintMode = false;
+  var inLoopLevel = false;
+
+
+  /**
+   * Sets the scale of blocks based on the size of the blockly window
+   * and whether it contains a toolbox or not.
+   */
+  const setBlockScale = function () {
+    if (this.showToolbox) {
+      if (this.inLoopLevel) {
+        this.workspace.setScale(1.0);
+      } else {
+        this.workspace.setScale(0.7)
+      }
+    } else if (window.matchMedia("(max-width: 500px)").matches) {
+      this.workspace.setScale(0.6);
+    } else if (window.matchMedia("(max-width: 600px)").matches) {
+      this.workspace.setScale(0.7);
+    } else if (window.matchMedia("(max-width: 700px)").matches) {
+      this.workspace.setScale(0.8);
+    } else {
+      this.workspace.setScale(1.0);
+    }
+  }
 
   var onresize = function(e) {
     // Compute the absolute coordinates and dimensions of blocklyArea.
@@ -114,9 +138,11 @@
                 scrollbars:  true
               });
     }
+
     if(blocklyCode) {
       var xml = Blockly.utils.xml.textToDom(blocklyCode);
       Blockly.Xml.domToWorkspace(xml, this.workspace);
+      setBlockScale();
       this.workspace.scrollCenter();
     }
 
@@ -251,6 +277,11 @@
       renderBlockly(isCut);
   };
 
+  var setIsInLoopLevel = function(isLoopLevel, isCut = false) {
+    inLoopLevel = isLoopLevel;
+    renderBlockly(isCut);
+  }
+
   var getCode = function() {
     var jsCode = Blockly.JavaScript.workspaceToCode(workspace);
     return jsCode;
@@ -265,6 +296,13 @@
   var getBlockById = function(id) {
       return  workspace.getBlockById(id);
   };
+
+  var getBlockNumber = function () {
+      if (workspace) {
+          return workspace.getAllBlocks().length;
+      }
+      return 0;
+  }
 
   var getMetrics = function () {
     return workspace.getMetrics();
@@ -306,8 +344,8 @@
 
 
   /**
-   * Checks validity of an assertion. It takes the current block as input.
-   * @param currentBlock block (child of assert-block) that is moved/changed right now
+   * Checks validity of an assertions and comparisons (e.g. logic_compare blocks). It takes the current block as input.
+   * @param currentBlock block (child of assert-block/compare-block) that is moved/changed right now
    */
   const _checkAssertValidity = function (currentBlock) {
     const parentBlock = currentBlock.parentBlock_;
@@ -321,7 +359,7 @@
         secondOperandBlock = childBlocks[0];
       }
 
-      const operandsCode = getAssertOperandsJsCode();
+      const operandsCode = getAssertOperandsJsCode(parentBlock);
 
       let firstOperand = "";
       let secondOperand = "";
@@ -338,10 +376,10 @@
       // Find out which jsCode corresponds to which operand block
       let currentOperand;
       let otherOperand;
-      if (firstOperand.includes(jsCodeOfCurrentBlock)) {
+      if ((firstOperand.includes(jsCodeOfCurrentBlock)) || (jsCodeOfCurrentBlock.includes(firstOperand))) {
         currentOperand = firstOperand;
         otherOperand = secondOperand;
-      } else if (secondOperand.includes(jsCodeOfCurrentBlock)) {
+      } else if ((secondOperand.includes(jsCodeOfCurrentBlock)) || (jsCodeOfCurrentBlock.includes(secondOperand))) {
         currentOperand = secondOperand;
         otherOperand = firstOperand;
       } else { // not building an assertion with the current block
@@ -393,17 +431,70 @@
   };
 
   /**
+   * Highlights the affected blocktemporarily. Blinks in red for two times.
+   * @param firstOperandBlock
+   */
+  const highlightOneBlock = function (block) {
+    // Save the original colors to revert back later
+     block.originalColour = block.originalColour ? block.originalColour : block.getColour();
+
+    let blinkCount = 3; // Number of times to blink
+    let blinkToggle = true;
+
+    block.setColour('#ff0000');
+
+    const blinkInterval = setInterval(() => {
+      // Toggle between original color and red
+      if (blinkToggle) {
+        block.setColour(block.originalColour);
+      } else {
+        block.setColour('#ff0000');
+      }
+      blinkToggle = !blinkToggle;
+      workspace.render();
+      blinkCount--;
+
+      if (blinkCount === 0) {
+        // Clear interval after blinking is done and revert color of blocks to original
+        clearInterval(blinkInterval);
+        block.setColour(block.originalColour);
+        workspace.render();
+      }
+    }, 500);
+  };
+
+  /**
    * Returns an array of max length of 2 containing the js code of the assert operands
    */
-  const getAssertOperandsJsCode = function () {
-    const jsCode = getCode();
+  const getAssertOperandsJsCode = function (parentBlock) {
+    Blockly.JavaScript.init(workspace);
+    const jsCode = Blockly.JavaScript.blockToCode(parentBlock) ?
+            removeBlocklyOrderFromBlockCode(Blockly.JavaScript.blockToCode(parentBlock).toString()) : "";
     const jsString = jsCode.toString();
-    const regex = /if\s*\((.*?)\s*!==\s*(.*?)\)\s*{/g; // look only at code inside assert (i.e. the two operands of the if-condition)
 
+    let regex;
     let matches = [];
     let match;
-    while ((match = regex.exec(jsString)) !== null) {
-      matches.push(match[1], match[2]);
+    if (parentBlock && (parentBlock.type === "assert" || parentBlock.type === "assert_loop")) {
+      regex = /if\s*\((.*?)\s*!==\s*(.*?)\)\s*{/g; // look only at code inside assert (i.e. the two operands of the if-condition)
+      while ((match = regex.exec(jsString)) !== null) {
+        matches.push(match[1], match[2]);
+      }
+    } else if (parentBlock && (parentBlock.type === "logic_compare")) {
+      const regexes = [
+        /(.*?)\s* == \s*(.*)/g,
+        /(.*?)\s* <= \s*(.*)/g,
+        /(.*?)\s* < \s*(.*)/g,
+        /(.*?)\s* >= \s*(.*)/g,
+        /(.*?)\s* > \s*(.*)/g,
+      ];
+
+      // Iterate through each regex pattern
+      regexes.forEach((regex) => {
+        while (((match = regex.exec(jsString)) !== null) && matches.length < 2) {
+          matches.push(match[1], match[2]);
+        }
+      });
     }
     return matches;
   }
@@ -417,15 +508,23 @@
    * @param otherOperandBlock other assert operand block
    */
   const checkValidityOfOperands =  function (currentOperandCode, otherOperandCode, currentBlock, otherOperandBlock) {
-    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
-    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown|white)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime | == | != | <= | >= | )\b/;
 
-    if (currentOperandCode.match(/\b(color)\b/)) { // is critter.shirtColor block
+    if (currentBlock.type === "math_arithmetic") {
+      validityCheckWithNumber(otherOperandCode, "math_number", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentBlock.type === "logic_compare" || currentBlock.type === "math_number_property" || currentBlock.type === "logic_operation") {
+      validityCheckWithBools(otherOperandCode, otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\b(color)\b/)) { // is critter.shirtColor block
       validityCheckWithColor(otherOperandCode, "shirtcolor_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
     } else if (currentOperandCode.match(/\b(hair)\b/)) { // is critter.haircolor block
       validityCheckWithColor(otherOperandCode, "haircolor_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
     } else if (currentOperandCode.match(/\b(size)\b/)) { // is critter.size block
       validityCheckWithNumber(otherOperandCode, "size_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\b(roundsCount)\b/) || currentOperandCode.match(/\b(innerRoundsCount)\b/)) { // is critter.roundsCount block
+      validityCheckWithNumber(otherOperandCode, "rounds_count_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
+    } else if (currentOperandCode.match(/\b\w*BerryCount\w*\b/)) { // is critter.berryCount block (for all colors)
+      validityCheckWithNumber(otherOperandCode, "berry_count_prop", otherOperandBlock.type, currentBlock, otherOperandBlock);
     } else if (currentOperandCode.match(allColorsRegex)) { // is hair or shirt color picker block
       validityCheckWithColor(otherOperandCode, currentBlock.type, otherOperandBlock.type, currentBlock, otherOperandBlock);
     } else if (currentOperandCode.match(/\d+/)) {
@@ -445,32 +544,40 @@
    * @param otherOperandBlock other assert operand block
    */
   const validityCheckWithBools = function (otherOperand, otherOperandBlockType, currentBlock, otherOperandBlock) {
-    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
-    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown|white)\b/;
 
-    if (otherOperand.match(/\b(color)\b/)) {
-      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
+    if (otherOperandBlockType === "math_arithmetic") {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "number" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(color)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
       highlightAssertBlocks(currentBlock, otherOperandBlock);
     } else if (otherOperand.match(/\b(hair)\b/)) {
-      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
       highlightAssertBlocks(currentBlock, otherOperandBlock);
     } else if (otherOperand.match(allColorsRegex)) {
       if (otherOperandBlockType === "hair_picker") {
-        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "hair_picker" }, bubbles: true, composed: true}));
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "hair_picker" }, bubbles: true, composed: true}));
         highlightAssertBlocks(currentBlock, otherOperandBlock);
       } else if (otherOperandBlockType === "shirt_picker") {
-        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "shirt_picker" }, bubbles: true, composed: true}));
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "shirt_picker" }, bubbles: true, composed: true}));
         highlightAssertBlocks(currentBlock, otherOperandBlock);
       }
     }
 
-    // if compared to numbers (not inside a num_property boolean)
-    if (!otherOperand.match(allNumPropertiesRegex)) {
+    // if compared to numbers (not inside a boolean block)
+    if (!(otherOperandBlockType === "logic_compare" || otherOperandBlockType === "logic_compare" || otherOperandBlockType === "logic_operation")) {
       if (otherOperand.match(/\d+/)) {
-        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "number" }, bubbles: true, composed: true}));
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "number" }, bubbles: true, composed: true}));
         highlightAssertBlocks(currentBlock, otherOperandBlock);
       } else if (otherOperand.match(/\b(size)\b/)) {
-        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "size_prop"}, bubbles: true, composed: true}));
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "size_prop"}, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperand.match(/\b(roundsCount)\b/) || otherOperand.match(/\b(innerRoundsCount)\b/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "rounds_count_prop"}, bubbles: true, composed: true}));
+        highlightAssertBlocks(currentBlock, otherOperandBlock);
+      } else if (otherOperand.match(/\b\w*BerryCount\w*\b/)) {
+        window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "logic_compare", comparedWith: "berry_count_prop"}, bubbles: true, composed: true}));
         highlightAssertBlocks(currentBlock, otherOperandBlock);
       }
     }
@@ -485,10 +592,13 @@
    * @param otherOperandBlock other assert operand block
    */
   const validityCheckWithNumber = function (otherOperand, curBlockType, otherOperandBlockType, currentBlock, otherOperandBlock) {
-    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
-    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown|white)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime | == | != | <= | >= | )\b/;
 
-    if (otherOperand.match(/\b(color)\b/)) {
+    if (otherOperandBlockType === "logic_compare" || otherOperandBlockType === "math_number_property" || otherOperandBlockType === "logic_operation") {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "logic_compare" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(color)\b/)) {
       window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "shirtcolor_prop" }, bubbles: true, composed: true}));
       highlightAssertBlocks(currentBlock, otherOperandBlock);
     } else if (otherOperand.match(/\b(hair)\b/)) {
@@ -517,11 +627,23 @@
    * @param otherOperandBlock other assert operand block
    */
   const validityCheckWithColor = function (otherOperand, curBlockType, otherOperandBlockType, currentBlock, otherOperandBlock) {
-    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime)\b/;
-    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown)\b/;
+    const allNumPropertiesRegex = /\b( % | > | < |mathIsPrime | == | != | <= | >= | )\b/;
+    const allColorsRegex = /\b(red|blue|cyan|green|orange|yellow|grey|black|pink|blond|brown|white)\b/;
 
-    if (otherOperand.match(/\b(size)\b/)) {
+    if (otherOperandBlockType === "math_arithmetic") {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "number" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperandBlockType === "logic_compare" || otherOperandBlockType === "math_number_property" || otherOperandBlockType === "logic_operation") {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "logic_compare" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(size)\b/)) {
       window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "size_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b(roundsCount)\b/) || otherOperand.match(/\b(innerRoundsCount)\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "rounds_count_prop" }, bubbles: true, composed: true}));
+      highlightAssertBlocks(currentBlock, otherOperandBlock);
+    } else if (otherOperand.match(/\b\w*BerryCount\w*\b/)) {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "berry_count_prop" }, bubbles: true, composed: true}));
       highlightAssertBlocks(currentBlock, otherOperandBlock);
     } else if (otherOperand.match(/\d+/)) {
       if (otherOperand.match(allNumPropertiesRegex)) {
@@ -547,6 +669,23 @@
         window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType, comparedWith: "haircolor_prop" }, bubbles: true, composed: true}));
         highlightAssertBlocks(currentBlock, otherOperandBlock);
       }
+    }
+  }
+
+  /**
+   * Throws event if current block (child of math_number_property) is not of type number.
+   * @param childblock
+   * @param childblockJsCode
+   */
+  const _validityCheckInNumProperty = function (childblock, childblockJsCode) {
+    if (childblock.type === "math_arithmetic" || childblock.type === "math_number") {
+      // do nothing
+    } else if ((childblock.type === "properties_user_healing" || childblock.type === "properties_user") && (childblockJsCode.match(/\b(size)\b/) || childblockJsCode.match(/\b(roundsCount)\b/)
+            || childblockJsCode.match(/\b(innerRoundsCount)\b/) || childblockJsCode.match(/\b\w*BerryCount\w*\b/))){
+      // do nothing
+    } else {
+      window.dispatchEvent(new CustomEvent("_invalidComparison", {detail: { curBlockType: "math_number_property", comparedWith: "notANumberAsChild" }, bubbles: true, composed: true}));
+      highlightOneBlock(childblock);
     }
   }
 
@@ -582,8 +721,16 @@
       if (currentBlock) {
         parentBlock = currentBlock.parentBlock_;
       }
-      if (parentBlock && parentBlock.type === "assert") {
+      if (parentBlock && (parentBlock.type === "assert" || parentBlock.type === "assert_loop"
+              || parentBlock.type === "logic_compare")) { // they all compare two values with each other
         _checkAssertValidity(currentBlock)
+      } else if (parentBlock && (parentBlock.type === "math_number_property")) { // this must contain a number
+        const childBlocks = parentBlock.childBlocks_;
+        if (childBlocks[0].id === currentBlock.id) {
+          const currentBlockJs = Blockly.JavaScript.blockToCode(currentBlock) ?
+                  removeBlocklyOrderFromBlockCode(Blockly.JavaScript.blockToCode(currentBlock).toString()) : "";
+          _validityCheckInNumProperty(currentBlock, currentBlockJs);
+        }
       }
     }
   }

@@ -33,17 +33,23 @@ export const critterTransitionDuration = "3s";
 export const warningMessages = {
     shirtcolor_prop: {
         size_prop: "invalid_compare_size_shirt",
+        rounds_count_prop: "invalid_compare_rounds_shirt",
+        berry_count_prop: "invalid_compare_berries_shirt",
         number: "invalid_compare_num_shirt",
         math_arithmetic: "invalid_compare_num_shirt",
         math_number_property: "invalid_compare_bool_shirt",
+        logic_compare: "invalid_compare_bool_shirt",
         hair_picker: "invalid_compare_hair_shirt",
         haircolor_prop: "invalid_compare_hair_shirt"
     },
     haircolor_prop: {
         size_prop: "invalid_compare_size_hair",
+        rounds_count_prop: "invalid_compare_rounds_hair",
+        berry_count_prop: "invalid_compare_berries_hair",
         number: "invalid_compare_num_hair",
         math_arithmetic: "invalid_compare_num_hair",
         math_number_property: "invalid_compare_bool_hair",
+        logic_compare: "invalid_compare_bool_hair",
         shirt_picker: "invalid_compare_hair_shirt",
         shirtcolor_prop: "invalid_compare_hair_shirt"
     },
@@ -51,20 +57,43 @@ export const warningMessages = {
         hair_picker: "invalid_compare_size_hair",
         shirt_picker: "invalid_compare_size_shirt",
         math_number_property: "invalid_compare_size_bool",
+        logic_compare: "invalid_compare_size_bool",
         shirtcolor_prop: "invalid_compare_size_shirt",
         haircolor_prop: "invalid_compare_size_hair"
+    },
+    rounds_count_prop: {
+        hair_picker: "invalid_compare_rounds_hair",
+        shirt_picker: "invalid_compare_rounds_shirt",
+        math_number_property: "invalid_compare_rounds_bool",
+        logic_compare: "invalid_compare_rounds_bool",
+        shirtcolor_prop: "invalid_compare_rounds_shirt",
+        haircolor_prop: "invalid_compare_rounds_hair"
+    },
+    berry_count_prop: {
+        hair_picker: "invalid_compare_berries_hair",
+        shirt_picker: "invalid_compare_berries_shirt",
+        math_number_property: "invalid_compare_berries_bool",
+        logic_compare: "invalid_compare_berries_bool",
+        shirtcolor_prop: "invalid_compare_berries_shirt",
+        haircolor_prop: "invalid_compare_berries_hair"
     },
     shirt_picker: {
         number: "invalid_compare_num_shirt",
         size_prop: "invalid_compare_size_shirt",
+        rounds_count_prop: "invalid_compare_rounds_shirt",
+        berry_count_prop: "invalid_compare_berries_shirt",
         math_number_property: "invalid_compare_bool_shirt",
+        logic_compare: "invalid_compare_bool_shirt",
         hair_picker: "invalid_compare_hair_shirt",
         haircolor_prop: "invalid_compare_hair_shirt"
     },
     hair_picker: {
         number: "invalid_compare_num_hair",
         math_number_property: "invalid_compare_bool_hair",
+        logic_compare: "invalid_compare_bool_hair",
         size_prop: "invalid_compare_size_hair",
+        rounds_count_prop: "invalid_compare_rounds_hair",
+        berry_count_prop: "invalid_compare_berries_hair",
         shirt_picker: "invalid_compare_hair_shirt",
         shirtcolor_prop: "invalid_compare_hair_shirt"
     },
@@ -72,6 +101,7 @@ export const warningMessages = {
         shirt_picker: "invalid_compare_num_shirt",
         hair_picker: "invalid_compare_num_hair",
         math_number_property: "invalid_compare_num_bool",
+        logic_compare: "invalid_compare_num_bool",
         shirtcolor_prop: "invalid_compare_num_shirt",
         haircolor_prop: "invalid_compare_num_hair"
     },
@@ -79,6 +109,7 @@ export const warningMessages = {
         shirt_picker: "invalid_compare_num_shirt",
         hair_picker: "invalid_compare_num_hair",
         math_number_property: "invalid_compare_num_bool",
+        logic_compare: "invalid_compare_num_bool",
         shirtcolor_prop: "invalid_compare_num_shirt",
         haircolor_prop: "invalid_compare_num_hair"
     },
@@ -88,8 +119,22 @@ export const warningMessages = {
         shirtcolor_prop: "invalid_compare_bool_shirt",
         haircolor_prop: "invalid_compare_bool_hair",
         size_prop: "invalid_compare_size_bool",
+        rounds_count_prop: "invalid_compare_rounds_bool",
+        berry_count_prop: "invalid_compare_berries_bool",
+        number: "invalid_compare_num_bool",
+        notANumberAsChild: "invalid_object_in_num_prop"
+    },
+    logic_compare: { // stands for all bool values, including e.g. logic operation blocks
+        shirt_picker: "invalid_compare_bool_shirt",
+        hair_picker: "invalid_compare_bool_hair",
+        shirtcolor_prop: "invalid_compare_bool_shirt",
+        haircolor_prop: "invalid_compare_bool_hair",
+        size_prop: "invalid_compare_size_bool",
+        rounds_count_prop: "invalid_compare_rounds_bool",
+        berry_count_prop: "invalid_compare_berries_bool",
         number: "invalid_compare_num_bool"
     }
+
 };
 
 // Names of fix variable blocks in CUTs (blocks are defined in the level XMLs)

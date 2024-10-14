@@ -125,6 +125,12 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
                         margin: auto;
                     }
                 }
+                
+                @media only screen and (min-width: 768px){
+                    :host {
+                        min-width: 766px;
+                    }
+                }
 
                 #dialog-container {
                     display: flex;
@@ -227,7 +233,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
                             <div class="dialog-title">[[__("really_delete_unsaved")]]</div>
                             <div id="dialog-buttons">
                                 <critter-button id="first_save" class="col-5">[[__("no_first_save")]]</critter-button>
-                                <critter-button id="close_without_save" class="col-5">[[__("yes")]]</critter-button>
+                                <critter-button id="close_without_save" class="col-5">[[__("close")]]</critter-button>
                             </div>
                         </div>
                     </critter-dialog>
@@ -322,6 +328,7 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
 
     _saveMine() {
         let code = this.$.blockly_test.getJavaScript();
+        const blockCount = this.$.blockly_test.getBlockNum();
 
         if (this._isCodeNewAndEmpty(code)) { // show error if trying to initially save an empty test
             this._popupClose();
@@ -356,11 +363,14 @@ class CritterTestPopup extends Toaster(Level(PolymerElement)) {
         detail.deleted = false;
         detail.deletionDateTime = null;
         detail.updated = false;
-        detail.frontEndId = uuidv4();
+        detail.blockCount = blockCount;
 
         // if an existing mine is edited
         if (this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] != null) {
             detail.updated = true;
+            detail.frontEndId = this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y].frontEndId;
+        } else {
+            detail.frontEndId = uuidv4();
         }
         this._globalData.mines[this._selectedBlock.x][this._selectedBlock.y] = detail;
 

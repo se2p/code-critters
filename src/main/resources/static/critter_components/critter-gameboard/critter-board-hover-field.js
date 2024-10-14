@@ -295,8 +295,9 @@ class CritterGameboardHoverField extends PolymerElement {
             },
 
             isClickable: {
-                type: Boolean
-            }
+                type: Boolean,
+                value: true
+            },
         };
     }
 

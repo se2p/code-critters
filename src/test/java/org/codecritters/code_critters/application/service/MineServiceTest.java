@@ -52,9 +52,9 @@ public class MineServiceTest {
     private static final String XML = "xml";
     private static final String assistantInfoId = "infoId";
     private Game game = new Game(ID, new Level(), LocalDateTime.now(), LocalDateTime.now(), 0, 0, 0, 0, ID, new ArrayList<>());
-    private MineDTO mine1 = new MineDTO(ID, GAME, CODE + ID, XML + ID, LocalDateTime.now(), LocalDateTime.now(), 8, 2, false, LocalDateTime.now(), true, "frontendID1");
-    private MineDTO mine2 = new MineDTO(ID2, GAME, CODE + ID2, XML + ID2, LocalDateTime.now(), LocalDateTime.now(), 5, 3, false, LocalDateTime.now(), true, "frontendID2");
-    private MineDTO mine3 = new MineDTO("mine3Id", GAME, CODE + "3", XML + "3", LocalDateTime.now(), LocalDateTime.now(), 6, 9, false, LocalDateTime.now(), true, "frontendID3");
+    private MineDTO mine1 = new MineDTO(ID, GAME, CODE + ID, XML + ID, LocalDateTime.now(), LocalDateTime.now(), 8, 2, false, LocalDateTime.now(), true, "frontendID1", 2);
+    private MineDTO mine2 = new MineDTO(ID2, GAME, CODE + ID2, XML + ID2, LocalDateTime.now(), LocalDateTime.now(), 5, 3, false, LocalDateTime.now(), true, "frontendID2", 5);
+    private MineDTO mine3 = new MineDTO("mine3Id", GAME, CODE + "3", XML + "3", LocalDateTime.now(), LocalDateTime.now(), 6, 9, false, LocalDateTime.now(), true, "frontendID3", 1);
 
     private MinesDTO minesDTO = new MinesDTO();
     private List<MineDTO> mines = new ArrayList<>();

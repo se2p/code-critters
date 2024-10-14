@@ -31,7 +31,6 @@ import org.codecritters.code_critters.persistence.repository.AssistantInfoReposi
 import org.codecritters.code_critters.persistence.repository.GameRepository;
 import org.codecritters.code_critters.persistence.repository.MineRepository;
 import org.codecritters.code_critters.web.dto.MineDTO;
-import org.codecritters.code_critters.web.dto.MinesDTO;
 import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,6 +130,8 @@ public class MineService {
         Optional.ofNullable(dto.isDeleted()).ifPresent(mine::setDeleted);
         Optional.ofNullable(dto.getxPosition()).ifPresent(mine::setxPosition);
         Optional.ofNullable(dto.getyPosition()).ifPresent(mine::setyPosition);
+        Optional.ofNullable(dto.getyPosition()).ifPresent(mine::setyPosition);
+        Optional.ofNullable(dto.getBlockCount()).ifPresent(mine::setBlockCount);
 
         return mine;
     }

@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.dto.usageStats;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -40,9 +40,17 @@ public class GamesOfUserDTO {
      */
     private List<GameMinimal> games;
 
+    private List<GameMinimal> healingGames;
+
     public GamesOfUserDTO(String user, List<GameMinimal> games) {
         this.user = user;
         this.games = games;
+    }
+
+    public GamesOfUserDTO(String user, List<GameMinimal> games, List<GameMinimal> healingGames) {
+        this.user = user;
+        this.games = games;
+        this.healingGames = healingGames;
     }
 
     public GamesOfUserDTO() {
@@ -64,4 +72,11 @@ public class GamesOfUserDTO {
         this.games = games;
     }
 
+    public List<GameMinimal> getHealingGames() {
+        return healingGames;
+    }
+
+    public void setHealingGames(List<GameMinimal> healingGames) {
+        this.healingGames = healingGames;
+    }
 }

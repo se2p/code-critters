@@ -35,6 +35,7 @@ import '../critter-timeout/critter-timeout-manager.js';
 import '../critter-score/critter-score.js';
 import '../critter-header/critter-header.js';
 import '../critter-data-store/critter-data-store.js';
+import '../critter-level-selector/critter-unlocked-level-selector.js'
 import './critter-game-image.js'
 import '/lib/@polymer/iron-icons/iron-icons.js';
 import '../critter-hint-assistant/critter-hint-assistant.js';
@@ -163,6 +164,7 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 #selector_container {
                     margin-top: 60px;
                     text-align: center;
+                    max-width: 500px;
                 }
 
                 #selector_container critter-level-selector-simple {
@@ -244,6 +246,25 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                     margin-left: auto;
                     margin-right: auto;
                 }
+
+                #retry_button {
+                    margin-left: auto;
+                    margin-right: auto;
+                    margin-botton: 10px;
+                    font-size: 1.5em;
+                    text-align: center;
+                }
+
+                #next_level_button {
+                    margin-left: auto;
+                    margin-right: auto;
+                    text-align: center;
+                    font-size: 1.1em;
+                }
+
+                #try_again_text {
+                    margin-top: 10px;
+                }
                 
                 #hint_assistant_container {
                     cursor: pointer;
@@ -262,25 +283,31 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                     display: block;
                 }
 
-                #dialog-container {
+                .dialog_container {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     padding: 8px 8px 0 8px;
                 }
 
-                .dialog-title {
+                .dialog_title {
                     font-weight: bold;
                     margin-bottom: 12px;
                 }
 
-                #dialog-buttons {
+                #dialog_buttons {
                     display: flex;
                     flex-direction: row;
                     justify-content: space-around;
                 }
 
-                #dialog-buttons critter-button {
+                #restart_game_confirm:hover,
+                #continue_confirm:hover {
+                    font-size: 1.1em;
+                    --critter-button-text-color: #ffa600;
+                }
+
+                #dialog_buttons critter-button {
                     --critter-button-color-disabled: transparent;
                     --critter-button-color: transparent;
                     --critter-button-text-color: #666;
@@ -361,8 +388,16 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                     <critter-button id="mutant_button">[[__('show_mutants')]]</critter-button>
                 </div>
                 <div id="selector_container">
-                    <h3>[[__('select_next')]]</h3>
-                    <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>
+                    <template is="dom-if" if="{{!_secondStageLocked}}">
+                        <h4>[[__('heal_critters')]]</h4>
+                    </template>
+                    <template is="dom-if" if="{{_secondStageLocked}}">
+                        <critter-button id="retry_button">[[__('retry')]]</critter-button>
+                        <h4>[[__('try_again')]]</h4>
+
+                    </template>
+                    <critter-unlocked-level-selector id="second_stage_level" name="{{currentHealLevelName}}"></critter-unlocked-level-selector>
+                    <critter-button id="next_level_button">[[__('or_to_next_level')]]</critter-button>
                 </div>
             </critter-dialog>
             <div class="row">
@@ -445,12 +480,26 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                         </div>
                         <div id="healed_container" class="col-12"></div>
                     </div>
+                    
                 </div>
+
+                <div>
+                    <critter-dialog id="restart_game_dialog">
+                        <div class="row dialog_container">
+                            <div class="dialog_title">[[__("restart_confirm")]]</div>
+                            <div id="dialog_buttons">
+                                <critter-button id="continue_confirm" class="col-5">[[__("no_continue")]]</critter-button>
+                                <critter-button id="restart_game_confirm" class="col-5">[[__("yes_restart")]]</critter-button>
+                            </div>
+                        </div>
+                    </critter-dialog>
+                </div>
+
                 <div>
                     <critter-dialog id="start_intro_dialog">
-                        <div class="row" id="dialog-container">
-                            <div class="dialog-title">[[__("start_intro_question")]]</div>
-                            <div id="dialog-buttons">
+                        <div class="row dialog_container">
+                            <div class="dialog_title">[[__("start_intro_question")]]</div>
+                            <div id="dialog_buttons">
                                 <critter-button id="close_intro_dialog" class="col-5">[[__("close_intro_confirm")]]</critter-button>
                                 <critter-button id="start_intro" class="col-5">[[__("start_intro_confirm")]]</critter-button>
                             </div>
@@ -470,6 +519,12 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
     static get properties() {
         return {
             currentLevelName: {
+                type: String,
+                value: "",
+                notify: true
+            },
+
+            currentHealLevelName: {
                 type: String,
                 value: "",
                 notify: true
@@ -532,7 +587,6 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 type: Number,
                 value: 0
             },
-
 
             stars: {
                 type: Number,
@@ -666,6 +720,10 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             _expectsUserSaveClick: {
                 type: Boolean,
                 value: false
+            },
+            _secondStageLocked: {
+                type: Boolean,
+                value: true
             }
         };
     }
@@ -685,8 +743,15 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             this.$.send_button.addEventListener("click", () => this._startCritters(this));
             this.$.speedUp_button.addEventListener("click", () => this._speedUpGame(this));
             this.$.speedDown_button.addEventListener("click", () => this._speedDownGame(this))
-            this.$.reload_button.addEventListener("click", () => this._reloadGame(this));
+            this.$.reload_button.addEventListener("click", () => this._showReloadConfirmDialog(this));
             this.$.mutant_button.addEventListener("click", () => this._showMutants(this));
+            if (this.shadowRoot.querySelector('#retry_button')) {
+                this.shadowRoot.querySelector('#retry_button').addEventListener("click", () => this._retryGame(false));
+            }
+            if (this.shadowRoot.querySelector('#next_level_button')) {
+                this.shadowRoot.querySelector('#next_level_button').addEventListener("click", () => this._loadNextLevel(this));
+            }
+
             this.$.board_container.addEventListener("mouseover", () => this._renderCoordinates(true));
             this.$.board_container.addEventListener("mouseout", () => this._renderCoordinates(false));
             window.addEventListener("resize", (event) => this._handleResize(event));
@@ -724,12 +789,27 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
 
             window.addEventListener("_userMovedBlockInHintMode", (event) => this._handleUserMovedBlockInHintMode(event));
 
-            this._globalData.levelName = new URL(window.location.href).searchParams.get("level");
+            this.$.continue_confirm.addEventListener("click", () => this._closeReloadConfirmDialog());
+            this.$.restart_game_confirm.addEventListener("click", () => this._reloadGameAndCloseDialog());
+
+            this._globalData.levelName = new URL(window.location.href).searchParams.get("level"); // levelName is observed in datastore and sends a request
             this.currentLevelName = this._globalData.levelName;
+            this.currentHealLevelName = this._globalData.levelName;
             this._createGame();
 
             this._startTime = Date.now();
+            /*this.$.score_dialog.open(); // testing score popup
+            this._secondStageLocked = false;
+            this.$.second_stage_level._unlockSecondStageLevel();*/
         });
+    }
+
+    /**
+     * navigate to next level
+     */
+    _loadNextLevel() {
+        let nextLevel = this.currentLevelName;
+        window.location.href = "/game?level=" + nextLevel;
     }
 
     _hasBuiltPortals() {
@@ -1164,7 +1244,8 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             deleted: mine.deleted,
             deletionDateTime: mine.deletionDateTime ? new Date(mine.deletionDateTime) : null,
             updated: mine.updated,
-            frontendId: mine.frontEndId
+            frontendId: mine.frontEndId,
+            blockCount: mine.blockCount
         }
         let req;
         let url;
@@ -1240,9 +1321,29 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         this._isSpeedUp = this._interval === speedyCritterInterval;
     }
 
-    _reloadGame() {
-        this._gameTime += Date.now() - this._startGameTime;
-        this._saveGameData();
+
+    _retryGame(saveGameData = true) {
+        this.$.score_dialog.close();
+        this._reloadGame(saveGameData);
+    }
+
+    _showReloadConfirmDialog() {
+        this.$.restart_game_dialog.open();
+    }
+
+    _closeReloadConfirmDialog() {
+        this.$.restart_game_dialog.close();
+    }
+
+    _reloadGameAndCloseDialog() {
+        this._closeReloadConfirmDialog();
+        this._reloadGame(true);
+    }
+
+    _reloadGame(saveGameData = true) {
+        if (saveGameData) {
+            this._saveGameData();
+        }
         this._startTime = Date.now();
         this._totalTime = 0;
         this._paused = true;
@@ -1670,6 +1771,11 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             stars = 2;
         } else if (this.score >= 500){
             stars = 1;
+        }
+
+        if (stars >= 2) {
+            this._secondStageLocked = false;
+            this.$.second_stage_level._unlockSecondStageLevel();
         }
         this._storeResult(stars);
         this._saveGame();

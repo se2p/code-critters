@@ -486,6 +486,7 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
             <div id="tooltip">
                 <span><h3>[[__('attributes')]]</h3></span>
                 <span>[[__('color')]]: [[__(color)]]</span><br>
+                <div class="row">[[__('hair')]]: [[__(hair)]]</div>
                 <span>[[__('size')]]: [[size]]</span><br>
                 <span>[[__('direction')]]: [[__(direction)]]</span><br>
                 <span id="water">[[__('walk_on_water')]]: [[__('false')]]</span><br id="waterBreak">
@@ -677,7 +678,9 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
     /** perform the next Step **/
     _doStep(start, last = false) {
         if (start !== this._numberOfStarts || !this.animate) {
-            return;
+            return this._timeoutManager.add(() => {
+                return this._doStep(start);
+            }, this._interval);
         }
 
         let temp = this.position;
@@ -707,15 +710,15 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
         }, this._interval * 0.9);
 
         if (this.path.length > 1) {
-            this._timeoutManager.add(() => {
-                this._doStep(start);
+            return this._timeoutManager.add(() => {
+                return this._doStep(start);
             }, this._interval);
         } else if (!last) {
-            this._timeoutManager.add(() => {
-                this._doStep(start, true);
+            return this._timeoutManager.add(() => {
+                return this._doStep(start, true);
             }, this._interval);
         } else {
-            this._timeoutManager.add(() => {
+            return this._timeoutManager.add(() => {
                 this.dispatchEvent(new CustomEvent('_critterFinished', {
                     detail: {human: this.human, critterCut: this.cut, critterInit: this.init, critterId: this.id},
                     bubbles: true,

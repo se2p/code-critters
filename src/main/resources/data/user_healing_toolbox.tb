@@ -1,0 +1,52 @@
+<block type="assert_loop" x="663" y="138">
+</block>
+
+<block type="assert_loop_free" x="663" y="138">
+</block>
+
+  <block type="controls_if"></block>
+
+ <block type="properties_user_healing"  x="663" y="138">
+ </block>
+
+  <block type="math_number" id="Eem[Vxht-;;+ILj@@lxp" x="263" y="113">
+              <field name="NUM">1</field>
+  </block>
+
+
+   <block type="logic_compare" id="Updh4`dmqWOl8d}M;g8y" x="438" y="113">
+             <field name="OP">EQ</field>
+         </block>
+
+  <block type="math_arithmetic" id="M]Qfng[KcxW;Qdz%;CdX" x="287" y="163">
+              <field name="OP">ADD</field>
+              <value name="A"></value>
+               <value name="B"></value>
+   </block>
+
+   <block type="shirt_picker"  x="663" y="138">
+    </block>
+
+    <block type="hair_picker"  x="663" y="138">
+    </block>
+
+
+        <block type="math_number_property" id="F5fxuP.thK*x0d;HVreV" x="287" y="113">
+                     <mutation divisor_input="false"></mutation>
+                     <field name="PROPERTY">EVEN</field>
+                     <value name="NUMBER_TO_CHECK">
+                     </value>
+         </block>
+
+  <block type="logic_operation" id=".N#$huRFJ^mEn.eXEy/N" x="163" y="138">
+            <field name="OP">AND</field>
+        </block>
+
+
+ <block type="controls_if">
+             <mutation else="1"></mutation>
+             </block>
+
+<block type="controls_if">
+                <mutation elseif="1" else="1"></mutation>
+            </block>

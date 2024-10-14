@@ -36,6 +36,7 @@ import org.codecritters.code_critters.persistence.repository.MutantRepository;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.RowRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.persistence.repository.healing.HealLevelRepository;
 import org.codecritters.code_critters.web.dto.LevelDTO;
 import org.codecritters.code_critters.web.dto.LevelNamesDTO;
 import org.codecritters.code_critters.web.dto.MutantDTO;
@@ -54,15 +55,17 @@ import java.util.*;
 public class LevelService {
 
     private final LevelRepository levelRepository;
+    private final HealLevelRepository healLevelRepository;
     private final MutantRepository mutantRepository;
     private final RowRepository rowRepository;
     private final UserRepositiory userRepositiory;
     private final ResultRepository resultRepository;
 
     @Autowired
-    public LevelService(LevelRepository levelRepository, MutantRepository mutantRepository, RowRepository rowRepository,
+    public LevelService(LevelRepository levelRepository, HealLevelRepository healLevelRepository, MutantRepository mutantRepository, RowRepository rowRepository,
                         UserRepositiory userRepositiory, ResultRepository resultRepository) {
         this.levelRepository = levelRepository;
+        this.healLevelRepository = healLevelRepository;
         this.mutantRepository = mutantRepository;
         this.rowRepository = rowRepository;
         this.userRepositiory = userRepositiory;
@@ -336,6 +339,151 @@ public class LevelService {
         return init;
     }
 
+    /**
+     * Gets all results of a specific user for all levels.
+     * @param cookie of the user
+     * @return List of results
+     */
+    public List getAllLevelsGrouped(String cookie) {
+        List groupedLevels = new LinkedList();
+
+        Collection<CritterRow> rows = rowRepository.getRows();
+        if(userRepositiory.existsByCookie(cookie)){
+            User user = userRepositiory.findByCookie(cookie);
+            for (CritterRow row : rows) {
+                HashMap map = new HashMap<String, Object>();
+                map.put("name", row.getName());
+                map.put("id", row.getId());
+                map.put("position", row.getPosition());
+
+                // Sort list of levels to ensure correct order
+
+                if (row.getName().equals("Tutorials")) {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_1", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_2", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_3", user));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_1", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_2", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_3", user));
+
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                } else if (row.getName().equals("Beginner")) {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_4", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_5", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_6", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_7", user));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_4", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_5", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_6", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_7", user));
+
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                } else {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_8", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_9", user));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_10", user));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_8", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_9", user));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_10", user));
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                }
+
+            }
+        } else {
+            for (CritterRow row : rows) {
+                HashMap map = new HashMap<String, Object>();
+                map.put("name", row.getName());
+                map.put("id", row.getId());
+                map.put("position", row.getPosition());
+
+
+                if (row.getName().equals("Tutorials")) {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_1", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_2", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_3", cookie));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_1", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_2", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_3", cookie));
+
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                } else if (row.getName().equals("Beginner")) {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_4", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_5", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_6", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_7", cookie));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_4", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_5", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_6", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_7", cookie));
+
+
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                } else {
+                    List<LevelResultType> sortedList1 = new LinkedList<>();
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_8", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_9", cookie));
+                    sortedList1.addAll(levelRepository.getLevelNameAndResult("level_10", cookie));
+                    Collections.sort(sortedList1, new SortByLevelName());
+
+                    List<LevelResultType> sortedList2 = new LinkedList<>();
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_8", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_9", cookie));
+                    sortedList2.addAll(healLevelRepository.getLevelNameAndResult("level_10", cookie));
+                    Collections.sort(sortedList2, new SortByLevelName());
+
+                    map.put("levels", sortedList1);
+                    map.put("healLevels", sortedList2);
+                    groupedLevels.add(map);
+                }
+            }
+        }
+        return groupedLevels;
+
+    }
+
+    /**
+     * Gets ONLY base level results of user.
+     */
     public List getLevelsGrouped(String cookie) {
         List groupedLevels = new LinkedList();
 

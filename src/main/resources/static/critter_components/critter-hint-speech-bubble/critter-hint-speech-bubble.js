@@ -541,8 +541,11 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
      * Saves the usage activities of the hint assistent in the backend.
      */
     storeAssistentDetails(closeAssistent = false) {
-        let dto;
+        if (!this.isInHintMode) {
+            return;
+        }
 
+        let dto;
         if (this._globalData.assistentUsageInfoObject !== null && closeAssistent) { // if updates existing info object
             dto = {...this._globalData.assistentUsageInfoObject, visitedSteps: this.visitedStepsObject, timeClosed: new Date()};
             this._globalData.assistentUsageInfoObject = null; // set info object to null on close of assistent

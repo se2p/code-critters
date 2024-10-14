@@ -6,9 +6,11 @@ import org.codecritters.code_critters.persistence.entities.Game;
 import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.entities.Mine;
 import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.entities.healing.HealingGame;
 import org.codecritters.code_critters.persistence.repository.GameRepository;
 import org.codecritters.code_critters.persistence.repository.MineRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.persistence.repository.healing.HealingGameRepository;
 import org.codecritters.code_critters.web.dto.usageStats.GamesOfUserDTO;
 
 import org.codecritters.code_critters.web.dto.usageStats.GamingDetailDTO;
@@ -41,6 +43,9 @@ public class StatisticsServiceTest {
 
     @Mock
     private GameRepository gameRepository;
+
+    @Mock
+    private HealingGameRepository healingGameRepository;
 
     @Mock
     private MineRepository mineRepository;
@@ -92,9 +97,11 @@ public class StatisticsServiceTest {
         game.setId(gameId);
         game.setUserID(userId);
         games.add(game);
+        List<HealingGame> healingGames = new ArrayList<>();
         gamesOfUserDTO.setUser(user.getUsername());
         when(userRepository.findByUsernameOrEmail(any(), any())).thenReturn(user);
         when(gameRepository.findAllByUserID(any())).thenReturn(games);
+        when(healingGameRepository.findAllByUserID(any())).thenReturn(healingGames);
 
         GamesOfUserDTO result = statisticService.getAllGamesOfUser(userName);
 
@@ -118,7 +125,7 @@ public class StatisticsServiceTest {
 
     @Test
     public void testGetMineHistory() {
-        mine = new Mine("id", game, "code", "code", LocalDateTime.now(), LocalDateTime.now(), xPos, yPos, false, null, false, "someFrontEndID");
+        mine = new Mine("id", game, "code", "code", LocalDateTime.now(), LocalDateTime.now(), xPos, yPos, false, null, false, "someFrontEndID", 2);
         mines = new ArrayList<>();
         mines.add(mine);
 

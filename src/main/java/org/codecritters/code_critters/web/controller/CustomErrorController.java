@@ -50,7 +50,7 @@ public class CustomErrorController extends BasicErrorController {
             Integer statusCode = (Integer) status;
 
             if (statusCode == 403) {
-                if (requestUri.equals("/game")) { // forward to login page if non-loggedin user tries to access games
+                if (requestUri.equals("/game") || requestUri.equals("/healing-game")) { // forward to login page if non-loggedin user tries to access games
                     modelAndView.setViewName("forward:/login.html");
                 } else { // forward to 403 error page
                     modelAndView.setViewName("forward:/error-403.html");

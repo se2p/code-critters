@@ -47,6 +47,8 @@ public class MineDTO {
 
     private boolean updated;
 
+    private int blockCount;
+
     /**
      * Holds the unique frontend id of the mine to identify the same mine after it has been moved,
      * because then identification via x- and y- positions are no longer guaranteed
@@ -56,7 +58,8 @@ public class MineDTO {
     public MineDTO() {}
 
     public MineDTO(String id, String game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
-                   int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated, String frontendId) {
+                   int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime,
+                   boolean updated, String frontendId, int blockCount) {
         this.id = id;
         this.game = game;
         this.code = code;
@@ -69,6 +72,7 @@ public class MineDTO {
         this.deletionDateTime = deletionDateTime;
         this.updated = updated;
         this.frontendId = frontendId;
+        this.blockCount = blockCount;
     }
 
     public String getId() {
@@ -165,5 +169,13 @@ public class MineDTO {
 
     public void setFrontendId(String frontendId) {
         this.frontendId = frontendId;
+    }
+
+    public int getBlockCount() {
+        return blockCount;
+    }
+
+    public void setBlockCount(int blockCount) {
+        this.blockCount = blockCount;
     }
 }
