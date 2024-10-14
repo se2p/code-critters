@@ -27,10 +27,14 @@ import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.entities.Result;
 import org.codecritters.code_critters.persistence.entities.Score;
 import org.codecritters.code_critters.persistence.entities.User;
+import org.codecritters.code_critters.persistence.entities.healing.HealLevel;
+import org.codecritters.code_critters.persistence.entities.healing.HealResult;
 import org.codecritters.code_critters.persistence.repository.LevelRepository;
 import org.codecritters.code_critters.persistence.repository.ResultRepository;
 import org.codecritters.code_critters.persistence.repository.ScoreRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
+import org.codecritters.code_critters.persistence.repository.healing.HealLevelRepository;
+import org.codecritters.code_critters.persistence.repository.healing.HealResultRepository;
 import org.codecritters.code_critters.web.dto.ResultDTO;
 import org.codecritters.code_critters.web.dto.ScoreDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +49,18 @@ public class ResultService {
     private final LevelRepository levelRepository;
     private final UserRepositiory userRepositiory;
     private final ScoreRepository scoreRepository;
+    private final HealLevelRepository healLevelRepository;
+    private final HealResultRepository healResultRepository;
+
 
     @Autowired
-    public ResultService(ResultRepository resultRepository, LevelRepository levelRepository, UserRepositiory userRepositiory, ScoreRepository scoreRepository) {
+    public ResultService(ResultRepository resultRepository, LevelRepository levelRepository, UserRepositiory userRepositiory, ScoreRepository scoreRepository, HealLevelRepository healLevelRepository, HealResultRepository healResultRepository) {
         this.resultRepository = resultRepository;
         this.levelRepository = levelRepository;
         this.userRepositiory = userRepositiory;
         this.scoreRepository = scoreRepository;
+        this.healLevelRepository = healLevelRepository;
+        this.healResultRepository = healResultRepository;
     }
 
     public void createResult(ResultDTO resultDTO, String cookie) {
@@ -75,6 +84,34 @@ public class ResultService {
             result = new Result(resultDTO.getScore(), cookie, level, resultDTO.getStars(), user);
         }
         resultRepository.save(result);
+    }
+
+    /**
+     * Saves the result of a second stage game.
+     * @param resultDTO
+     * @param cookie of the user
+     */
+    public void createSecondStageResult(ResultDTO resultDTO, String cookie) {
+        HealLevel level = healLevelRepository.findByName(resultDTO.getLevel());
+        User user = userRepositiory.findByCookie(cookie);
+        HealResult result;
+        if(user != null)  {
+            result = healResultRepository.getResultByLevelAndUser(level, user);
+            cookie = null;
+        } else {
+            result = healResultRepository.getResultByLevelAndCookie(level, cookie);
+        }
+        if (result != null) {
+
+            // only overwrite if new score is higher
+            if (resultDTO.getScore() >= result.getScore()) {
+                result.setScore(resultDTO.getScore());
+                result.setStars(resultDTO.getStars());
+            }
+        } else{
+            result = new HealResult(resultDTO.getScore(), cookie, level, resultDTO.getStars(), user);
+        }
+        healResultRepository.save(result);
     }
 
     public ScoreDTO getMyScore(String cookie) {

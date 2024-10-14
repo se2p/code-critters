@@ -34,6 +34,12 @@
     <script type=module src="critter_components/critter-project-info/critter-project-info.js"></script>
     <script type=module src="critter_components/critter-copyright/critter-copyright.js"></script>
 
+    <script>
+        window.Polymer = window.Polymer || {};
+        window.Polymer.dom = 'shadow';
+
+    </script>
+
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
 
 
@@ -126,7 +132,7 @@
                     <h6><b><critter-translator-escaped key="landing_subtitle"></critter-translator-escaped></b></h6>
                 </div>
                 <div class="col-sm-9 text">
-                    <critter-translator-escaped key="landing_text"></critter-translator-escaped>
+                    <critter-translator-escaped key="landing_text_new"></critter-translator-escaped>
                 </div>
             </div>
             <div class="row" id="level_display">

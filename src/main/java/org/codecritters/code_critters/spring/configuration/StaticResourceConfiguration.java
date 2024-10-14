@@ -43,6 +43,7 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
         registry.addViewController("/xml-generator").setViewName("forward:/generators/xml-generator/xml-generator.html");
         registry.addViewController("/level-generator").setViewName("forward:/generators/level-generator/level-generator.html");
         registry.addViewController("/customBlocks.js").setViewName("forward:/critter_components/critter-blockly/iFrame/customBlocks.js");
+        registry.addViewController("/healing-game").setViewName("forward:/healingGame.html");
     }
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

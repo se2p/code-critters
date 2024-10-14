@@ -25,7 +25,9 @@ package org.codecritters.code_critters.application.service;
 import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
 import org.codecritters.code_critters.persistence.entities.*;
+import org.codecritters.code_critters.persistence.entities.healing.HealingGame;
 import org.codecritters.code_critters.persistence.repository.*;
+import org.codecritters.code_critters.persistence.repository.healing.HealingGameRepository;
 import org.codecritters.code_critters.web.dto.usageStats.*;
 import org.codecritters.code_critters.web.enums.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public class StatisticService {
     private final UserRepositiory userRepositiory;
 
     private final GameRepository gameRepository;
-
+    private final HealingGameRepository healingGameRepository;
     private final MutantRepository mutantRepository;
 
     private final MineRepository mineRepository;
@@ -55,10 +57,11 @@ public class StatisticService {
 
     @Autowired
     public StatisticService(LevelRepository levelRepository, UserRepositiory userRepositiory,
-                            GameRepository gameRepository, MutantRepository mutantRepository, MineRepository mineRepository) {
+                            GameRepository gameRepository, HealingGameRepository healingGameRepository, MutantRepository mutantRepository, MineRepository mineRepository) {
         this.levelRepository = levelRepository;
         this.userRepositiory = userRepositiory;
         this.gameRepository = gameRepository;
+        this.healingGameRepository = healingGameRepository;
         this.mutantRepository = mutantRepository;
         this.mineRepository = mineRepository;
     }
@@ -78,6 +81,7 @@ public class StatisticService {
             throw new NotFoundException("Could not find user with username " + username);
         }
         List<Game> gamesOfUser = gameRepository.findAllByUserID(user.getId());
+        List<HealingGame> healingGamesOfUser = healingGameRepository.findAllByUserID(user.getId());
 
         List<GameMinimal> gameMinList = new ArrayList<>();
         for (Game game : gamesOfUser) {
@@ -86,7 +90,15 @@ public class StatisticService {
             gameMinList.add(gameMin);
         }
 
-        GamesOfUserDTO gamesOfUserDTO = new GamesOfUserDTO(user.getUsername(), gameMinList);
+        List<GameMinimal> healingGameMinList = new ArrayList<>();
+        for (HealingGame healingGame : healingGamesOfUser) {
+            GameMinimal gameMin = new GameMinimal(healingGame.getId(), healingGame.getLevel().getId(), healingGame.getScore(),
+                    healingGame.getMutantsKilled(), healingGame.getCollectorsFinished());
+            healingGameMinList.add(gameMin);
+        }
+
+
+        GamesOfUserDTO gamesOfUserDTO = new GamesOfUserDTO(user.getUsername(), gameMinList, healingGameMinList);
         return gamesOfUserDTO;
     }
 

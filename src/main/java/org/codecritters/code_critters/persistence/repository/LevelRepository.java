@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.repository;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -65,6 +65,12 @@ public interface LevelRepository extends CrudRepository<Level, String> {
 
     @Query(nativeQuery = true, value = "SELECT l.name, r.score, r.stars FROM level as l LEFT JOIN ( SELECT r2.score, r2.level_id, r2.stars FROM result AS r2 WHERE r2.user_id = :user) AS r ON l.id = r.level_id WHERE l.row_id = :rid ORDER BY l.name ASC")
     List<LevelResultType> getLevelNamesAndResultByGroup(@Param("rid") CritterRow row, @Param("user") User user);
+
+    @Query(nativeQuery = true, value = "SELECT l.name, r.score, r.stars FROM level as l LEFT JOIN result AS r ON l.id = r.level_id AND r.user_id = :user WHERE l.name = :levelname")
+    List<LevelResultType> getLevelNameAndResult(@Param("levelname") String levelName, @Param("user") User user);
+
+    @Query(nativeQuery = true, value = "SELECT l.name, r.score, r.stars FROM level as l LEFT JOIN result AS r ON l.id = r.level_id AND r.cookie = :cookie WHERE l.name = :levelname")
+    List<LevelResultType> getLevelNameAndResult(@Param("levelname") String levelName, @Param("cookie") String cookie);
 
     @Modifying
     @Query("DELETE FROM Level AS l WHERE l.id = :id")

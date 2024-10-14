@@ -70,10 +70,13 @@ public class Mine {
     @JoinColumn(name = "assistant_info_id")
     private AssistantInfo assistantInfo;
 
+    private int blockCount;
+
     public Mine() {}
 
     public Mine(String id, Game game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
-                int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime, boolean updated, String frontendId) {
+                int xPosition, int yPosition, boolean deleted, LocalDateTime deletionDateTime,
+                boolean updated, String frontendId, int blockCount) {
         this.id = id;
         this.game = game;
         this.code = code;
@@ -86,6 +89,7 @@ public class Mine {
         this.deletionDateTime = deletionDateTime;
         this.updated = updated;
         this.frontendId = frontendId;
+        this.blockCount = blockCount;
     }
 
     public Mine(String id, Game game, String code, String xml, LocalDateTime creationStart, LocalDateTime creationEnd,
@@ -208,5 +212,13 @@ public class Mine {
 
     public void setAssistantInfo(AssistantInfo assistantInfo) {
         this.assistantInfo = assistantInfo;
+    }
+
+    public int getBlockCount() {
+        return blockCount;
+    }
+
+    public void setBlockCount(int blockCount) {
+        this.blockCount = blockCount;
     }
 }

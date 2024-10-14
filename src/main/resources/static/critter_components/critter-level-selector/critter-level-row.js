@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -99,6 +99,12 @@ class CritterLevelRow extends I18n(PolymerElement) {
                 type: Array,
                 value: [],
                 notify: true
+            },
+
+            healLevels: {
+                type: Array,
+                value: [],
+                notify: true
             }
         }
     }
@@ -115,12 +121,15 @@ class CritterLevelRow extends I18n(PolymerElement) {
      */
     addElements() {
         this.$.level_row.innerHtml = "";
-        this.levels.forEach((level) => {
+        for (let i = 0; i < this.levels.length; i++) {
             let preview = document.createElement("critter-level-preview");
-            preview.name = level.name;
-            preview.stars = level.stars;
+            preview.name = this.levels[i].name;
+            preview.stars = this.levels[i].stars;
+            preview.secondStageStars = this.healLevels[i].stars;
+
             this.$.level_row.append(preview);
-        })
+        }
+
         this.$.category.innerHTML = "";
         let translation = document.createElement("critter-translator-escaped");
         translation.setAttribute("key", this.name.toLowerCase());

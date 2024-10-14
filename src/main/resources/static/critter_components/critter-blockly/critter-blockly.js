@@ -118,6 +118,24 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
                 value: []
             },
 
+            isHealingTest: {
+                type: Boolean,
+                value: false,
+                observer: '_isHealingTestChanged'
+            },
+
+            isHealingCut: {
+                type: Boolean,
+                value: false,
+                observer: '_isHealingCodeChanged'
+            },
+
+            customXmlString: { // can hold the recipe xml of a critter from second stage
+                type: String,
+                value: '',
+                observer: '_isCustomXmlStringChanged'
+            }
+
         };
     }
 
@@ -145,15 +163,23 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         if (this.cut) {
             rootNode.addEventListener("_xmlCodeChanged", this._codeChanged.bind(this));
             rootNode.removeEventListener("_testCodeChanged", this._codeChanged.bind(this));
+            rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
+
+        } else if (this.isHealingTest) {
+            rootNode.addEventListener("_healingToolboxChanged", this._toolboxChanged.bind(this));
+            rootNode.addEventListener("_isHealingChanged", this._isHealingTestChanged.bind(this));
+        } else if (this.isHealingCut) {
+            rootNode.addEventListener("_healingCodeChanged", this._isHealingCodeChanged.bind(this));
         } else {
             rootNode.addEventListener("_testCodeChanged", this._codeChanged.bind(this));
             rootNode.removeEventListener("_xmlCodeChanged", this._codeChanged.bind(this));
+            rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
+
         }
 
         this.$.blockly_frame.contentWindow.addEventListener("_invalidComparison", (event) => this._dispatchInvalidBlocklyAssertWarning(event));
         this.$.blockly_frame.contentWindow.addEventListener("_userInteraction", (event) => this._dispatchUserInteractionEvent(event));
         this.$.blockly_frame.contentWindow.addEventListener("_blocklyReady", () => this._updateIFrame());
-        rootNode.addEventListener("_toolboxChanged", this._toolboxChanged.bind(this));
     }
 
     /** updates the IFrame **/
@@ -162,9 +188,16 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             this._toolboxChanged();
             this._controlsChanged();
             this._trashcanChanged();
-            this._codeChanged();
             this._readOnlyChanged();
             this._onLanguageChanged();
+            this._isInHealingLevelChanged();
+
+            if (this.isHealingTest || this.isHealingCut) {
+                this._isHealingTestChanged();
+                this._isHealingCodeChanged();
+            } else {
+                this._codeChanged();
+            }
         } else {
             this.restartFunction(this._updateIFrame)
         }
@@ -177,24 +210,66 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             this.restartFunction(this._toolboxChanged);
             return;
         }
-        if (((window.Core.Generator || !this.cut ))) {
-            this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox, this.cut);
+        if (this.isHealingTest) {
+            this.$.blockly_frame.contentWindow.setToolbox(this._globalData.healingToolbox, this.cut || this.isHealingCut);
+        } else if (((window.Core.Generator || !this.cut ))) {
+            this.$.blockly_frame.contentWindow.setToolbox(this._globalData.toolbox, this.cut || this.isHealingCut);
         } else {
-            this.$.blockly_frame.contentWindow.setToolbox("", this.cut);
+            this.$.blockly_frame.contentWindow.setToolbox("", this.cut || this.isHealingCut);
         }
+    }
+
+    _setToolBox(toolBox) {
+        if (!this.$.blockly_frame || !this.$.blockly_frame.contentWindow.setToolbox) {
+            this.restartFunction(this._setToolBox(toolBox));
+            return;
+        }
+        this.$.blockly_frame.contentWindow.setToolbox(toolBox);
     }
 
     /** updates the trashcan symbol of the IFrame **/
     _trashcanChanged() {
         if (this.$.blockly_frame.contentWindow.setTrashcan) {
-            this.$.blockly_frame.contentWindow.setTrashcan(this.trashcan, this.cut);
+            this.$.blockly_frame.contentWindow.setTrashcan(this.trashcan, this.cut || this.isHealingCut);
         }
     }
 
     /** updates the controls of the IFrame **/
     _controlsChanged() {
         if (this.$.blockly_frame.contentWindow.setControls) {
-            this.$.blockly_frame.contentWindow.setControls(this.controls, this.cut);
+            this.$.blockly_frame.contentWindow.setControls(this.controls, this.cut || this.isHealingCut);
+        }
+    }
+
+    _isHealingTestChanged() {
+        if (this.isHealingTest) {
+            this.setCode('<xml xmlns="http://www.w3.org/1999/xhtml"></xml>');
+        }
+    }
+
+    _isCustomXmlStringChanged() {
+        this._isHealingCodeChanged();
+    }
+
+    _isHealingCodeChanged() {
+        if (!this._globalData) {
+            if(this.isHealingCut){
+                this.restartFunction(this._isHealingCodeChanged);
+            }
+            return
+        }
+        let code = "";
+        if (this.isHealingCut) {
+            if (this.customXmlString.length > 1) {
+                code = this.customXmlString;
+            } else {
+                code = this._globalData.healXml;
+            }
+            this.getHealingCenteredCode(code);
+            if(!code){
+                this.restartFunction(this._isHealingCodeChanged);
+                return;
+            }
         }
     }
 
@@ -220,7 +295,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
                 return;
             }
         }
-        this.setCode(code);
+        // this.setCode(code);
     }
 
     /** Restart a funktion if not all required elements for the function are available **/
@@ -233,6 +308,38 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
             this[func.name]();
         }, 200);
 
+    }
+
+    getHealingCenteredCode(code) {
+        this.setCode(code);
+        const blocklyWindow = this.$.blockly_frame.contentWindow;
+
+        if (blocklyWindow.getBlockById) {
+            const recipeStartWhileBlock = blocklyWindow.getBlockById("recipe_start_while");
+            if (recipeStartWhileBlock) {
+                const recipeWidth = recipeStartWhileBlock.width;
+                const recipeHeight = recipeStartWhileBlock.height;
+
+                let recipeX = 0;
+                let recipeY = 0;
+
+                if (this.$.blockly_frame.offsetWidth > recipeWidth + 50) {
+                    recipeX = (this.$.blockly_frame.offsetWidth - recipeWidth) / 2;
+                } else {
+                    recipeY = (this.$.blockly_frame.offsetHeight - recipeHeight) / 2;
+                }
+
+                code = code.replace(/(id="recipe_start_while".{0,50}x=")(.*?)(")/ig, "$1" + recipeX + "$3");
+                code = code.replace(/(id="recipe_start_while".{0,50}y=")(.*?)(")/ig, "$1" + recipeY + "$3");
+
+                if (!this.customXmlString) {
+                    this._globalData.healXml = code;
+                }
+            }
+        } else {
+            return;
+        }
+        return code;
     }
 
     getCenteredCode(code){
@@ -286,7 +393,7 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     /** sets the blockly code**/
     setCode(code){
         if (this.$.blockly_frame.contentWindow.setCode) {
-            this.$.blockly_frame.contentWindow.setCode(code, this.cut);
+            this.$.blockly_frame.contentWindow.setCode(code, this.cut || this.isHealingCut);
         }
     }
 
@@ -323,7 +430,15 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
     /** disables changing the blockly code **/
     _readOnlyChanged() {
         if (this.$.blockly_frame.contentWindow.setReadOnly) {
-            this.$.blockly_frame.contentWindow.setReadOnly(this.readOnly, this.cut);
+            this.$.blockly_frame.contentWindow.setReadOnly(this.readOnly, this.cut || this.isHealingCut);
+        }
+    }
+
+    /** Sets the type of level: base or loop/healing level */
+    _isInHealingLevelChanged() {
+        if (this.$.blockly_frame.contentWindow.setIsInLoopLevel) {
+            let isLoopLevel = (this.isHealingCut || this.isHealingTest)
+            this.$.blockly_frame.contentWindow.setIsInLoopLevel(isLoopLevel);
         }
     }
 
@@ -340,6 +455,13 @@ class CritterBlockly extends I18n(Level(PolymerElement)) {
         if (this.$.blockly_frame.contentWindow.getCode) {
             this.jsCode = this.$.blockly_frame.contentWindow.getXML();
             return this.jsCode;
+        }
+    }
+
+    /** Returns the number of blocks in the workspace */
+    getBlockNum() {
+        if (this.$.blockly_frame.contentWindow.getBlockNumber) {
+            return this.$.blockly_frame.contentWindow.getBlockNumber();
         }
     }
 

@@ -24,6 +24,32 @@ Blockly.Blocks['properties_user'] = {
     }
 };
 
+Blockly.Blocks['properties_user_healing'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("critter")
+            .appendField(new Blockly.FieldDropdown([["roundsCount", "ROUNDS"], ["redBerryCount", "REDBERRIES"], ["pinkBerryCount", "PINKBERRIES"], ["blackBerryCount", "BLACKBERRIES"], ["orangeBerryCount", "ORANGEBERRIES"], ["purpleBerryCount", "PURPLEBERRIES"], ["whiteBerryCount", "WHITEBERRIES"], ["innerRoundsCount", "INNERROUNDS"], ["shirtColor","BODYCOLOR"], ["haircolor","HATCOLOR"]]), "properties");
+        this.setInputsInline(false);
+        this.setOutput(true, null);
+        this.setColour(330);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['bush_properties'] = {
+    init: function() {
+        this.appendDummyInput()
+            .appendField("bush with")
+            .appendField(new Blockly.FieldDropdown([["redBerries", "REDBERRIES"], ["pinkBerries", "PINKBERRIES"], ["blackBerries", "BLACKBERRIES"], ["orangeBerries", "ORANGEBERRIES"], ["purpleBerries", "PURPLEBERRIES"], ["whiteBerries", "WHITEBERRIES"]]), "properties");
+        this.setInputsInline(false);
+        this.setOutput(true, null);
+        this.setColour(290);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
 Blockly.Blocks['set'] = {
     init: function() {
         this.appendValueInput("value1")
@@ -36,6 +62,23 @@ Blockly.Blocks['set'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(75);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['set_berries'] = {
+    init: function() {
+        this.appendValueInput("value1")
+            .setCheck(null)
+            .appendField("follow the route to the");
+        this.appendValueInput("value2")
+            .setCheck(null)
+            .appendField("and collect");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#ad6519");
         this.setTooltip("");
         this.setHelpUrl("");
     }
@@ -55,6 +98,79 @@ Blockly.Blocks['assert'] = {
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(120);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['assert_loop'] = {
+    init: function() {
+        this.appendValueInput("target")
+            .setCheck(null)
+            .appendField("only critters with");
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("equals");
+        this.appendDummyInput()
+            .appendField("can continue")
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(120);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['assert_loop_free'] = {
+    init: function() {
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("only critters with");
+        this.appendDummyInput()
+            .appendField("can continue")
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(120);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['assert_loop_must_go'] = {
+    init: function() {
+        this.appendValueInput("target")
+            .setCheck(null)
+            .appendField("critters with");
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("not equals");
+        this.appendDummyInput()
+            .appendField("must return")
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(100);
+        this.setTooltip("");
+        this.setHelpUrl("");
+    }
+};
+
+Blockly.Blocks['assert_loop_and'] = {
+    init: function() {
+        this.appendValueInput("value1")
+            .setCheck(null)
+            .appendField("only critters with");
+        this.appendValueInput("value2")
+            .setCheck(null)
+            .appendField("and");
+        this.appendDummyInput()
+            .appendField("can continue")
+        this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(80);
         this.setTooltip("");
         this.setHelpUrl("");
     }

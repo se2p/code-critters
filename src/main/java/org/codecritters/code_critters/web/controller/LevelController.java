@@ -118,4 +118,13 @@ public class LevelController {
         return levelService.getLevelsGrouped(cookie);
     }
 
+    /**
+     * Returns a list of all the levels, including second stage levels
+     * @param cookie The current user cookie.
+     * @return A list of LevelResultTypes.
+     */
+    @GetMapping(path = "/all-levels")
+    public List getAllLevels(@CookieValue("id") String cookie) {
+        return levelService.getAllLevelsGrouped(cookie);
+    }
 }

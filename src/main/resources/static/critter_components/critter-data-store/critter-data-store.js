@@ -92,6 +92,63 @@ class CritterDataStore extends PolymerElement {
                 notify: true
             },
 
+            berryBushes: {
+                type: Array,
+                notify: true
+            },
+
+            berryNumber: {
+                type: Number,
+                notify: true
+            },
+
+            roundsNumber: {
+                type: Number,
+                notify: true
+            },
+
+            loopStartingPoint: {
+                type: Object,
+                notify: true
+            },
+
+            basketPosition: {
+                type: Object,
+                notify: true
+            },
+
+            innerLoopStartingPoint: { // for levels with nested loops
+                type: Object,
+                notify: true,
+                value: null
+            },
+
+            innerBasketPosition: { // for levels with nested loops
+                type: Object,
+                notify: true,
+                value: null
+            },
+
+            numberOfCollectors: {
+                type: Number,
+                value: 10
+            },
+
+            numberOfHealMutants: {
+                type: Number,
+                notify: true
+            },
+
+            numDoneCollectors: {
+                type: Number,
+                value: 0
+            },
+
+            numKilledMutantCollectors: {
+                type: Number,
+                value: 0
+            },
+
             width: {
                 type: Number,
                 value: 16,
@@ -104,7 +161,26 @@ class CritterDataStore extends PolymerElement {
                 notify: true
             },
 
+            healLevelHeight: {
+                type: Number,
+                value: 8,
+                notify: true
+            },
+
+            healLevelWidth: {
+                type: Number,
+                value: 8,
+                notify: true
+            },
+
             mines: {
+                type: Array,
+                value: [],
+                notify: true
+            },
+
+            // tests written by player
+            secondStagePortals: {
                 type: Array,
                 value: [],
                 notify: true
@@ -116,8 +192,33 @@ class CritterDataStore extends PolymerElement {
                 observer: '_testCodeChanged'
             },
 
+            healingCode: {
+                type: String,
+                value: '',
+                observer: '_healingCodeChanged'
+            },
+
             cut: {
                 type: Function
+            },
+
+            healCut: {
+                type: Function
+            },
+
+            healInit: {
+                type: Function
+            },
+
+            healXml: {
+                type: String,
+                value: '',
+                observer: '_healingXmlCodeChanged'
+            },
+
+            displayLevel: {
+                type: Array,
+                notify: true
             },
 
             init: {
@@ -141,6 +242,18 @@ class CritterDataStore extends PolymerElement {
                 observer: '_toolboxChanged'
             },
 
+            healingToolbox: {
+                type: String,
+                value: '',
+                observer: '_healingToolboxChanged'
+            },
+
+            healLevelName: {
+                type: String,
+                value: '',
+                observer: '_updateHealLevelData'
+            },
+
             cookie: {
                 type: String,
                 value: ''
@@ -157,9 +270,34 @@ class CritterDataStore extends PolymerElement {
                 notify: true
             },
 
+            backgroundSand: {
+                type: Boolean,
+                value: false
+            },
+
+            backgroundStone: {
+                type: Boolean,
+                value: false
+            },
+
+            backgroundSea: {
+                type: Boolean,
+                value: false
+            },
+
+            backgroundLava: {
+                type: Boolean,
+                value: false
+            },
+
+            backgroundIce: {
+                type: Boolean,
+                value: false
+            },
+
             hintObjectsArray: {
-               type: Array,
-               notify: true
+                type: Array,
+                notify: true
             },
 
             portalSolutions: {
@@ -177,8 +315,11 @@ class CritterDataStore extends PolymerElement {
     static get observers() {
         return [
             '_dataChanged(width, height, tower.*, spawn.*, level.*, mines.*, levelDisplayName)',
+            '_healDataChanged(healLevelHeight, healLevelWidth, berryBushes.*, displayLevel.*, berryNumber, secondStagePortals.*, loopStartingPoint.*, basketPosition.*, innerLoopStartingPoint.*, innerBasketPosition.*, backgroundSand, backgroundStone, backgroundSea, backgroundLava, backgroundIce)',
             '_sizeChanged(width, height)',
+            '_healSizeChanged(healLevelHeight, healLevelWidth)',
             '_critterNumberChanged(numberOfCritters, numberOfHumans)',
+            '_healingCritterNumberChanged(numberOfCollectors, numberOfHealMutants)',
             '_userChanged(user,*)',
             '_rowChanged(row, freeMines)',
             '_levelDisplayNameChanged(levelDisplayName)'
@@ -198,8 +339,17 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_userChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
+    _healDataChanged() {
+        this.dispatchEvent(new CustomEvent('_healLevelDataChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
     _dataChanged() {
         this.dispatchEvent(new CustomEvent('_levelDataChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
+    _healSizeChanged() {
+        this.deletePortals();
+        this.dispatchEvent(new CustomEvent('_healLevelSizeChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
     _sizeChanged() {
@@ -211,6 +361,10 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_critterNumberChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
+    _healingCritterNumberChanged() {
+        this.dispatchEvent(new CustomEvent('_healingCritterNumberChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
     _testCodeChanged() {
         this.dispatchEvent(new CustomEvent('_testCodeChanged', {detail: {}, bubbles: true, composed: true}));
     }
@@ -219,6 +373,9 @@ class CritterDataStore extends PolymerElement {
         this.dispatchEvent(new CustomEvent('_levelDisplayNameChanged', {detail: {}, bubbles: true, composed: true}));
     }
 
+    _healingCodeChanged() {
+        this.dispatchEvent(new CustomEvent('_healingCodeChanged', {detail: {}, bubbles: true, composed: true}));
+    }
 
     _xmlCodeChanged() {
         this.dispatchEvent(new CustomEvent('_xmlCodeChanged', {detail: {}, bubbles: true, composed: true}));
@@ -227,6 +384,11 @@ class CritterDataStore extends PolymerElement {
 
     _toolboxChanged() {
         this.dispatchEvent(new CustomEvent('_toolboxChanged', {detail: {}, bubbles: true, composed: true}));
+    }
+
+    _healingToolboxChanged() {
+        this.dispatchEvent(new CustomEvent('_healingToolboxChanged', {detail: {}, bubbles: true, composed: true}));
+
     }
 
     _rowChanged() {
@@ -252,6 +414,88 @@ class CritterDataStore extends PolymerElement {
         });
         return mineList;
     }
+
+    /**
+     * Deletes all written tests (guideposts).
+     */
+    deletePortals() {
+        this.secondStagePortals = Array.from({length: this.healLevelWidth}, () => Array.from({length: this.healLevelWidth}, () => undefined));
+    }
+
+    /**
+     * Gets all portals that have been set in the game.
+     * @returns {*} A list of portals -> user tests.
+     */
+    getPortals() {
+        let portalList = [];
+        this.secondStagePortals.forEach(row => {
+            row.forEach(elem =>{
+                if(elem){
+                    portalList.push(elem);
+                }
+            });
+        });
+        return portalList;
+    }
+
+    _updateHealLevelData() {
+        if (this.healLevelName === '') {
+            return;
+        }
+
+        let req = document.createElement('iron-ajax');
+        req.url = "/healing-level/get";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+        req.params = {healLevel: this.healLevelName};
+
+        req.addEventListener('response', e => {
+            let data = e.detail.__data.response;
+
+            this.healingToolbox = data.toolbox;
+            this.healCut = new Function(data.cut);
+            this.healInit = new Function(data.init);
+            this.healXml = data.xml;
+            this.displayLevel = data.displayLevel;
+            this.berryBushes = data.berryBushes;
+            this.loopStartingPoint = data.loopStart;
+            this.basketPosition = data.basketPosition;
+            this.roundsNumber = data.roundsNum;
+            this.numberOfHealMutants = data.numberOfMutants;
+            this._setBackground(data.background);
+            if (data.innerLoopStart) {
+                this.innerLoopStartingPoint = data.innerLoopStart;
+            }
+            if (data.innerBasketPosition) {
+                this.innerBasketPosition = data.innerBasketPosition;
+            }
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+
+        return req;
+    }
+
+    _setBackground(background) {
+        if (background === "GRASS") {
+            // do nothing, default
+        } else if (background === "ICE") {
+            this.backgroundIce = true;
+        } else if (background === "SAND") {
+            this.backgroundSand = true;
+        } else if (background === "STONE") {
+            this.backgroundStone = true;
+        } else if (background === "SEA") {
+            this.backgroundSea = true;
+        } else if (background === "LAVA") {
+            this.backgroundLava = true;
+        }
+    }
+
 
     /** performs an ajax call to get level data from the server **/
     _updateLevelData() {

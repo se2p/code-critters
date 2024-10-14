@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/level-generator", "/xml-generator", "/manage-levels").hasRole("ADMIN")
                 .antMatchers("/profile").hasRole("USER")
                 .antMatchers("/game").hasRole("USER")
+                .antMatchers("/healing-game").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .headers().frameOptions().sameOrigin()

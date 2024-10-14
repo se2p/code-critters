@@ -8,18 +8,20 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import {html, PolymerElement} from '/lib/@polymer/polymer/polymer-element.js';
+import {I18n} from '../critter-i18n/critter-i18n-mixin.js';
+import { afterNextRender } from '/lib/@polymer/polymer/lib/utils/render-status.js';
 
 /*
 # critter-button
@@ -35,7 +37,7 @@ A Simple Button
 */
 
 
-class CritterControlButton extends PolymerElement {
+class CritterControlButton extends I18n(PolymerElement) {
     static get template() {
         return html`
             <style>
@@ -200,9 +202,120 @@ class CritterControlButton extends PolymerElement {
                     border-color: transparent #5b67ff #5b67ff #5b67ff;
                 }
 
+                #button.jump-to-end {
+                    height: 35px;
+                    width: 35px;
+                    box-sizing: border-box;
+                    transition: 500ms all ease;
+                    position: relative;
+                }
+
+                #button.jump-to-end:after {
+                    display: block;
+                    content: " ";
+                    border-color: transparent transparent transparent #868bff;
+                    border-style: solid;
+                    border-width: 20px 0 20px 25px;
+                    height: 0;
+                    position: absolute;
+                    top: 1px;
+                    left: 7px;
+                    width: 0;
+                    box-sizing: border-box;
+                }
+
+                #button.jump-to-end:before {
+                    display: block;
+                    content: " ";
+                    border-color: transparent transparent transparent #868bff;
+                    border-style: solid;
+                    border-width: 20px 0 20px 25px;
+                    height: 0;
+                    position: absolute;
+                    top: 1px;
+                    left: 16px;
+                    width: 0;
+                    box-sizing: border-box;
+                }
+
+                #button.jump-to-end:hover:after,
+                #button.jump-to-end:hover:before {
+                    border-color: transparent transparent transparent #5b67ff;
+                }
+
+                #button.jump-to-end:hover .hover-text-end {
+                    display: block;
+                }
+
+                #button.jump-to-end.disabled:hover .hover-text-end {
+                    display: none;
+                }
+
+                #button.jump-to-end.disabled,
+                #button.jump-to-end.disabled:after,
+                #button.jump-to-end.disabled:before,
+                #button.jump-to-end.disabled:hover,
+                #button.jump-to-end.disabled:hover:after {
+                    border-color: transparent transparent transparent #9192b6;
+                }
+
+                .hover-text-end {
+                    display: none;
+                    position: absolute;
+                    top: 40px;
+                    background-color: #5b67ff;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    z-index: 1;
+                }
+
+                .hover-text-faster {
+                    display: none;
+                    position: absolute;
+                    top: 40px;
+                    background-color: #1c5023;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    z-index: 1;
+                }
+
+                .hover-text-reload {
+                    display: none;
+                    position: absolute;
+                    top: 40px;
+                    background-color: #5b67ff;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    z-index: 1;
+                }
+
+                .hover-text-normal-speed {
+                    display: none;
+                    position: absolute;
+                    top: 40px;
+                    background-color: #1c5023;
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    z-index: 1;
+                }
 
             </style>
+
             <div id="button" class$="[[_disabledString]] [[shape]]">
+            </div>
+            <div>
+                <span class="hover-text-reload">[[__("restart_game")]]</span>
+                <span class="hover-text-end">[[__("jump_to_end")]]</span>
+                <span class="hover-text-faster">[[__("faster")]]</span>
+                <span class="hover-text-normal-speed">[[__("normal_speed")]]</span>
             </div>
         `;
     }
@@ -229,6 +342,49 @@ class CritterControlButton extends PolymerElement {
             }
 
         }
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        afterNextRender(this, function () {
+            this.$.button.addEventListener('mouseover', this._onHover.bind(this));
+            this.$.button.addEventListener('mouseout', this._onHoverOut.bind(this));
+        });
+    }
+
+    _onHover() {
+        this._toggleTooltip(true)
+    }
+
+    _onHoverOut() {
+        this._toggleTooltip(false);
+    }
+
+    _toggleTooltip(show) {
+        if (this.$.button.className && !this.$.button.className.includes("disabled")) {
+            const tooltip = this._getTooltipElement();
+            if (tooltip) {
+                tooltip.style.display = show ? 'block' : 'none';
+            }
+        }
+    }
+
+    /** Returns the tooltip element that corresponds to the button shape */
+    _getTooltipElement() {
+        const classMap = {
+            'reload': '.hover-text-reload',
+            'fastforward': '.hover-text-faster',
+            'normalSpeed': '.hover-text-normal-speed',
+            'jump-to-end': '.hover-text-end'
+        };
+
+        for (let key in classMap) {
+            if (this.$.button.className.includes(key)) {
+                return this.shadowRoot.querySelector(classMap[key]);
+            }
+        }
+        return null;
     }
 
     _isDisabled(disabled) {

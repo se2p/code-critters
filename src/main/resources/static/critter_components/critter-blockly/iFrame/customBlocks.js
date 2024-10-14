@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -74,12 +74,89 @@ Blockly.JavaScript.forBlock['properties_user'] = function(block) {
     return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
+Blockly.JavaScript.forBlock['properties_user_healing'] = function(block) {
+    var dropdown_properties = block.getFieldValue('properties');
+    var code;
+    switch (dropdown_properties) {
+        case 'BODYCOLOR':
+            code = 'this.color';
+            break;
+        case 'HATCOLOR':
+            code = 'this.hair';
+            break;
+        case 'ROUNDS':
+            code = 'this.roundsCount';
+            break;
+        case 'REDBERRIES':
+            code = 'this.redBerryCount';
+            break;
+        case 'PINKBERRIES':
+            code = 'this.pinkBerryCount';
+            break;
+        case 'BLACKBERRIES':
+            code = 'this.blackBerryCount';
+            break;
+        case 'ORANGEBERRIES':
+            code = 'this.orangeBerryCount';
+            break;
+        case 'PURPLEBERRIES':
+            code = 'this.purpleBerryCount';
+            break;
+        case 'WHITEBERRIES':
+            code = 'this.whiteBerryCount';
+            break;
+        case 'INNERROUNDS':
+            code = 'this.innerRoundsCount';
+            break;
+        default:
+            code = "console.log('Cannot translate blockly to javaScript!')"
+    }
+    return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+
+Blockly.JavaScript.forBlock['bush_properties'] = function(block) {
+    var dropdown_properties = block.getFieldValue('properties');
+    var code;
+    switch (dropdown_properties) {
+        case 'REDBERRIES':
+            code = 'this.redBerryCount';
+            break;
+        case 'PINKBERRIES':
+            code = 'this.pinkBerryCount';
+            break;
+        case 'BLACKBERRIES':
+            code = 'this.blackBerryCount';
+            break;
+        case 'ORANGEBERRIES':
+            code = 'this.orangeBerryCount';
+            break;
+        case 'PURPLEBERRIES':
+            code = 'this.purpleBerryCount';
+            break;
+        case 'WHITEBERRIES':
+            code = 'this.whiteBerryCount';
+            break;
+        default:
+            code = "console.log('Cannot translate blockly to javaScript!')"
+    }
+    return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+
 Blockly.JavaScript.forBlock['set'] = function(block) {
     var value_name1 = Blockly.JavaScript.valueToCode(block, 'value1', Blockly.JavaScript.ORDER_ATOMIC);
     var value_name2 = Blockly.JavaScript.valueToCode(block, 'value2', Blockly.JavaScript.ORDER_ATOMIC);
     var code = value_name1 + " = " + value_name2 + ";\n";
     return code;
 };
+
+Blockly.JavaScript.forBlock['set_berries'] = function(block) {
+    var value_name1 = Blockly.JavaScript.valueToCode(block, 'value1', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_name2 = Blockly.JavaScript.valueToCode(block, 'value2', Blockly.JavaScript.ORDER_ATOMIC);
+    var code = value_name1 + " = " + value_name1 + " + " + value_name2 + ";\n";
+    return code;
+}
 
 Blockly.JavaScript.forBlock['assert'] = function(block) {
     var value_target = Blockly.JavaScript.valueToCode(block, 'target', Blockly.JavaScript.ORDER_ATOMIC);
@@ -88,6 +165,70 @@ Blockly.JavaScript.forBlock['assert'] = function(block) {
     var code = 'if (' + value_target + ' !== ' + value_value + ') {\n' +
         '\tthis._killCritter(x, y, ' + value_target + ', ' + value_value + '); \n' +
         '}\n';
+    return code;
+};
+
+/**
+ * The javascript for the assert block of healing levels.
+ */
+Blockly.JavaScript.forBlock['assert_loop'] = function(block) {
+    var value_target = Blockly.JavaScript.valueToCode(block, 'target', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
+
+    // indicates whether to leave immediately or not
+    var code = 'if (' + value_target + ' !== ' + value_value + ') {\n' +
+        '\tthis._killCritter(x, y, ' + value_target + ', ' + value_value + '); \n' +
+        '\tthis.mustWalkOut = true; \n' +
+        '\treturn true; \n' +
+        '}\n'
+    return code;
+};
+
+/**
+ * The javascript for another possible assert block (not in use yet)
+ */
+Blockly.JavaScript.forBlock['assert_loop_free'] = function(block) {
+    var value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
+
+    // indicates whether to leave immediately or not
+    var code = 'if (!(' + value + ')) {\n' +
+        '\tthis._killCritter(x, y, ' + value + ', ' + value + '); \n' +
+        '\tthis.mustWalkOut = true; \n' +
+        '\treturn true; \n' +
+        '}\n'
+    return code;
+};
+
+/**
+ * The javascript for another possible assert block (not in use yet)
+ */
+Blockly.JavaScript.forBlock['assert_loop_and'] = function(block) {
+    var value_value1 = Blockly.JavaScript.valueToCode(block, 'value1', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_value2 = Blockly.JavaScript.valueToCode(block, 'value2', Blockly.JavaScript.ORDER_ATOMIC);
+
+    // indicates whether to leave immediately or not
+    var code = 'if (!(' + value_value1 + ' && ' + value_value2 + ')) {\n' +
+        '\tthis._killCritter(x, y, ' + value_value1 + ', ' + value_value2 + '); \n' +
+        '\tthis.mustWalkOut = true; \n' +
+        '\treturn true; \n' +
+        '}\n'
+
+    return code;
+};
+
+/**
+ * The javascript for another possible assert block (not in use yet)
+ */
+Blockly.JavaScript.forBlock['assert_loop_must_go'] = function(block) {
+    var value_target = Blockly.JavaScript.valueToCode(block, 'target', Blockly.JavaScript.ORDER_ATOMIC);
+    var value_value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
+
+    // indicates whether to leave immediately or not
+    var code = 'if (' + value_target + ' !== ' + value_value + ') {\n' +
+        '\tthis._killCritter(x, y, ' + value_target + ', ' + value_value + '); \n' +
+        '\tthis.mustWalkOut = true; \n' +
+        '\treturn true; \n' +
+        '}\n'
     return code;
 };
 
