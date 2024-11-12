@@ -721,10 +721,15 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 type: Boolean,
                 value: false
             },
+
             _secondStageLocked: {
                 type: Boolean,
                 value: true
-            }
+            },
+
+            levelNamesList: {
+                type: []
+            },
         };
     }
 
@@ -795,6 +800,7 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
             this._globalData.levelName = new URL(window.location.href).searchParams.get("level"); // levelName is observed in datastore and sends a request
             this.currentLevelName = this._globalData.levelName;
             this.currentHealLevelName = this._globalData.levelName;
+            this._getAllLevelNames();
             this._createGame();
 
             this._startTime = Date.now();
@@ -809,7 +815,44 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
      */
     _loadNextLevel() {
         let nextLevel = this.currentLevelName;
+        if (this.levelNamesList?.length > 0 && this.currentLevelName) {
+            let currentLevelIndex = 0;
+            for (let i = 0; i < this.levelNamesList.length; i++) {
+                if (this.levelNamesList[i].name === this.currentLevelName) {
+                    currentLevelIndex = i;
+                }
+            }
+            // If playing the last level, default to the current, last level
+            if (this.levelNamesList.length - 1 === currentLevelIndex) {
+                nextLevel = this.levelNamesList[this.levelNamesList.length - 1].name;
+            } // in any other case select the next level from list
+            else {
+                nextLevel = this.levelNamesList[currentLevelIndex + 1].name;
+            }
+        }
         window.location.href = "/game?level=" + nextLevel;
+    }
+
+
+    /**
+     * Fetches the list of all level names.
+     */
+    _getAllLevelNames() {
+        let req = document.createElement('iron-ajax');
+        req.url = "/generator/fullNames";
+        req.method = "GET";
+        req.handleAs = 'json';
+        req.contentType = 'application/json';
+        req.bubbles = true;
+        req.rejectWithRequest = true;
+
+        req.addEventListener('response', e => {
+            this.levelNamesList = e.detail.__data.response;
+        });
+
+        let genRequest = req.generateRequest();
+        req.completes = genRequest.completes;
+        return req;
     }
 
     _hasBuiltPortals() {
