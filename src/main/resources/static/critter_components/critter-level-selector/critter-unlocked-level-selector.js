@@ -135,6 +135,7 @@ class CritterUnlockedLevelSelector extends PolymerElement {
     _addLockedStyle() {
         const img = this.$.second_stage_level;
         img.classList.add("glow-red");
+        img.classList.add("locked");
         img.style.cursor = "default";
     }
 }

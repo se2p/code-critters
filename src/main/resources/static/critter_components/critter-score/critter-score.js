@@ -136,6 +136,32 @@ class CritterScore extends I18n(PolymerElement) {
         });
     }
 
+    clearComponent() {
+        this.score = 0;
+        this.overallScore = 0;
+        this._shownScore = 0;
+        this._prevScore = 0;
+
+
+        const scoreLines = [
+            "finished_humans_line",
+            "killed_critters_line",
+            "mines_line",
+            "time_line",
+            "portal_absence_penalty"
+        ];
+
+        scoreLines.forEach(id => {
+            const scoreLine = this.shadowRoot.getElementById(id);
+            if (scoreLine) {
+                // hide all score lines and reset
+                scoreLine.style.display = "none";
+                scoreLine._shownScore = 0;
+                scoreLine._shownPercentage = 0;
+            }
+        });
+    }
+
     _onScoreIncreased(e) {
         let newScore = this.score + e.detail.score;
         if(this.overallScore  >= newScore) {

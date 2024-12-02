@@ -1421,6 +1421,8 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         this.$.speedUp_button.disabled = true;
         this.$.speedUp_button.shape = "fastforward";
 
+        this.resetScoreDialog();
+
         this._onCritterNumberChanged();
         this._createGame();
     }
@@ -1876,6 +1878,20 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         } else {
             await dialogScore.insertData("mines_line", 0, numMines);
             await dialogScore.insertData("time_line", timeBonus, this._calculateTimeBonusRatio(), "%");
+        }
+    }
+
+    resetScoreDialog() {
+        this.stars = 0;
+        this._secondStageLocked = true;
+        this.$.second_stage_level._addLockedStyle();
+
+        let dialogScore = this.$.dialog_score;
+        dialogScore.clearComponent();
+
+        for (let i = 1; i <= 3; i++) {
+            let star = this.shadowRoot.querySelector("#star" + i);
+            star.classList.remove("visibleStar");
         }
     }
 
