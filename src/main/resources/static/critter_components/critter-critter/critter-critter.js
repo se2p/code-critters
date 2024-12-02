@@ -683,6 +683,11 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
             }, this._interval);
         }
 
+        if (!this.position) {
+            console.log("Set position to spawn")
+            this.position = this._globalData.spawn;
+        }
+
         let temp = this.position;
         this.position = this.path.shift();
 
@@ -800,8 +805,6 @@ class CritterCritter extends I18n(Level(PolymerElement)) {
 
 
     async _killCritter(x, y, valueTarget, valuevalue) {
-        console.log('valuetarget: ' + valueTarget);
-        console.log('valuevalue: ' + valuevalue);
         if (!this.animate) {
             return;
         }
