@@ -742,7 +742,7 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
     /**
      * Ends the game, shows the score and saves game result.
      */
-    _onLevelFinished() {
+    async _onLevelFinished() {
         this._finished = true;
         this._portals = this._globalData.getPortals();
         let numSigns = this._portals.length; // maybe use for score??
@@ -750,7 +750,7 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
         this.$.score_dialog.open();
         let score = (this._finishedHumans) * 100 + ((this._killedMutants) * 100);
         this.score = score + this._getKilledMutantsPenalty();
-        this.showScore();
+        await this.showScore();
         let stars = 0;
         if(this.score >= 950){
             stars = 3;
@@ -903,6 +903,7 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
         this.$.jump_to_end_button.disabled = true;
 
         this._clearCrittersContainer();
+        this.resetScoreDialog();
 
         this._createGame();
         this._addMutantAndNormalCritters();
@@ -1202,6 +1203,18 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
         await dialogScore.insertData("finished_humans_line", this._finishedHumans * 100, finishedHumansPercentage, "%");
         await dialogScore.insertData("killed_critters_line", this._killedMutants * 100, killedCritterPercentage, "%");
         await dialogScore.insertData("time_penalty", this._getKilledMutantsPenalty(), "", undefined);
+    }
+
+    resetScoreDialog() {
+        this.stars = 0;
+
+        let dialogScore = this.$.dialog_score;
+        dialogScore.clearComponent();
+
+        for (let i = 1; i <= 3; i++) {
+            let star = this.shadowRoot.querySelector("#star" + i);
+            star.classList.remove("visibleStar");
+        }
     }
 
     /**

@@ -104,6 +104,7 @@ class CritterHealingScore extends I18n(PolymerElement) {
 
     insertData(id, score, percentage = -1, unit = "") {
         let scoreLine = this.shadowRoot.getElementById(id);
+        scoreLine.style.display = "table-row";
         scoreLine.score = score;
         scoreLine.unit = unit;
         scoreLine.percentage = percentage;
@@ -114,6 +115,30 @@ class CritterHealingScore extends I18n(PolymerElement) {
                     resolve();
                 }
             );
+        });
+    }
+
+    clearComponent() {
+        this.score = 0;
+        this.overallScore = 0;
+        this._shownScore = 0;
+        this._prevScore = 0;
+
+
+        const scoreLines = [
+            "finished_humans_line",
+            "killed_critters_line",
+            "time_penalty",
+        ];
+
+        scoreLines.forEach(id => {
+            const scoreLine = this.shadowRoot.getElementById(id);
+            if (scoreLine) {
+                // hide all score lines and reset
+                scoreLine.style.display = "none";
+                scoreLine._shownScore = 0;
+                scoreLine._shownPercentage = 0;
+            }
         });
     }
 
