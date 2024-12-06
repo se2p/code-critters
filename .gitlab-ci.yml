@@ -1,0 +1,23 @@
+stages:
+  - Test
+  - Build
+
+test:unit:
+  stage: Test
+  image: maven:3-eclipse-temurin-21-alpine
+  when: always
+  needs: []
+  script:
+    - mvn test
+
+build:jar:
+  stage: Build
+  image: maven:3-eclipse-temurin-21-alpine
+  when: always
+  needs: ["test:unit"]
+  script:
+    - mvn clean package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
