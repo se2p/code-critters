@@ -14,7 +14,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>20</java.version>
+		<java.version>21</java.version>
 	</properties>
 
 	<dependencies>
@@ -249,8 +249,8 @@
 				<configuration>
 					<fork>true</fork>
 					<!-- <executable>%JAVA_HOME%\bin\javac.exe</executable> -->
-					<source>8</source>
-					<target>8</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 				</configuration>
 			</plugin>
 		</plugins>
