@@ -38,6 +38,7 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
                 --critter-display: block;
                 --tooltip-display: none;
                 --cut-xml-display: none;
+                --cut-container-arrow-left: 12px;
             }
             
             /* Defines the width and height of the Critters, their clothes, and hair as well as the images to be used for small 20x20px critter-board-fields. */
@@ -160,6 +161,34 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
                     --critter-button-text-color: #666;
                     --critter-button-text-color-disabled: whitesmoke;
                     transition: 100ms
+                }
+
+                isDirty::before {
+                    content: "";
+                    position: absolute;
+                    top: 13px;
+                    left: 2px;
+                    width: 40%;
+                    height: 40%;
+                    background-image: url(image/critter/instructionDirty.png);
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 1;
+                    pointer-events: none;
+                }
+
+                .isNotDirty::before {
+                    content: "";
+                    position: absolute;
+                    top: 13px;
+                    left: 3px;
+                    width: 40%;
+                    height: 40%;
+                    background-image: url(image/critter/instructions2.png);
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 1;
+                    pointer-events: none;
                 }
             }
             
@@ -297,6 +326,36 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
                     --iron-icon-width: 35px;
                     margin: auto;
                 }
+
+                .isDirty::before {
+                    content: "";
+                    position: absolute;
+                    top: 23px;
+                    left: 5px;
+                    width: 40%;
+                    height: 40%;
+                    background-image: url(image/critter/instructionDirty.png);
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 1;
+                    pointer-events: none;
+                    filter: brightness(0.95) grayscale(0.5);
+                }
+
+                .isNotDirty::before {
+                    content: "";
+                    position: absolute;
+                    top: 23px;
+                    left: 5px;
+                    width: 40%;
+                    height: 40%;
+                    background-image: url(image/critter/instructions2.png);
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 1;
+                    pointer-events: none;
+                    filter: brightness(0.95) grayscale(1);
+                }
             }
 
             #tooltip {
@@ -329,7 +388,7 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
                 content: '';
                 position: absolute;
                 top: -60px;
-                left: 12px;
+                left: var(--cut-container-arrow-left, 12px);
                 width: 0;
                 height: 0;
                 border-left: 20px solid transparent;
@@ -417,7 +476,7 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
             </div>
             <div id="ccritter"
                  class$="critter-east critter-{{color}} critter-size-{{size}}
-                 critter-stay">
+                 critter-stay {{isMutatedString}}">
             </div>
             <div id="hcritter"
                  class$="critter-east hair-{{hair}} critter-size-{{size}}
@@ -547,6 +606,11 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
                 value: false
             },
 
+            isMutatedString: {
+                type: String,
+                value: "isNotDirty"
+            },
+
             xmlCode: {
                 type: String,
                 value: ''
@@ -613,13 +677,17 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
             if (this.showXmlCode) {
                 this.$.close_button.addEventListener("click", () => this._closeOnClick());
             }
+
+            if (this.isMutated) {
+                this.isMutatedString = "isDirty";
+            }
         });
     }
 
     _closeOnClick() {
         if (this.showXmlCode) {
             this.updateStyles({
-                '--cut-xml-display': 'none'
+                '--cut-xml-display': 'none',
             });
             this.showXmlCode = false;
         }
@@ -765,16 +833,34 @@ class CritterCollectedCritter extends I18n(Level(PolymerElement)) {
     _onClickOnDetected() {
         if (this.showXmlCode) {
             this.updateStyles({
-                '--cut-xml-display': 'none'
+                '--cut-xml-display': 'none',
             });
             this.showXmlCode = false;
         } else {
             // TODO later??
             this.$.blockly_CUT._onLanguageChanged();
+
             this.updateStyles({
                 '--cut-xml-display': 'block',
                 '--tooltip-display': 'none'
             });
+
+            const container = this.shadowRoot.querySelector('#blockly_cut_container');
+            const containerWidth = container.clientWidth;
+            const elementRect = this.getBoundingClientRect();
+            const spaceOnRight = window.innerWidth - elementRect.right;
+
+            console.log(elementRect)
+            console.log(spaceOnRight)
+            console.log(containerWidth)
+            // If there's not enough space on the right, position it on the left
+            if (spaceOnRight < containerWidth) {
+                this.$.blockly_cut_container.style.left = "-350px";
+                this.updateStyles({
+                    '--cut-container-arrow-left': '348px'
+                });
+            }
+
             this.showXmlCode = true;
         }
     }

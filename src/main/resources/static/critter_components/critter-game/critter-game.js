@@ -46,7 +46,7 @@ import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
 
 import {critterStyle} from '/style/critter-botstrap.js'
 import {normalCritterInterval, speedyCritterInterval} from "../constants.js";
-import {translateVariableNames} from "../common.js";
+import {getOtherLanguageTag, translateVariableNames} from "../common.js";
 
 
 /*
@@ -498,10 +498,10 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 <div>
                     <critter-dialog id="start_intro_dialog">
                         <div class="row dialog_container">
-                            <div class="dialog_title">[[__("start_intro_question")]]</div>
+                            <div class="dialog_title">[[__("remove_portals_question")]]</div>
                             <div id="dialog_buttons">
-                                <critter-button id="close_intro_dialog" class="col-5">[[__("close_intro_confirm")]]</critter-button>
-                                <critter-button id="start_intro" class="col-5">[[__("start_intro_confirm")]]</critter-button>
+                                <critter-button id="close_intro_dialog" class="col-5">[[__("close_remove_portals_dialog")]]</critter-button>
+                                <critter-button id="start_intro" class="col-5">[[__("remove_portals_confirm")]]</critter-button>
                             </div>
                         </div>
                     </critter-dialog>
@@ -1077,7 +1077,7 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         else if (event.detail && event.detail.xml && event.detail.jsCode) {
             const currentPortalContent = event.detail.xml;
             const currentJsCode = event.detail.jsCode;
-            const otherLanguageTag = this._getOtherLanguageTag();
+            const otherLanguageTag = getOtherLanguageTag(this.language);
             const translatedCurrentJs = translateVariableNames(currentJsCode, otherLanguageTag);
             if (this._stepNum >= 0 && this._currentHintObject && this._currentHintObject.expectedUserInteractions
                 && this._currentHintObject.expectedUserInteractions[this._stepNum]) {
@@ -1131,7 +1131,7 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
                 this._removePointAtGameboardItemsOfHintstep()
             }
 
-            const componentIds = hintObject.associatedComponentIds;
+            const componentIds = hintObject.associatedComponentIds[step];
             this._removeBorderAroundComponents(componentIds);
         }
     }
@@ -2092,19 +2092,6 @@ class CritterGame extends Toaster(I18n(Level(PolymerElement))) {
         return req;
     }
 
-    /**
-     * Returns the language tag of the currently NOT used language.
-     * E.g. current language is german, it returns 'en'
-     */
-    _getOtherLanguageTag() {
-        const currentLangTag = this.language.substring(0, 2);
-        let otherLangTag = 'de';
-        if (currentLangTag === 'de') {
-            otherLangTag = 'en'
-        }
-
-        return otherLangTag;
-    }
 
     _gameHasStarted() {
         return this._crittersSent;

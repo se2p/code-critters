@@ -86,6 +86,7 @@ public class HealingLevelController {
         map.put("background", dto.getBoardbackground());
         map.put("innerLoopStart", dto.getInnerLoopStart());
         map.put("innerBasketPosition", dto.getInnerBasketPosition());
+        map.put("hints", dto.getHints());
 
         return map;
     }

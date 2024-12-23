@@ -39,12 +39,15 @@ import '../critter-score/critter-healing-score.js';
 import '../critter-header/critter-header.js';
 import '../critter-data-store/critter-data-store.js';
 import '../critter-arrow-popup/critter-arrow-popup.js';
+import '../critter-hint-assistant/critter-hint-assistant.js';
+import '../critter-hint-speech-bubble/critter-loop-hint-speech-bubble.js'
 
 import '/lib/@polymer/iron-icons/iron-icons.js';
 
 import {critterStyle} from '/style/critter-botstrap.js'
 import {normalCritterInterval, speedyCritterInterval} from "../constants.js";
 import {Toaster} from '../critter-toaster/critter-toaster-mixin.js';
+import {getOtherLanguageTag, translateVariableNames} from "../common.js";
 
 
 /*
@@ -65,43 +68,23 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                 }
                 
                 #board_container {
+                    min-width: 344px;
+                }
+                
+
+                #hint_assistant_container {
+                    cursor: pointer;
+                }
+
+                #hint_elements_container {
                     display: flex;
+                    justify-content: end;
                     flex-direction: column;
-                    justify-content: space-between;
+                    align-items: center;
                 }
 
-                /* Causes the blockly_container to only take up 1/3 of the screen in order to not overlap with the
-                fixed-size gameboard. */
-                @media only screen and (max-width: 1350px) and (min-width: 1150px) {
-                    #board_container {
-                        max-width: 62%;
-                    }
-
-                    #blockly_container {
-                        max-width: 38%;
-                        margin-left: 2%;
-                    }
-
-                    .full_blockly {
-                        width: 100%;
-                    }
-                }
-
-                /* Causes the blockly_container to be positioned below the gameboard. */
-                @media only screen and (max-width: 1149px) {
-                    #board_container {
-                        max-width: 100%;
-                        width: 100%;
-                    }
-
-                    #blockly_container {
-                        max-width: 100vw;
-                        width: 100vw;
-                    }
-
-                    .full_blockly {
-                        max-width: 640px;
-                    }
+                #hint_container {
+                    display: block;
                 }
 
                 #game_critter_container {
@@ -121,22 +104,34 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                     display: flex;
                     flex-direction: row;
                     justify-content: left;
-                    border-radius: 15px;
-                    max-width: 430px;
                     background-color: white;
                     margin: 1%;
+                    width: 100%;
+                }
+
+                #critter_container_all_collectors {
+                    position: relative;
+                    pointer-events: none;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: left;
+                    background-color: white;
+                    margin: 1%;
+                    width: 100%;
                 }
 
                 #critter_container {
                     max-width: 350px;
                 }
-
-                #critter_container critter-collected-critter, #critter_container_finished critter-collected-critter, #critter_container_all_collectors critter-collected-critter{
+                
+                
+                #critter_container_finished critter-collected-critter, #critter_container critter-collected-critter, #critter_container_all_collectors critter-collected-critter{
                     pointer-events: all;
                     width: 40px;
                     height: 40px;
+                    margin-right: 5%;
                 }
-
+                
                 #send_button,
                 #speedUp_button,
                 #speedDown_button,
@@ -179,7 +174,7 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                 .critterIntrText {
                     position: absolute;
                     top: 10px;
-                    left: 20px;
+                    left: 50px;
                     z-index: 2;
                 }
 
@@ -264,24 +259,34 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                     background-color: white;
                 }
 
-                #sent_back_critters, #finished_critters, #all_collectors {
-                    position: relative;
-                    pointer-events: none;
+                #finished_critters, #all_collectors {
                     display: flex;
                     flex-direction: row;
                     justify-content: left;
                     border-radius: 15px;
                     border: 2px solid #FFA600;
                     padding: 1%;
-                    max-width: 430px;
                     background-color: white;
                     flex-wrap: wrap;
                 }
 
                 #sent_back_critters {
-                    margin-top: 3%;
-                    left: -15px;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: left;
+                    border-radius: 15px;
+                    border: 2px solid #FFA600;
+                    padding: 1%;
                     max-width: 350px;
+                    background-color: white;
+                    flex-wrap: wrap;
+                }
+
+                #sent_back_critters_container {
+                    margin-top: 3%;
+                    max-width: 350px;
+                    display: flex;
+                    flex-direction: row;
                 }
 
                 #finished_critters, #all_collectors {
@@ -338,6 +343,48 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                     --critter-button-text-color-disabled: whitesmoke;
                     transition: 100ms
                 }
+                
+                #mine_popup {
+                    top: 5px;
+                    right: 15px;
+                }
+                
+                #test_popup_container {
+                    height: 440px;
+                }
+
+                .paperImage {
+                    width: 60px;
+                    height: auto;
+                    position: absolute;
+                    top: -8px;
+                    left: -8px;
+                    z-index: 2;
+                }
+
+                #close_remove_portals_dialog:hover,
+                #remove_portals:hover {
+                    font-size: 1.1em;
+                    --critter-button-text-color: #ffa600;
+                }
+
+                /* On small size screens Blockly Container goes in next row */
+                @media only screen and (max-width: 1100px) {
+                    #blockly_container {
+                        min-width: 100%;
+                    }
+                    #hint_elements_container {
+                        left: -5.5%;
+                        margin-bottom: 0px;
+                    }
+                }
+
+                /* On very small size screens the assistent must go into next row as well*/
+                @media only screen and (max-width: 875px) {
+                    #hint_elements_container {
+                        min-width: 100%;
+                    }
+                }
 
             </style>
 
@@ -369,9 +416,6 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                         <h3>[[__('try_again_later')]]</h3>
                     </template>
                     <critter-button id="next_level_button">[[__('to_next_level')]]</critter-button>
-                    
-                   <!-- <h3>[[__('select_next')]]</h3>
-                    <critter-level-selector-simple initial-value="{{currentLevelName}}"></critter-level-selector-simple>-->
                 </div>
             </critter-dialog>
 
@@ -383,12 +427,16 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
             </div>
             <div class="col">
                 <div class="row justify-content-center" id="game_containers">
-                    <div id="board_container" class="col-4">
-                        <div class="row position-relative">
+                    <div id="board_container" class="col-sm-12 col-md-8 col-lg-4 col-xl-3">
+                        <div class="col-12" style="left: 5%;">
+                        <div class="row">
                             <critter-healing-board id="gameboard" show-grid="{{showGrid}}"></critter-healing-board>
                             <div id="game_critter_container"></div>
-                            <critter-arrow-popup id="arrow_popup" block-size="{{_blockSize}}"
+                            <critter-arrow-popup id="arrow_popup_hint" block-size="{{_blockSize}}"
                                                 board-height="{{ _boardHeight }}">
+                            </critter-arrow-popup>
+                            <critter-arrow-popup id="arrow_popup" block-size="{{_blockSize}}"
+                                                 board-height="{{ _boardHeight }}">
                             </critter-arrow-popup>
                         </div>
                         <div class="row" id="buttons">
@@ -409,24 +457,39 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                                 <div id="coordinate_container">[[__('coordinates')]]: (X: {{_hoverX}}, Y: {{_hoverY}})</div>
                             </div>
                         </div>
-                        <div class="col" id="sent_back_critters">
-                            <div class="col-12 text">
-                                <p>[[__("sent_home_critters")]]</p>
+                        <div class="row" id="sent_back_critters_container">
+                            <div class="col" id="sent_back_critters">
+                                <div class="col-12 text">
+                                    <p>[[__("sent_home_critters")]]</p>
+                                </div>
+                                <div id="critter_container" class="row">
+                                </div> 
                             </div>
-                            <div id="critter_container" class="row">
-                            </div>
+                            
                         </div>
-                        
+                        </div>
                     </div>
-                    <div id="blockly_container" class="col-sm-6 px-0">
-                        <div class="critterCodeDiv">
-                            <div class="critterIntrText text">[[__("wizard_instr")]]</div>
-                            <!--<div id="blockly_container" class="col-lg mt-3">-->
-                            <div class="critterCodeContainer">
-                                <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _healingCutHeight}}" controls="true"
-                                                 is-healing-cut="true"
-                                                 read-only>
-                                </critter-blockly>
+
+                    <div id="hint_elements_container" class="col-2">
+                        <div id="hint_container">
+                            <critter-loop-hint-speech-bubble id="hint_speech_bubble"></critter-loop-hint-speech-bubble>
+                        </div>
+                        <div id="hint_assistant_container">
+                            <critter-hint-assistant></critter-hint-assistant>
+                        </div>
+                    </div>
+                    <div id="blockly_container" class="col">
+                        <div id="blockly_cut_div">
+                            <div class="critterCodeDiv">
+                                <img class="paperImage" src="[[importPath]]../../images/instructions2.png" alt="Paper Image">
+                                <div class="critterIntrText text">[[__("wizard_instr")]]</div>
+                                <!--<div id="blockly_container" class="col-lg mt-3">-->
+                                <div class="critterCodeContainer">
+                                    <critter-blockly id="blockly_CUT" class="full_blockly" height$="{{ _healingCutHeight}}" controls="true"
+                                                     is-healing-cut="true"
+                                                     read-only>
+                                    </critter-blockly>
+                                </div>
                             </div>
                         </div>
                         <div id="finished_critters" class="col" hidden="{{!_finished}}">
@@ -447,12 +510,15 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                 </div>
                 
 
-                <div id="signpost_popup_div" class="row justify-content-center">
-                    <critter-healing-test-popup class="col-10" id="mine_popup" block-size="{{_blockSize}}"
-                                                board-height="{{ _boardHeight }}"
-                                                popup-height="400"
-                    >
-                    </critter-healing-test-popup>
+                <div id="test_popup_div" class="row justify-content-center">
+                    <div id="test_popup_container" class="col-10 row justify-content-center">
+                        <critter-healing-test-popup class="col-12 " id="mine_popup" block-size="{{_blockSize}}"
+                                                    board-height="{{ _boardHeight }}"
+                                                    popup-height="400"
+                        >
+                        </critter-healing-test-popup>
+                    </div>
+                    
                 </div>
                 <div>
                     <critter-dialog id="restart_game_dialog">
@@ -476,9 +542,23 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
                         </div>
                     </critter-dialog>
                 </div>
+
+                <div>
+                    <critter-dialog id="remove_portals_dialog">
+                        <div class="row dialog_container">
+                            <div class="dialog_title">[[__("remove_portals_question")]]</div>
+                            <div id="dialog_buttons">
+                                <critter-button id="close_remove_portals_dialog" class="col-5">[[__("close_remove_portals_dialog")]]</critter-button>
+                                <critter-button id="remove_portals" class="col-5">[[__("remove_portals_confirm")]]</critter-button>
+                            </div>
+                        </div>
+                    </critter-dialog>
+                </div>
             </div>
         `;
     }
+
+    static get importMeta() { return import.meta; }
 
     static get is() {
         return 'critter-healing-game';
@@ -638,7 +718,36 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
             _showJumpToEnd: {
                 type: Boolean,
                 value: false
-            }
+            },
+
+            _inHintMode: {
+                type: Boolean,
+                value: false
+            },
+
+            _expectsUserSaveClick: {
+                type: Boolean,
+                value: false
+            },
+
+            _stepNum: {
+                type: Number,
+                value: -1
+            },
+
+            _currentHintObject: {
+                type: Object
+            },
+
+            _hadCodeExplained: {
+                type: Boolean,
+                value: false
+            },
+
+            _requestedHintMode: {
+                type: String,
+                value: ''
+            },
 
         };
     }
@@ -690,6 +799,25 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
             this.$.cont_normal_confirm.addEventListener("click", () => this._closeJumpToEndDialog());
             this.$.jump_to_end_confirm.addEventListener("click", () => this._finishGameQuickly(this));
 
+
+            // Hint assistent listeners
+            this.$.hint_assistant_container.addEventListener("mouseover", () => this._showHelpInfo());
+            this.$.hint_assistant_container.addEventListener("mouseout", () => this._closeHelpInfo());
+            this.$.hint_assistant_container.addEventListener("click", () => this._openHintAssistent());
+            this.addEventListener("_hintClosed", (event) => this._resetHintSettingsOfStep(event.detail.stepNum, event.detail.hintObject, true));
+            this.addEventListener("_introHintMode", (event) => this._activateHintMode(event));
+            this.addEventListener("_codeExplanationMode", (event) => this._activateHintMode(event));
+            this.addEventListener("_completePortalHintMode", (event) => this._activateHintMode(event));
+            this.addEventListener("_showNextHint", (event) => this._showNextHintVisuals(event));
+
+            this.addEventListener("_startRemoveAllSetPortalsQuestion", (event) => this._openRemovePortalsDialog(event));
+            this.$.close_remove_portals_dialog.addEventListener("click", () => this._closeAllHintDialogs());
+            this.$.remove_portals.addEventListener("click", () => this._doRemovePortalsBeforeHintMode());
+
+
+            window.addEventListener("_userMovedBlockInHintMode", (event) => this._handleUserMovedBlockInHintMode(event));
+
+
             // TRIGGERS THE LEVEL BACKEND FETCHES IN THE GLOBAL DATASTORE VIA OBSERVER
             this._globalData.healLevelName = new URL(window.location.href).searchParams.get("level");
 
@@ -707,8 +835,392 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
         super.disconnectedCallback();
         window.removeEventListener("resize", (event) => this._handleResize(event));
         window.removeEventListener("beforeunload", (event) => this._saveGameData(event));
+        window.removeEventListener("_userMovedBlockInHintMode", (event) => this._handleUserMovedBlockInHintMode(event));
     }
 
+    /**
+     * Shows the "I can help" info on hover over the assistant if not
+     * already in hint mode or during game play.
+     */
+    _showHelpInfo() {
+        if (!this._inHintMode) {
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+            speechBubble.showHoverText(this._gameHasStarted());
+        }
+    }
+
+    _closeHelpInfo() {
+        if (!this._inHintMode) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.closeHoverText();
+        }
+    }
+
+    /**
+     * Opens the speech bubble of the hint assistent, only before a game is started
+     */
+    async _openHintAssistent() {
+        if (!this._inHintMode && !this._gameHasStarted()) {
+            const isForCompletePortal = await this._hadCodeAlreadyExplained();
+            this._inHintMode = true;
+            const speechBubble = this.$.hint_speech_bubble;
+            while (speechBubble.firstChild) {
+                speechBubble.removeChild(speechBubble.firstChild);
+            }
+            speechBubble.gameId = this._game.id;
+            speechBubble.isOnHoverInfoText = false;
+            speechBubble.showHintOptions(isForCompletePortal);
+        }
+    }
+
+    _activateHintMode(event) {
+        if (this.$.mine_popup._isOpen) {
+            this.$.mine_popup._popupClose(); // if a portal is already open
+        }
+        if (event.detail && event.detail.stepNum >= 0 && event.detail.hintObject) {
+            this._hintObject = event.detail.hintObject;
+            this._stepNum = event.detail.stepNum;
+            this._inHintMode = true;
+            if (this._hintObject.situation === "CODE_EXPLANATION") {
+                this._hadCodeExplained = true;
+            }
+        }
+    }
+
+    /**
+     * Shows the next hints, resets UI changes of the last step such as block highlighting
+     * or arrows on the board, and applies UI changes for the current step
+     * @param event holds the required stepNum and hint object
+     */
+    _showNextHintVisuals(event) {
+        if (event && event.detail && event.detail.stepNum >= 0 && event.detail.hintObject !== null) {
+            const stepNum = event.detail.stepNum;
+            this._stepNum = stepNum;
+            const previousStepNum = event.detail.previousStepNum;
+            const hintObject = event.detail.hintObject;
+            this._currentHintObject = hintObject;
+
+            const testPopup = this.$.mine_popup;
+            const blocklyTest = testPopup.$.blockly_test;
+
+            let isLastStep =  hintObject.hintTexts && hintObject.hintTexts.length && hintObject.hintTexts.length - 1 === this._stepNum;
+
+            if ((hintObject.expectedUserInteractions && hintObject.expectedUserInteractions[stepNum]
+                && hintObject.expectedUserInteractions[stepNum] === "PORTAL_BUILD") || isLastStep) {
+                blocklyTest.reactOnBlockMove(true);
+            } else {
+                blocklyTest.reactOnBlockMove(false);
+            }
+
+            this._resetHintSettingsOfStep(previousStepNum, hintObject);
+            this._highlightBlocksOfHintstep(stepNum, hintObject);
+            this._pointAtGameboardItemsOfHintstep(stepNum, hintObject);
+            this._addBorderToComponentsOfStep(stepNum, hintObject);
+            this._fillPortalWithTestHint(stepNum, hintObject);
+        }
+    }
+
+    /**
+     * Fills a test portal with blocks in the hint mode.
+     * @param step current step num
+     * @param hintObject object that holds the blocks to fill in the portal
+     */
+    _fillPortalWithTestHint(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            let portalXml = hintObject.portalXmls[step];
+            if (portalXml) {
+                const testPopup = this.$.mine_popup;
+                const blocklyTest = testPopup.$.blockly_test;
+                if (blocklyTest) {
+                    if (!testPopup._isOpen) {
+                        let coords;
+
+                        // open last clicked coordinates
+                        for (var i = step - 1; i >= 0; i--) {
+                            if (hintObject.expectedClickCoordinates[i]
+                                && hintObject.expectedClickCoordinates[i].length > 0) {
+                                coords = hintObject.expectedClickCoordinates[i][0];
+                                break;
+                            }
+                        }
+                        testPopup.showPortal(coords)
+                        this.$.arrow_popup.show(coords);
+                    }
+                    blocklyTest._setCodeInCurrentLanguage(portalXml)
+                }
+            }
+        }
+    }
+
+    _showNextHint() {
+        const speechBubble = this.$.hint_speech_bubble;
+        while (speechBubble.firstChild) {
+            speechBubble.removeChild(speechBubble.firstChild);
+        }
+        speechBubble.showNext();
+    }
+
+    /**
+     * Adds a red border style to elements their id to highlight them
+     * in the hint mode.
+     * @param step num of current hint step
+     * @param hintObject object that holds the required element ids
+     */
+    _addBorderToComponentsOfStep(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const componentIdsToHighlight = hintObject.associatedComponentIds[step];
+            this._addBorderToHtmlElements(componentIdsToHighlight);
+        }
+    }
+
+    /**
+     * Adds a red arrow that points at a given coordinate of the board
+     * to show fields in the hint mode.
+     * @param step num of the current hint step
+     * @param hintObject object to hold the required coordinates
+     */
+    _pointAtGameboardItemsOfHintstep(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const associatedCoordinates = hintObject.associatedCoordinates[step];
+            if (associatedCoordinates) {
+                this.$.arrow_popup_hint.show(associatedCoordinates);
+            }
+        }
+    }
+
+    _addBorderToHtmlElements(elementIds) {
+        if (elementIds.length > 0) {
+            elementIds.forEach(elementId => {
+                if (elementId.length <= 0) {
+                    // nothing
+                } else {
+                    const id = CSS.escape(elementId);
+                    const component = this.$[id];
+                    if (component) { // if component is directly in this html
+                        component.style.border = "3px solid red";
+                    } else if (this.$.mine_popup.shadowRoot.querySelector('#' + id)) { // if component is in portal popup
+                        const portalComponent = this.$.mine_popup.shadowRoot.querySelector('#' + id);
+                        portalComponent.style.border = "3px solid red";
+                    } else if (this.$.all_collectors.querySelector('#' + id)) { // if component is a critter
+                        const crittersComponent = this.$.all_collectors.querySelector('#' + id);
+                        crittersComponent.style.border = "3px solid red";
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * Highlights blocks of the CUT in the hint mode.
+     * @param step current step num
+     * @param hintObject holds the block ids to highlight
+     */
+    _highlightBlocksOfHintstep(step, hintObject) {
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const blockIdsToBeHighlighted = hintObject.associatedCutBlocks[step];
+            this._highlightBlocks(blockIdsToBeHighlighted);
+        }
+    }
+
+    _highlightBlocks(blockIds) {
+        if (blockIds !== undefined && blockIds.length > 0) {
+            const cut = this.$.blockly_CUT;
+            blockIds.forEach(blockId => {
+                cut.highlightBlock(blockId, "#ff0000");
+            })
+        }
+    }
+
+
+    /**
+     * Resets the UI changes in hint mode, e.g. to undo block highlighting.
+     * @param step current hint step num
+     * @param hintObject holds all required info, e.g. block ids to un-highlight
+     * @param closeAssistent if true, the hint mode is ended after resetting the UI
+     */
+    _resetHintSettingsOfStep(step, hintObject, closeAssistent = false) {
+        if (closeAssistent) { // close button click
+            this._deactivateHintMode();
+        }
+        if (step === undefined || step < 0 || hintObject === undefined) {
+            return;
+        } else {
+            const blocks = hintObject.associatedCutBlocks[step];
+            this._resetBlockColors(blocks);
+            if (hintObject.associatedCoordinates[step]) {
+                this._removePointAtGameboardItemsOfHintstep()
+            }
+
+            const componentIds = hintObject.associatedComponentIds[step];
+            this._removeBorderAroundComponents(componentIds);
+        }
+    }
+
+    _removePointAtGameboardItemsOfHintstep() {
+        this.$.arrow_popup_hint.hide();
+    }
+
+    _removeBorderAroundComponents(componentIds) {
+        if (componentIds !== undefined && componentIds.length > 0) {
+            componentIds.forEach(componentId => {
+                if (componentId.length <= 0) {
+                    // nothing
+                }
+                else {
+                    const id = CSS.escape(componentId);
+                    const component = this.$[id];
+                    if (component) {
+                        component.style.border = "";
+                    } else if (this.$.mine_popup.shadowRoot.querySelector('#' + id)) { // if component of portal popup
+                        const portalComponent = this.$.mine_popup.shadowRoot.querySelector('#' + id);
+                        portalComponent.style.border = "";
+                    } else if (this.$.all_collectors.querySelector('#' + id)) { // if is a critter
+                        const crittersComponent = this.$.all_collectors.querySelector('#' + id);
+                        crittersComponent.style.border = "";
+                    }
+                }
+            })
+        }
+    }
+
+    _deactivateHintMode() {
+        this._tipsForFieldsActivated = false;
+        this._inHintMode = false;
+        const testPopup = this.$.mine_popup;
+        const blocklyTest = testPopup.$.blockly_test;
+        blocklyTest.reactOnBlockMove(false);
+    }
+
+    _resetBlockColors(highlightedBlockIds) {
+        if (highlightedBlockIds !== undefined && highlightedBlockIds.length > 0) {
+            const cut = this.$.blockly_CUT;
+            highlightedBlockIds.forEach(blockId => {
+                cut.resetColorOfBlock(blockId);
+            })
+        }
+    }
+
+    _gameHasStarted() {
+        return this._crittersSent;
+    }
+
+    _hasBuiltPortals() {
+        let builtPortals = this._globalData.getPortals();
+        return (builtPortals.length > 0);
+    }
+
+    /**
+     * Returns if the user has already used to code-explanation, necessary before showing a portal
+     * is allowed
+     */
+    async _hadCodeAlreadyExplained() {
+        if (this._hadCodeExplained) {
+            return true;
+        } else {
+            let levelName = this._globalData.healLevelName;
+            let req = this._generateRequest(`/healing-game/${levelName}/code-explanations-used`, "GET");
+
+
+            req.addEventListener('response', e => {
+                this._hadCodeExplained = e.detail.__data.response;
+            });
+
+            let genRequest = req.generateRequest();
+            req.completes = await genRequest.completes;
+
+            return this._hadCodeExplained;
+        }
+
+    }
+
+    /**
+     * Handles interaction on block moves of a user during hint mode
+     * @param event
+     */
+    _handleUserMovedBlockInHintMode(event) {
+        // if last step, just close hint assistent
+        if (this._currentHintObject && this._currentHintObject.hintTexts
+            && this._currentHintObject.hintTexts.length - 1 === this._stepNum) {
+            const speechBubble = this.$.hint_speech_bubble;
+            speechBubble.close();
+        }
+        else if (event.detail && event.detail.xml && event.detail.jsCode) {
+            const currentPortalContent = event.detail.xml;
+            const currentJsCode = event.detail.jsCode;
+            const otherLanguageTag = getOtherLanguageTag(this.language);
+            const translatedCurrentJs = translateVariableNames(currentJsCode, otherLanguageTag);
+            if (this._stepNum >= 0 && this._currentHintObject && this._currentHintObject.expectedUserInteractions
+                && this._currentHintObject.expectedUserInteractions[this._stepNum]) {
+                const expectedInteraction = this._currentHintObject.expectedUserInteractions[this._stepNum];
+                if (expectedInteraction === "PORTAL_BUILD" && this._currentHintObject.expectedPortalJsCode
+                    && this._currentHintObject.expectedPortalJsCode[this._stepNum]) {
+                    const isAsExpected = (this._currentHintObject.expectedPortalJsCode[this._stepNum] === currentJsCode) || (this._currentHintObject.expectedPortalJsCode[this._stepNum] === translatedCurrentJs);
+
+                    if (isAsExpected) {
+                        this._expectsUserSaveClick = true;
+                        this._showNextHint();
+                    } else {
+                        this.showWarningToast("hint_wrong_portal_content");
+                    }
+                }
+            }
+        }
+    }
+
+    _openRemovePortalsDialog(event) {
+        this._requestedHintMode = event?.detail?.hintObject?.situation;
+        this.$.remove_portals_dialog.open();
+    }
+
+    _closeRemovePortalsDialog() {
+        this.$.remove_portals_dialog.close();
+    }
+
+    _closeAllHintDialogs() {
+        this.$.remove_portals_dialog.close();
+        this._closeHelpInfo();
+    }
+
+    _doRemovePortalsBeforeHintMode() {
+        this._closeRemovePortalsDialog();
+        this._updateAllPortalsDeleted();
+
+        let buttonId;
+        if (this._requestedHintMode === "COMPLETE_PORTAL") {
+            buttonId = "complete_portal"
+        } else {
+            buttonId = "introduction"
+        }
+
+        this.dispatchEvent(new CustomEvent('_portalsDeletedBeforeHintMode', {
+            detail: { target: {id: buttonId} },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    _updateAllPortalsDeleted() {
+        const portals = this._globalData.getPortals();
+        for (let portal of portals) {
+            portal.creationEnd = new Date();
+            portal.deleted = true;
+            portal.deletionDateTime = Date.now();
+            this._updateMine(portal)
+        }
+
+        this._globalData.deletePortals();
+    }
 
     /**
      * Saves updates on mines to the database, i.e. on creation, editing or deletion of a mine.
@@ -731,8 +1243,17 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
         let req;
         let url;
 
-        url = `/healing-game/${this._game.id}/portal`;
-        req = this._generateRequest(url, mineDtoObject, "POST");
+        if (this._inHintMode && this._expectsUserSaveClick) {
+            this._expectsUserSaveClick = false;
+            url = `/healing-game/${this._game.id}/assistant-portal`;
+            const dto = {mine: mineDtoObject, assistantInfoId: this._globalData.assistentUsageInfoObject.id}
+            req = this._generateRequest(url, dto, "POST");
+            this._showNextHint();
+        } else {
+            url = `/healing-game/${this._game.id}/portal`;
+            req = this._generateRequest(url, mineDtoObject, "POST");
+        }
+
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
@@ -915,9 +1436,37 @@ class CritterHealingGame extends Toaster(I18n(Level(PolymerElement))) {
      * @private
      */
     _onFieldClicked(event) {
-        let detail = event.detail;
-        this.$.mine_popup.showPortal(detail, this._crittersSent);
-        this.$.arrow_popup.show(detail);
+        if (this._inHintMode) {
+
+            if (this._hintObject && this._hintObject.expectedUserInteractions
+                && this._hintObject.expectedUserInteractions[this._stepNum]
+                && this._hintObject.expectedUserInteractions[this._stepNum] === "FIELD_CLICK") { // only open if user interaction "Field click" is expected
+                if (this._hintObject.expectedClickCoordinates && this._hintObject.expectedClickCoordinates[this._stepNum].length > 0) { // if the next hint step involves a portal
+                    let detail = event.detail;
+                    const expectedCoords = this._hintObject.expectedClickCoordinates[this._stepNum];
+
+                    let isCorrectField = false;
+
+                    expectedCoords.forEach(coordinates => { // compare clicked field with all correct fields
+                        if (detail.x === coordinates.x && detail.y === coordinates.y) { // if player clicks on correct coords
+                            isCorrectField = true;
+                        }
+                    });
+
+                    if (isCorrectField) {
+                        this.$.mine_popup.showPortal(detail, this._gameHasStarted());
+                        this.$.arrow_popup.show(detail);
+                        this._showNextHint();
+                    } else {
+                        this.showWarningToast("hint_wrong_field");
+                    }
+                }
+            }
+        } else {
+            let detail = event.detail;
+            this.$.mine_popup.showPortal(detail, this._gameHasStarted());
+            this.$.arrow_popup.show(detail);
+        }
     }
 
     _startCritters() {

@@ -10,12 +10,12 @@ package org.codecritters.code_critters.web.dto.hintSystem;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -26,6 +26,7 @@ import org.codecritters.code_critters.persistence.entities.hintSystem.Coordinate
 import org.codecritters.code_critters.web.enums.ExpectedInteraction;
 import org.codecritters.code_critters.web.enums.HintSituation;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,9 +48,26 @@ public class HintDTO {
     private Map<Integer, ExpectedClickedCoordsDTO> expectedClickedCoordinates;
     private Map<Integer, ExpectedInteraction> expectedUserInteraction;
     private Map<Integer, String> expectedPortalJsCode;
+    private Map<Integer, List<String>> answerOptionsList;
+    private Map<Integer, String> solutionAnswer;
 
 
     public HintDTO() {
+    }
+
+    public HintDTO(String id, HintSituation hintSituation, Map<Integer, String> hintTexts, Map<Integer, Coordinate> associatedCoordinates, Map<Integer, CutBlocksDTO> associatedCutBlocks, Map<Integer, ComponentsDTO> associatedComponentIds, Map<Integer, String> portalXmls, Map<Integer, ExpectedClickedCoordsDTO> expectedClickedCoordinates, Map<Integer, ExpectedInteraction> expectedUserInteraction, Map<Integer, String> expectedPortalJsCode, Map<Integer, List<String>> answerOptionsList, Map<Integer, String> solutionAnswer) {
+        this.id = id;
+        this.hintSituation = hintSituation;
+        this.hintTexts = hintTexts;
+        this.associatedCoordinates = associatedCoordinates;
+        this.associatedCutBlocks = associatedCutBlocks;
+        this.associatedComponentIds = associatedComponentIds;
+        this.portalXmls = portalXmls;
+        this.expectedClickedCoordinates = expectedClickedCoordinates;
+        this.expectedUserInteraction = expectedUserInteraction;
+        this.expectedPortalJsCode = expectedPortalJsCode;
+        this.answerOptionsList = answerOptionsList;
+        this.solutionAnswer = solutionAnswer;
     }
 
     public HintDTO(String id, HintSituation hintSituation, Map<Integer, String> hintTexts, Map<Integer, Coordinate> associatedCoordinates, Map<Integer, CutBlocksDTO> associatedCutBlocks, Map<Integer, ComponentsDTO> associatedComponentIds, Map<Integer, String> portalXmls, Map<Integer, ExpectedClickedCoordsDTO> expectedClickedCoordinates, Map<Integer, ExpectedInteraction> expectedUserInteraction, Map<Integer, String> expectedPortalJsCode) {
@@ -143,5 +161,21 @@ public class HintDTO {
 
     public void setExpectedPortalJsCode(Map<Integer, String> expectedPortalJsCode) {
         this.expectedPortalJsCode = expectedPortalJsCode;
+    }
+
+    public Map<Integer, List<String>> getAnswerOptionsList() {
+        return answerOptionsList;
+    }
+
+    public void setAnswerOptionsList(Map<Integer, List<String>> answerOptionsList) {
+        this.answerOptionsList = answerOptionsList;
+    }
+
+    public Map<Integer, String> getSolutionAnswer() {
+        return solutionAnswer;
+    }
+
+    public void setSolutionAnswer(Map<Integer, String> solutionAnswer) {
+        this.solutionAnswer = solutionAnswer;
     }
 }

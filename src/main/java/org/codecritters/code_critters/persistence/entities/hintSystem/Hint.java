@@ -10,12 +10,12 @@ package org.codecritters.code_critters.persistence.entities.hintSystem;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -25,6 +25,7 @@ package org.codecritters.code_critters.persistence.entities.hintSystem;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.codecritters.code_critters.persistence.entities.Level;
+import org.codecritters.code_critters.persistence.entities.healing.HealLevel;
 import org.codecritters.code_critters.web.enums.ExpectedInteraction;
 import org.codecritters.code_critters.web.enums.HintSituation;
 import org.hibernate.annotations.GenericGenerator;
@@ -54,6 +55,14 @@ public class Hint {
             generator = ObjectIdGenerators.PropertyGenerator.class,
             property = "id")
     private Level level;
+
+    @ManyToOne
+    @JoinColumn(name = "heal_level_id")
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
+    private HealLevel healLevel;
+
     private HintSituation hintSituation;
 
     // The hint text divided into different parts => the one text per step, with the step number as key
@@ -102,6 +111,14 @@ public class Hint {
     @Column(name = "expected_portal_js_code", columnDefinition = "text")
     private Map<Integer, String> expectedPortalJsCode;
 
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id")
+    @OneToMany(mappedBy = "hint", cascade = CascadeType.ALL)
+    private Map<Integer, AnswerOptionsList> answerOptionsList;
+
+    @ElementCollection
+    private Map<Integer, String> solutionAnswer;
 
     public Hint() {
     }
@@ -116,6 +133,20 @@ public class Hint {
         this.associatedComponentIds = associatedComponentIds;
         this.portalXmls = portalXmls;
         this.expectedClickedCoordinates = expectedClickedCoordinates;
+    }
+
+    public Hint(String id, HealLevel healLevel, HintSituation hintSituation, Map<Integer, String> hintTexts, Map<Integer, Coordinate> associatedCoordinates, Map<Integer, AssociatedCutBlocks> associatedCutBlocks, Map<Integer, AssociatedComponentIds> associatedComponentIds, Map<Integer, String> portalXmls, Map<Integer, ExpectedClickedCoordinate> expectedClickedCoordinates, Map<Integer, ExpectedInteraction> expectedUserInteraction, Map<Integer, String> expectedPortalJsCode) {
+        this.id = id;
+        this.healLevel = healLevel;
+        this.hintSituation = hintSituation;
+        this.hintTexts = hintTexts;
+        this.associatedCoordinates = associatedCoordinates;
+        this.associatedCutBlocks = associatedCutBlocks;
+        this.associatedComponentIds = associatedComponentIds;
+        this.portalXmls = portalXmls;
+        this.expectedClickedCoordinates = expectedClickedCoordinates;
+        this.expectedUserInteraction = expectedUserInteraction;
+        this.expectedPortalJsCode = expectedPortalJsCode;
     }
 
     public Hint(String id, Level level, HintSituation hintSituation, Map<Integer, String> hintTexts, Map<Integer, Coordinate> associatedCoordinates, Map<Integer, AssociatedCutBlocks> associatedCutBlocks, Map<Integer, AssociatedComponentIds> associatedComponentIds, Map<Integer, String> portalXmls, Map<Integer, ExpectedClickedCoordinate> expectedClickedCoordinates, Map<Integer, ExpectedInteraction> expectedUserInteraction, Map<Integer, String> expectedPortalJsCode) {
@@ -222,6 +253,30 @@ public class Hint {
 
     public void setExpectedPortalJsCode(Map<Integer, String> expectedPortalJsCode) {
         this.expectedPortalJsCode = expectedPortalJsCode;
+    }
+
+    public HealLevel getHealLevel() {
+        return healLevel;
+    }
+
+    public void setHealLevel(HealLevel healLevel) {
+        this.healLevel = healLevel;
+    }
+
+    public Map<Integer, AnswerOptionsList> getAnswerOptionsList() {
+        return answerOptionsList;
+    }
+
+    public void setAnswerOptionsList(Map<Integer, AnswerOptionsList> answerOptionsList) {
+        this.answerOptionsList = answerOptionsList;
+    }
+
+    public Map<Integer, String> getSolutionAnswer() {
+        return solutionAnswer;
+    }
+
+    public void setSolutionAnswer(Map<Integer, String> solutionAnswer) {
+        this.solutionAnswer = solutionAnswer;
     }
 }
 

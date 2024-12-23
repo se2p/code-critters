@@ -256,7 +256,13 @@ class CritterHealingTestPopup extends Toaster(Level(PolymerElement)) {
             _readOnly: {
                 type: Boolean,
                 value: false
+            },
+
+            _isOpen: {
+                type: Boolean,
+                value: false
             }
+
         }
     }
 
@@ -414,6 +420,7 @@ class CritterHealingTestPopup extends Toaster(Level(PolymerElement)) {
 
 
     _popupClose() {
+        this._isOpen = false;
         this.$.close_signpost_dialog.close();
         this.$.signpost_popup.hide();
         this.dispatchEvent(new CustomEvent('_closeTestPopup', {
@@ -429,7 +436,6 @@ class CritterHealingTestPopup extends Toaster(Level(PolymerElement)) {
      * @param event holds the two block types being compared
      */
     _showWarning(event) {
-        console.log("IS show warning executed???")
         if (event.detail.curBlockType && event.detail.comparedWith) {
             const { curBlockType, comparedWith } = event.detail;
             const warningMessage = warningMessages[curBlockType]?.[comparedWith];
@@ -471,6 +477,7 @@ class CritterHealingTestPopup extends Toaster(Level(PolymerElement)) {
         this.$.blockly_test.readOnly = this._readOnly;
         this.$.blockly_test.trashcan = true;
         this.$.signpost_popup.show();
+        this._isOpen = true;
         if (!this._readOnly) {
             this.$.blockly_test._setToolBox(this._globalData.healingToolbox);
         }

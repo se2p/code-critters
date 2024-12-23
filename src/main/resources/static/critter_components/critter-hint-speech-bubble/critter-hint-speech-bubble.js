@@ -95,7 +95,7 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                     --critter-button-text-color: red;
                 }
 
-                #bubble_buttons {
+                #bubble_buttons, #bubble_buttons_selection {
                     position: relative;
                     bottom: 0;
                     right: 0;
@@ -140,7 +140,7 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
                     </div>
                     
 
-                    <div id="bubble_buttons" class="row-12">
+                    <div id="bubble_buttons_selection" class="row-12">
                         <critter-button id="introduction" class="popup_button" hidden$="{{!isFirstLevel}}">
                             [[__("introduction")]]
                         </critter-button>
@@ -338,11 +338,12 @@ class CritterHintSpeechBubble extends I18n(PolymerElement) {
             if (this.isOpen) {
                 this.open();
             }
-
-            if (this._globalData.levelName === "level_1") {
-                this.isFirstLevel = true;
-            }
         });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("_portalsDeletedBeforeIntro", (event) => this.loadHint(event.detail));
     }
 
     open() {

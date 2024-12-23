@@ -24,6 +24,8 @@ package org.codecritters.code_critters.persistence.entities.hintSystem;
 
 import org.codecritters.code_critters.persistence.entities.Game;
 import org.codecritters.code_critters.persistence.entities.Mine;
+import org.codecritters.code_critters.persistence.entities.healing.HealingGame;
+import org.codecritters.code_critters.persistence.entities.healing.HealingMine;
 import org.codecritters.code_critters.web.enums.HintSituation;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -47,31 +49,39 @@ public class AssistantInfo {
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @ManyToOne
+    @JoinColumn(name = "healing_game_id")
+    private HealingGame healingGame;
+
     @OneToMany(mappedBy = "assistantInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VisitedStep> visitedSteps = new ArrayList<>();
     private HintSituation hintSituation;
     private LocalDateTime timeClosed;
     @OneToMany(mappedBy = "assistantInfo", cascade = CascadeType.ALL)
-    private List<Mine> builtPortals = new ArrayList<>();
+    private List<Mine> builtPortalsBaseGame = new ArrayList<>();
+
+    @OneToMany(mappedBy = "assistantInfo", cascade = CascadeType.ALL)
+    private List<HealingMine> builtPortalsHealGame = new ArrayList<>();
 
     public AssistantInfo() {
     }
 
-    public AssistantInfo(String id, Game game, List<VisitedStep> visitedSteps, HintSituation hintSituation, LocalDateTime timeClosed, List<Mine> builtPortals) {
+    public AssistantInfo(String id, Game game, List<VisitedStep> visitedSteps, HintSituation hintSituation, LocalDateTime timeClosed, List<Mine> builtPortalsBaseGame) {
         this.id = id;
         this.game = game;
         this.visitedSteps = visitedSteps;
         this.hintSituation = hintSituation;
         this.timeClosed = timeClosed;
-        this.builtPortals = builtPortals;
+        this.builtPortalsBaseGame = builtPortalsBaseGame;
     }
 
-    public AssistantInfo(Game game, List<VisitedStep> visitedSteps, HintSituation hintSituation, LocalDateTime timeClosed, List<Mine> builtPortals) {
+    public AssistantInfo(Game game, List<VisitedStep> visitedSteps, HintSituation hintSituation, LocalDateTime timeClosed, List<Mine> builtPortalsBaseGame) {
         this.game = game;
         this.visitedSteps = visitedSteps;
         this.hintSituation = hintSituation;
         this.timeClosed = timeClosed;
-        this.builtPortals = builtPortals;
+        this.builtPortalsBaseGame = builtPortalsBaseGame;
     }
 
     public String getId() {
@@ -124,23 +134,44 @@ public class AssistantInfo {
         this.timeClosed = timeClosed;
     }
 
-    public List<Mine> getBuiltPortals() {
-        return builtPortals;
+    public List<Mine> getBuiltPortalsBaseGame() {
+        return builtPortalsBaseGame;
     }
 
-    public void setBuiltPortals(List<Mine> builtPortals) {
-        this.builtPortals = builtPortals;
+    public void setBuiltPortalsBaseGame(List<Mine> builtPortals) {
+        this.builtPortalsBaseGame = builtPortals;
     }
 
     public void addBuiltPortal(Mine builtPortal) {
-        this.builtPortals.add(builtPortal);
+        this.builtPortalsBaseGame.add(builtPortal);
         builtPortal.setAssistantInfo(this);
     }
 
     public void addBuiltPortals(List<Mine> builtPortal) {
-        builtPortals.addAll(builtPortal);
-        builtPortals.forEach(portal -> {
+        builtPortalsBaseGame.addAll(builtPortal);
+        builtPortalsBaseGame.forEach(portal -> {
             portal.setAssistantInfo(this);
         });
+    }
+
+    public HealingGame getHealingGame() {
+        return healingGame;
+    }
+
+    public void setHealingGame(HealingGame healingGame) {
+        this.healingGame = healingGame;
+    }
+
+    public List<HealingMine> getBuiltPortalsHealGame() {
+        return builtPortalsHealGame;
+    }
+
+    public void setBuiltPortalsHealGame(List<HealingMine> builtPortalsHealGame) {
+        this.builtPortalsHealGame = builtPortalsHealGame;
+    }
+
+    public void addBuiltPortalHealGame(HealingMine builtPortal) {
+        this.builtPortalsHealGame.add(builtPortal);
+        builtPortal.setAssistantInfo(this);
     }
 }
