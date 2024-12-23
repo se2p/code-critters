@@ -239,12 +239,12 @@ class CritterHealingBoard extends Toaster(Level(PolymerElement)) {
 
         if(window.matchMedia("(max-width: 600px)").matches) {
             this.updateStyles({
-                '--board-width': (this._globalData.healLevelWidth * 20) + "px",
+                '--board-width': (this._globalData.healLevelWidth * 20) + 15 + "px",
                 '--board-height': (this._globalData.healLevelWidth * 20) + "px"
             });
         } else {
             this.updateStyles({
-                '--board-width': (this._globalData.healLevelWidth * 40) + "px",
+                '--board-width': (this._globalData.healLevelWidth * 40) + 30 + "px",
                 '--board-height': (this._globalData.healLevelWidth * 40) + "px"
             });
         }
@@ -345,12 +345,12 @@ class CritterHealingBoard extends Toaster(Level(PolymerElement)) {
         }
         if(window.matchMedia("(max-width: 600px)").matches) {
             this.updateStyles({
-                '--board-width': (this._globalData.healLevelWidth * 20) + "px",
+                '--board-width': (this._globalData.healLevelWidth * 20) + 15 + "px",
                 '--board-height': (this._globalData.healLevelHeight * 20) + "px"
             });
         } else {
             this.updateStyles({
-                '--board-width': (this._globalData.healLevelWidth * 40) + "px",
+                '--board-width': (this._globalData.healLevelWidth * 40) + 30 + "px",
                 '--board-height': (this._globalData.healLevelHeight * 40) + "px"
             });
         }

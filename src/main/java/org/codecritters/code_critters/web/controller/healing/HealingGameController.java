@@ -28,6 +28,8 @@ import org.codecritters.code_critters.application.service.healing.HealingGameSer
 import org.codecritters.code_critters.application.service.healing.HealingMineService;
 import org.codecritters.code_critters.web.dto.MineDTO;
 import org.codecritters.code_critters.web.dto.healing.HealingGameDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantInfoDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,4 +80,36 @@ public class HealingGameController {
     public void saveHealingPortal(@PathVariable String gameId, @RequestBody MineDTO portal) {
         mineService.saveMine(portal, gameId);
     }
+
+    /**
+     * Saves details about the usage of the hint assistant in a game.
+     * @param gameId
+     * @param dto of the assistant information
+     */
+    @PostMapping(path="/{gameId}/assistant-details")
+    public AssistantInfoDTO saveAssistantInformation(@PathVariable String gameId, @RequestBody AssistantInfoDTO dto) {
+        return healingGameService.saveAssistantUsageInformation(dto, gameId);
+    }
+
+    /**
+     * Saves a portal that is built during the assistance mode.
+     * @param gameId
+     * @param dto DTO that holds the assistantInfoId and the portalDTO so save
+     */
+    @PostMapping(path="/{gameId}/assistant-portal")
+    public void saveAssistantBuiltPortal(@PathVariable String gameId, @RequestBody AssistantPortalSaveDTO dto) {
+        mineService.savePortalDuringAssistance(dto, gameId);
+    }
+
+
+    /**
+     * Returns true if user has already seen the code explanations of a level
+     * @param levelName
+     * @param cookie
+     */
+    @GetMapping(path="/{levelName}/code-explanations-used")
+    public Boolean hasUsedCodeExplanations(@PathVariable String levelName, @CookieValue("id") String cookie) {
+        return healingGameService.hadCodeExplained(levelName, cookie);
+    }
+
 }

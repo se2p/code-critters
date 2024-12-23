@@ -10,18 +10,19 @@ package org.codecritters.code_critters.persistence.entities.healing;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -63,6 +64,11 @@ public class HealingMine {
     // Assigned on the frontend to clearly identify a mine and all its operations
     private String frontendId;
     private int blockCount;
+
+    // Only filled if the mine/portal was built during assistance mode
+    @ManyToOne
+    @JoinColumn(name = "assistant_info_id")
+    private AssistantInfo assistantInfo;
 
     public HealingMine() {
     }
@@ -185,5 +191,13 @@ public class HealingMine {
 
     public void setBlockCount(int blockCount) {
         this.blockCount = blockCount;
+    }
+
+    public AssistantInfo getAssistantInfo() {
+        return assistantInfo;
+    }
+
+    public void setAssistantInfo(AssistantInfo assistantInfo) {
+        this.assistantInfo = assistantInfo;
     }
 }

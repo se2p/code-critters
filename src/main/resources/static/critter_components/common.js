@@ -141,6 +141,20 @@ export function translateVariableNames(jsString, language) {
     return jsString;
 }
 
+/**
+ * Returns the language tag of the currently NOT used language.
+ * E.g. current language is german, it returns 'en'
+ */
+export function getOtherLanguageTag(language) {
+    const currentLangTag = language.substring(0, 2);
+    let otherLangTag = 'de';
+    if (currentLangTag === 'de') {
+        otherLangTag = 'en'
+    }
+
+    return otherLangTag;
+}
+
 
 /**
  * Computes the css class name of a field of the game board and by that defines the

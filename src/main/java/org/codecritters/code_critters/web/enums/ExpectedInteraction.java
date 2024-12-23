@@ -23,11 +23,12 @@ package org.codecritters.code_critters.web.enums;
  */
 
 /**
- * Represents the two types of inputs expected in hint mode. Field_Click means a field click is expected,
+ * Represents the types of inputs expected in hint mode. Field_Click means a field click is expected,
  * Portal_Build means building a portal code is expected, Save_Portal expects to click save for a portal
  */
 public enum ExpectedInteraction {
     FIELD_CLICK,
     PORTAL_BUILD,
-    SAVE_PORTAL
+    SAVE_PORTAL,
+    SELECT_ANSWER
 }

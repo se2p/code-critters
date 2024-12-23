@@ -23,6 +23,7 @@ package org.codecritters.code_critters.persistence.entities.healing;
  */
 
 import org.codecritters.code_critters.persistence.entities.PauseTime;
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -90,6 +91,8 @@ public class HealingGame {
     )
     private List<HealingCollector> gameMissedMutantsList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "healingGame", cascade = CascadeType.ALL)
+    private List<AssistantInfo> assistantInfoList = new ArrayList<>();
 
     public HealingGame() {
     }
@@ -235,5 +238,17 @@ public class HealingGame {
 
     public void setGameMissedMutantsList(List<HealingCollector> gameMissedMutantsList) {
         this.gameMissedMutantsList = gameMissedMutantsList;
+    }
+
+    public List<AssistantInfo> getAssistantInfoList() {
+        return assistantInfoList;
+    }
+
+    public void setAssistantInfoList(List<AssistantInfo> assistantInfoList) {
+        this.assistantInfoList = assistantInfoList;
+    }
+
+    public void addAssistantInfoToList(AssistantInfo assistantInfo) {
+        this.assistantInfoList.add(assistantInfo);
     }
 }

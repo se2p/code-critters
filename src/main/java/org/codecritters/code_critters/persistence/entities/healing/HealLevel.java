@@ -22,6 +22,7 @@ package org.codecritters.code_critters.persistence.entities.healing;
  * #L%
  */
 
+import org.codecritters.code_critters.persistence.entities.hintSystem.Hint;
 import org.codecritters.code_critters.web.enums.Boardbackground;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -93,6 +94,9 @@ public class HealLevel {
 
     @Type(type = "org.codecritters.code_critters.persistence.customDataTypes.CoordinateDataType")
     private HashMap<String, Integer> innerBasketPosition;
+
+    @OneToMany(mappedBy = "healLevel", cascade = CascadeType.ALL)
+    private List<Hint> levelHints;
 
     public HealLevel(String id, String name, String displayName, String CUT, String xml, String test, HashMap<String, Integer> loopStart, HashMap<String, Integer> basketPosition, HashMap<String, Integer> spawn, List<Bush> bushes, String[][] displayLevel, int roundsNum, int numberOfMutants, Boardbackground boardbackground, HashMap<String, Integer> innerLoopStart, HashMap<String, Integer> innerBasketPosition) {
         this.id = id;
@@ -279,5 +283,13 @@ public class HealLevel {
 
     public void setInnerBasketPosition(HashMap<String, Integer> innerBasketPosition) {
         this.innerBasketPosition = innerBasketPosition;
+    }
+
+    public List<Hint> getLevelHints() {
+        return levelHints;
+    }
+
+    public void setLevelHints(List<Hint> levelHints) {
+        this.levelHints = levelHints;
     }
 }

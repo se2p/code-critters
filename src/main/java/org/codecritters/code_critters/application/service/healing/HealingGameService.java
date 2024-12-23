@@ -24,20 +24,27 @@ package org.codecritters.code_critters.application.service.healing;
 
 import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.application.service.UserService;
 import org.codecritters.code_critters.persistence.entities.*;
 import org.codecritters.code_critters.persistence.entities.healing.GameHealingCollector;
 import org.codecritters.code_critters.persistence.entities.healing.HealLevel;
 import org.codecritters.code_critters.persistence.entities.healing.HealingCollector;
 import org.codecritters.code_critters.persistence.entities.healing.HealingGame;
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.codecritters.code_critters.persistence.entities.hintSystem.VisitedStep;
+import org.codecritters.code_critters.persistence.repository.AssistantInfoRepository;
 import org.codecritters.code_critters.persistence.repository.healing.HealLevelRepository;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.persistence.repository.healing.HealingCollectorRepository;
 import org.codecritters.code_critters.persistence.repository.healing.HealingGameRepository;
-import org.codecritters.code_critters.web.dto.GamePauseTimeDTO;
+import org.codecritters.code_critters.web.dto.UserDTO;
 import org.codecritters.code_critters.web.dto.healing.HealingGameDTO;
 import org.codecritters.code_critters.web.dto.healing.KilledMutantDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantInfoDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.VisitedStepDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,15 +61,17 @@ public class HealingGameService {
     private final HealLevelRepository healLevelRepository;
     private final UserRepositiory userRepositiory;
     private final HealingGameRepository healingGameRepository;
-
     private final HealingCollectorRepository healingCollectorRepository;
+    private final AssistantInfoRepository assistantInfoRepository;
+
 
     @Autowired
-    public HealingGameService(HealLevelRepository healLevelRepository, UserRepositiory userRepositiory, HealingGameRepository healingGameRepository, HealingCollectorRepository healingCollectorRepository) {
+    public HealingGameService(HealLevelRepository healLevelRepository, UserRepositiory userRepositiory, HealingGameRepository healingGameRepository, HealingCollectorRepository healingCollectorRepository, AssistantInfoRepository assistantInfoRepository) {
         this.healLevelRepository = healLevelRepository;
         this.userRepositiory = userRepositiory;
         this.healingGameRepository = healingGameRepository;
         this.healingCollectorRepository = healingCollectorRepository;
+        this.assistantInfoRepository = assistantInfoRepository;
     }
 
     /**
@@ -99,19 +108,84 @@ public class HealingGameService {
      * @param dto The dto containing the updated game data.
      */
     public void saveGame(HealingGameDTO dto) {
-        Optional<HealLevel> level = healLevelRepository.findById(dto.getLevel().getId());
+        HealLevel level = healLevelRepository.findByName(dto.getName());
         HealingGame game;
 
-        if (!level.isPresent()) {
+        if (level == null) {
             throw new NotFoundException("Could not find level with name " + dto.getName());
         }
         if (dto.getId() == null) {
             throw new IncompleteDataException("Cannot save a game dto with ID null!");
         }
 
-        dto.setLevel(level.get());
+        dto.setLevel(level);
         game = createGame(dto);
         healingGameRepository.save(game);
+    }
+
+    /**
+     * Saves usage details of the hint assistant for a game.
+     * @param dto
+     * @param gameId
+     */
+    @Transactional
+    public AssistantInfoDTO saveAssistantUsageInformation(AssistantInfoDTO dto, String gameId) {
+        if (gameId == null || gameId.isEmpty()) {
+            throw new IncompleteDataException("Cannot save assistant information with an empty game ID!");
+        }
+
+        Optional<HealingGame> curGameOptional = healingGameRepository.findById(gameId);
+        if (!curGameOptional.isPresent()) {
+            throw new NotFoundException("Could not find a game with id " + dto.getGameId());
+        }
+        dto.setGameId(gameId);
+        HealingGame curGame = curGameOptional.get();
+
+        AssistantInfo assistantInfo;
+
+        if (dto.getId() != null) { // update existing assistantInfo entity
+            Optional<AssistantInfo> curAssistantInfoOptional = assistantInfoRepository.findById(dto.getId());
+            if (!curAssistantInfoOptional.isPresent()) {
+                throw new NotFoundException("Could not find an assistant info with given id " + dto.getId());
+            }
+            assistantInfo = curAssistantInfoOptional.get();
+        } else {
+            assistantInfo = new AssistantInfo();
+            curGame.addAssistantInfoToList(assistantInfo);
+        }
+
+        updateAssistantInfo(assistantInfo, dto, curGame);
+        AssistantInfo savedInfo = assistantInfoRepository.save(assistantInfo);
+        dto.setId(savedInfo.getId());
+        return dto;
+    }
+
+    /**
+     * Returns a boolean that states whether the user has already checked out code explanation hints of
+     * the given level.
+     *
+     * @param levelName
+     * @param cookie
+     * @return boolean: has checked out code explanation hints
+     */
+    public Boolean hadCodeExplained(String levelName, String cookie) {
+        User user = userRepositiory.findByCookie(cookie);
+
+        if(user == null){
+            throw new NotFoundException("Cookie invalid", "invalid_cookie");
+        }
+
+        String levelId = healLevelRepository.getIdByName(levelName);
+
+        List<HealingGame> allGamesOfLevelByUser = healingGameRepository.findAllByUserIDAndLevelId(user.getId(), levelId);
+
+        for (int i = 0; i < allGamesOfLevelByUser.size(); i++) {
+            List<AssistantInfo> allByHealingGame = assistantInfoRepository.findAllByHealingGameId(allGamesOfLevelByUser.get(i).getId());
+            if (!allByHealingGame.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private HealingGameDTO createGameDTO(HealingGame game) {
@@ -120,9 +194,7 @@ public class HealingGameService {
         if (game.getId() != null) {
             dto.setId(game.getId());
         }
-        if (game.getLevel() != null) {
-            dto.setLevel(game.getLevel());
-        }
+
         if (game.getStart() != null) {
             dto.setStart(game.getStart());
         }
@@ -182,5 +254,26 @@ public class HealingGameService {
         game.setGameMissedHealthyCollectorsList(missedHealthyCollectors);
 
         return game;
+    }
+
+    private void updateAssistantInfo(AssistantInfo assistantInfo, AssistantInfoDTO dto, HealingGame game) {
+        assistantInfo.setHealingGame(game);
+        assistantInfo.setHintSituation(dto.getHintSituation());
+        assistantInfo.setTimeClosed(dto.getTimeClosed());
+
+        assistantInfo.getVisitedSteps().clear();
+
+        dto.getVisitedSteps().forEach(visitedStepDTO -> {
+            VisitedStep visitedStep = createVisitedStep(visitedStepDTO, assistantInfo);
+            assistantInfo.addVisitedStep(visitedStep);
+        });
+    }
+
+    private VisitedStep createVisitedStep(VisitedStepDTO dto, AssistantInfo assistantInfo) {
+        VisitedStep visitedStep = new VisitedStep();
+        visitedStep.setHintStep(dto.getHintStep());
+        visitedStep.setTimeSeen(dto.getTimeSeen());
+        visitedStep.setAssistantInfo(assistantInfo);
+        return visitedStep;
     }
 }

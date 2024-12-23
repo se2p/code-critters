@@ -23,9 +23,15 @@ package org.codecritters.code_critters.persistence.repository;
  */
 
 import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface AssistantInfoRepository extends CrudRepository<AssistantInfo, String> {
+    @Query(nativeQuery = true, value = "SELECT * FROM assistant_info WHERE healing_game_id = :healing_game_id AND hint_situation = 2")
+    List<AssistantInfo> findAllByHealingGameId(@Param("healing_game_id") String healingGameId);
 }

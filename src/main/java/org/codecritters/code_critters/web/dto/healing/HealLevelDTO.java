@@ -22,6 +22,7 @@ package org.codecritters.code_critters.web.dto.healing;
  * #L%
  */
 
+import org.codecritters.code_critters.web.dto.hintSystem.HintDTO;
 import org.codecritters.code_critters.web.enums.Boardbackground;
 
 import java.util.HashMap;
@@ -49,8 +50,10 @@ public class HealLevelDTO {
     private HashMap<String, Integer> innerLoopStart;
     private HashMap<String, Integer> innerBasketPosition;
 
+    private List<HintDTO> hints;
 
-    public HealLevelDTO(String id, String name, String displayName, String CUT, String xml, String test, HashMap<String, Integer> loopStart, HashMap<String, Integer> basketPosition, HashMap<String, Integer> spawn, String[][] displayLevel, List<BushDTO> bushes, int numberOfMutants, int roundsNum, Boardbackground boardbackground) {
+
+    public HealLevelDTO(String id, String name, String displayName, String CUT, String xml, String test, HashMap<String, Integer> loopStart, HashMap<String, Integer> basketPosition, HashMap<String, Integer> spawn, String[][] displayLevel, List<BushDTO> bushes, int numberOfMutants, int roundsNum, Boardbackground boardbackground, List<HintDTO> hints) {
         this.id = id;
         this.name = name;
         this.displayName = displayName;
@@ -65,6 +68,7 @@ public class HealLevelDTO {
         this.numberOfMutants = numberOfMutants;
         this.roundsNum = roundsNum;
         this.boardbackground = boardbackground;
+        this.hints = hints;
     }
 
     public HealLevelDTO(String id, String name, String displayName, String CUT, String xml, String test, HashMap<String, Integer> loopStart, HashMap<String, Integer> spawn, String[][] displayLevel, List<BushDTO> bushes, int numberOfMutants, int roundsNum, Boardbackground boardbackground, HashMap<String, Integer> innerLoopStart) {
@@ -231,5 +235,13 @@ public class HealLevelDTO {
 
     public void setInnerBasketPosition(HashMap<String, Integer> innerBasketPosition) {
         this.innerBasketPosition = innerBasketPosition;
+    }
+
+    public List<HintDTO> getHints() {
+        return hints;
+    }
+
+    public void setHints(List<HintDTO> hints) {
+        this.hints = hints;
     }
 }

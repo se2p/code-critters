@@ -400,7 +400,7 @@ class CritterDataStore extends PolymerElement {
     }
 
     /**
-     * Gets all mines that have been set in the game.
+     * Gets all mines that have been set in a base game.
      * @returns {*} A list of mines.
      */
     getMines() {
@@ -416,14 +416,14 @@ class CritterDataStore extends PolymerElement {
     }
 
     /**
-     * Deletes all written tests (guideposts).
+     * Deletes all written tests from second stage game.
      */
     deletePortals() {
         this.secondStagePortals = Array.from({length: this.healLevelWidth}, () => Array.from({length: this.healLevelWidth}, () => undefined));
     }
 
     /**
-     * Gets all portals that have been set in the game.
+     * Gets all portals that have been set in a second stage game.
      * @returns {*} A list of portals -> user tests.
      */
     getPortals() {
@@ -472,10 +472,14 @@ class CritterDataStore extends PolymerElement {
             if (data.innerBasketPosition) {
                 this.innerBasketPosition = data.innerBasketPosition;
             }
+            this.hintObjectsArray = this.transformHints(data.hints);
+
         });
 
         let genRequest = req.generateRequest();
         req.completes = genRequest.completes;
+
+        this.dispatchEvent(new CustomEvent('_healLevelDataLoaded', {detail: {}, bubbles: true, composed: true}));
 
         return req;
     }
@@ -582,6 +586,9 @@ class CritterDataStore extends PolymerElement {
             const expectedClickCoordinates = createArrayWithLength(hintTexts.length, []);
             const expectedUserInteractions = createArrayWithLength(hintTexts.length, null);
             const expectedPortalJsCode = createArrayWithLength(hintTexts.length, null);
+            const answerOptionsList = createArrayWithLength(hintTexts.length, null);
+            const solutionAnswers = createArrayWithLength(hintTexts.length, null);
+
             // Fill the arrays with data from the hint object
             for (let [index, text] of Object.entries(hint.hintTexts)) {
                 hintTexts[Number(index)] = text;
@@ -623,8 +630,20 @@ class CritterDataStore extends PolymerElement {
                 }
             }
             if (hint.expectedPortalJsCode) {
-                for (let [index, interaction] of Object.entries(hint.expectedPortalJsCode)) {
-                    expectedPortalJsCode[Number(index)] = interaction;
+                for (let [index, code] of Object.entries(hint.expectedPortalJsCode)) {
+                    expectedPortalJsCode[Number(index)] = code;
+                }
+            }
+
+            if (hint.answerOptionsList) {
+                for (let [index, options] of Object.entries(hint.answerOptionsList)) {
+                    answerOptionsList[Number(index)] = options;
+                }
+            }
+
+            if (hint.solutionAnswer) {
+                for (let [index, answer] of Object.entries(hint.solutionAnswer)) {
+                    solutionAnswers[Number(index)] = answer;
                 }
             }
 
@@ -637,7 +656,9 @@ class CritterDataStore extends PolymerElement {
                 portalXmls: portalXmls,
                 expectedClickCoordinates: expectedClickCoordinates,
                 expectedUserInteractions: expectedUserInteractions,
-                expectedPortalJsCode: expectedPortalJsCode
+                expectedPortalJsCode: expectedPortalJsCode,
+                answerOptionsList: answerOptionsList,
+                solutionAnswers: solutionAnswers
             };
         });
     }

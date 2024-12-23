@@ -10,12 +10,12 @@ package org.codecritters.code_critters.application.service.healing;
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -24,13 +24,19 @@ package org.codecritters.code_critters.application.service.healing;
 
 import org.codecritters.code_critters.application.exception.IncompleteDataException;
 import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.persistence.entities.Game;
+import org.codecritters.code_critters.persistence.entities.Mine;
 import org.codecritters.code_critters.persistence.entities.healing.HealingGame;
 import org.codecritters.code_critters.persistence.entities.healing.HealingMine;
+import org.codecritters.code_critters.persistence.entities.hintSystem.AssistantInfo;
+import org.codecritters.code_critters.persistence.repository.AssistantInfoRepository;
 import org.codecritters.code_critters.persistence.repository.healing.HealingGameRepository;
 import org.codecritters.code_critters.persistence.repository.healing.HealingMineRepository;
 import org.codecritters.code_critters.web.dto.MineDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.AssistantPortalSaveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,13 +46,16 @@ import java.util.Optional;
 @Service
 public class HealingMineService {
 
-    HealingGameRepository healingGameRepository;
-    HealingMineRepository healingMineRepository;
+    private final HealingGameRepository healingGameRepository;
+    private final HealingMineRepository healingMineRepository;
+    private final AssistantInfoRepository assistantInfoRepository;
+
 
     @Autowired
-    public HealingMineService(HealingGameRepository healingGameRepository, HealingMineRepository healingMineRepository) {
+    public HealingMineService(HealingGameRepository healingGameRepository, HealingMineRepository healingMineRepository, AssistantInfoRepository assistantInfoRepository) {
         this.healingGameRepository = healingGameRepository;
         this.healingMineRepository = healingMineRepository;
+        this.assistantInfoRepository = assistantInfoRepository;
     }
 
     /**
@@ -73,6 +82,45 @@ public class HealingMineService {
         healingMineRepository.save(mine);
         return mine;
 
+    }
+
+    /**
+     * Saves a portal (i.e. mine) that has been built during the hint assistance mode.
+     * @param assistantPortalSaveDTO
+     * @param gameId
+     */
+    @Transactional
+    public void savePortalDuringAssistance(AssistantPortalSaveDTO assistantPortalSaveDTO, String gameId) {
+        MineDTO dto = assistantPortalSaveDTO.getMine();
+        String assistantInfoId = assistantPortalSaveDTO.getAssistantInfoId();
+
+        if (gameId == null || gameId.isEmpty()) {
+            throw new IncompleteDataException("Cannot save mines for game with id null or empty!");
+        }
+
+        Optional<HealingGame> game = healingGameRepository.findById(dto.getGame());
+        if (!game.isPresent()) {
+            throw new NotFoundException("Could not find game with id " + gameId);
+        }
+        dto.setGame(gameId);
+        HealingGame curGame = game.get();
+
+        Optional<AssistantInfo> assistantInfoOptional = assistantInfoRepository.findById(assistantInfoId);
+        if (!assistantInfoOptional.isPresent()) {
+            throw new NotFoundException("Could not find assistant info with id " + assistantInfoId);
+        }
+        AssistantInfo assistantInfo = assistantInfoOptional.get();
+
+        HealingMine mine = createMineFromDTO(dto, curGame, assistantInfo);
+
+        assistantInfo.addBuiltPortalHealGame(mine);
+    }
+
+    private HealingMine createMineFromDTO(MineDTO dto, HealingGame game, AssistantInfo assistantInfo) {
+        HealingMine mine = createMineFromDTO(dto, game);
+        mine.setAssistantInfo(assistantInfo);
+
+        return mine;
     }
 
     private HealingMine createMineFromDTO(MineDTO dto, HealingGame game) {

@@ -85,7 +85,6 @@ public class HealingGameServiceTest {
 
         assertAll(
                 () -> assertEquals(gameId, createdGame.getId()),
-                () -> assertEquals(healLevel, createdGame.getLevel()),
                 () -> assertEquals(userId, createdGame.getUserID()),
                 () -> assertEquals(healingGame.getStart(), createdGame.getStart()),
                 () -> assertEquals(healingGame.getEnd(), createdGame.getEnd())
@@ -118,7 +117,7 @@ public class HealingGameServiceTest {
         missedHealthy.add(hc3);
 
 
-        when(healLevelRepository.findById(gameDTO.getLevel().getId())).thenReturn(Optional.of(healLevel));
+        when(healLevelRepository.findByName(gameDTO.getName())).thenReturn(healLevel);
         when(healingCollectorRepository.findByIdIn(mutantIds)).thenReturn(detecetdList);
         when(healingCollectorRepository.findByIdIn(gameDTO.getFinishedMutantsList())).thenReturn(missedMutants);
         when(healingCollectorRepository.findByIdIn(gameDTO.getFinishedCollectorsList())).thenReturn(finishedHealthy);

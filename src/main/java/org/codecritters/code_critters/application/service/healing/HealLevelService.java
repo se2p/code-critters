@@ -23,11 +23,13 @@ package org.codecritters.code_critters.application.service.healing;
  */
 
 import org.codecritters.code_critters.application.exception.NotFoundException;
+import org.codecritters.code_critters.persistence.entities.Level;
 import org.codecritters.code_critters.persistence.entities.User;
 import org.codecritters.code_critters.persistence.entities.healing.Bush;
 import org.codecritters.code_critters.persistence.entities.healing.HealLevel;
 import org.codecritters.code_critters.persistence.entities.healing.HealResult;
 import org.codecritters.code_critters.persistence.entities.healing.HealingCollector;
+import org.codecritters.code_critters.persistence.entities.hintSystem.Hint;
 import org.codecritters.code_critters.persistence.repository.UserRepositiory;
 import org.codecritters.code_critters.persistence.repository.healing.HealLevelRepository;
 import org.codecritters.code_critters.persistence.repository.healing.HealResultRepository;
@@ -36,11 +38,14 @@ import org.codecritters.code_critters.web.dto.ResultDTO;
 import org.codecritters.code_critters.web.dto.healing.BushDTO;
 import org.codecritters.code_critters.web.dto.healing.HealLevelDTO;
 import org.codecritters.code_critters.web.dto.healing.HealingCollectorsDTO;
+import org.codecritters.code_critters.web.dto.hintSystem.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service to provide heal level data (i.e. second stage level).
@@ -108,13 +113,14 @@ public class HealLevelService {
 
         HealLevelDTO healLevelDTO = new HealLevelDTO(level.getId(), level.getName(), level.getDisplayName(), level.getCUT(),
                 level.getXml(), level.getTest(), level.getLoopStart(), level.getBasketPosition(), level.getSpawn(), level.getDisplayLevel(), bushes,
-                level.getNumberOfMutants(), level.getRoundsNum(), level.getBoardbackground());
+                level.getNumberOfMutants(), level.getRoundsNum(), level.getBoardbackground(), createHintDtoList(level));
         if (level.getInnerLoopStart() != null) {
             healLevelDTO.setInnerLoopStart(level.getInnerLoopStart());
         }
         if (level.getInnerBasketPosition() != null) {
             healLevelDTO.setInnerBasketPosition(level.getInnerBasketPosition());
         }
+
         return healLevelDTO;
     }
 
@@ -126,5 +132,52 @@ public class HealLevelService {
         });
 
         return bushesDTOs;
+    }
+
+    private List<HintDTO> createHintDtoList(HealLevel level) {
+        List<Hint> levelHints = level.getLevelHints();
+        List<HintDTO> hintDTOList = new ArrayList<>();
+
+
+        if (levelHints != null && !levelHints.isEmpty()) {
+            levelHints.forEach(hint -> {
+                Map<Integer, CutBlocksDTO> cutBlocksDTOMap = new HashMap<>();
+                Map<Integer, ComponentsDTO> componentsDTOMap = new HashMap<>();
+                Map<Integer, ExpectedClickedCoordsDTO> clickedCoordsDTOMap = new HashMap<>();
+                Map<Integer, List<String>> answerOptionsListDTOMap = new HashMap<>();
+
+
+
+                hint.getExpectedClickedCoordinates().forEach((integer, coordinates) -> {
+                    ExpectedClickedCoordsDTO coordsDTO = new ExpectedClickedCoordsDTO(coordinates.getCoordinates());
+                    clickedCoordsDTOMap.put(integer, coordsDTO);
+                });
+
+                hint.getAssociatedComponentIds().forEach((integer, associatedComponentIds) -> {
+                    ComponentsDTO componentsDTO = new ComponentsDTO(associatedComponentIds.getComponentIds());
+                    componentsDTOMap.put(integer, componentsDTO);
+                });
+
+                hint.getAssociatedCutBlocks().forEach((integer, associatedCutBlocks) -> {
+                    CutBlocksDTO blocksDTO = new CutBlocksDTO(associatedCutBlocks.getBlockIds());
+                    cutBlocksDTOMap.put(integer, blocksDTO);
+                });
+
+                hint.getAnswerOptionsList().forEach((integer, answerOptionsList) -> {
+                    List<String> answerOptions = answerOptionsList.getAnswerOptions(); // TODODODO
+                    answerOptionsListDTOMap.put(integer, answerOptions);
+                });
+
+
+                HintDTO hintDTO = new HintDTO(hint.getId(), hint.getHintSituation(),
+                        hint.getHintTexts(), hint.getAssociatedCoordinates(), cutBlocksDTOMap,  componentsDTOMap,
+                        hint.getPortalXmls(), clickedCoordsDTOMap, hint.getExpectedUserInteraction(), hint.getExpectedPortalJsCode(), answerOptionsListDTOMap, hint.getSolutionAnswer());
+
+                hintDTOList.add(hintDTO);
+            });
+        }
+
+
+        return hintDTOList;
     }
 }

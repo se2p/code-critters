@@ -34,4 +34,5 @@ import java.util.List;
 public interface HealingGameRepository extends CrudRepository<HealingGame, String> {
 
     List<HealingGame> findAllByUserID(@Param("user_id") String userId);
+    List<HealingGame> findAllByUserIDAndLevelId(@Param("user_id") String userId, @Param("level_id") String levelId);
 }
