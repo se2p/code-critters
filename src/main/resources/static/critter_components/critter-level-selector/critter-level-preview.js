@@ -71,7 +71,7 @@ class CritterLevelPreview extends I18n(PolymerElement) {
             }
             
             .locked {
-                filter: grayscale(50%) blur(6px);
+                filter: grayscale(95%) contrast(70%);
             }
             
             #stars{

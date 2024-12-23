@@ -47,7 +47,7 @@ class CritterUnlockedLevelSelector extends PolymerElement {
 
 
                 .locked {
-                    filter: grayscale(50%) blur(6px);
+                    filter: grayscale(95%) contrast(70%);
                     transition: filter 0.3s ease;
                 }
 
@@ -57,11 +57,6 @@ class CritterUnlockedLevelSelector extends PolymerElement {
 
                 .glow-green {
                     box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-                    transition: box-shadow 1s ease;
-                }
-
-                .glow-red {
-                    box-shadow: 0 0 10px rgb(255, 0, 0);
                     transition: box-shadow 1s ease;
                 }
 
@@ -134,7 +129,6 @@ class CritterUnlockedLevelSelector extends PolymerElement {
 
     _addLockedStyle() {
         const img = this.$.second_stage_level;
-        img.classList.add("glow-red");
         img.classList.add("locked");
         img.style.cursor = "default";
     }
