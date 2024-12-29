@@ -1,4 +1,4 @@
-FROM openjdk:20-slim
+FROM openjdk:21-slim
 
 COPY mail mail
 COPY target/Code-Critters-1.0.1.jar CCapp.jar
