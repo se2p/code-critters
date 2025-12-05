@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   flyway:
     env_file: ./.env
@@ -12,7 +10,7 @@ services:
       - mysqldb
   mysqldb:
     container_name: "critter-mysql"
-    image: mariadb:11.1-rc
+    image: mariadb:11
     ports:
       - "3306:3306"
     env_file: ./.env
