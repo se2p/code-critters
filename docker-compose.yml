@@ -11,6 +11,7 @@ services:
   mysqldb:
     container_name: "critter-mysql"
     image: mariadb:11
+    restart: on-failure
     ports:
       - "3306:3306"
     env_file: ./.env
@@ -42,6 +43,9 @@ services:
       - BASE_API_URL=$BASE_API
     stdin_open: true
     tty: true
+    tmpfs:
+      - /tmp
+      - /temp
 
   nginx:
     image: nginx:stable-alpine
